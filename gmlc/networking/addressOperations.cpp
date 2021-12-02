@@ -6,6 +6,7 @@ SPDX-License-Identifier: BSD-3-Clause
 */
 #include "addressOperations.hpp"
 
+#include <algorithm>
 #include <stdexcept>
 
 namespace gmlc::networking {
