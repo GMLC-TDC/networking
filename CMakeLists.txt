@@ -39,7 +39,8 @@ endif()
 # -----------------------------------------------------------------------------
 # set the module path and include some common macros
 # -----------------------------------------------------------------------------
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/config/cmake/")
+list(APPEND CMAKE_MODULE_PATH "${GMLC_NETWORKING_SOURCE_DIR}/config")
+list(APPEND CMAKE_MODULE_PATH "${GMLC_NETWORKING_SOURCE_DIR}/ThirdParty/cmake")
 include(extraMacros)
 include(CMakeDependentOption)
 include(CTest)
@@ -68,7 +69,7 @@ endif(GMLC_NETWORKING_WITH_CMAKE_PACKAGE)
 
 cmake_dependent_option(
     GMLC_NETWORKING_CLANG_TIDY "Look for and use Clang-Tidy" OFF
-    "CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME;NOT CMAKE_VERSION VERSION_LESS 3.6" OFF
+    "CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME" OFF
 )
 set(GMLC_NETWORKING_CLANG_TIDY_OPTIONS
     ""
@@ -101,9 +102,25 @@ endif()
 
 target_link_libraries(networking_base INTERFACE compile_flags_target)
 
+target_compile_definitions(networking_base INTERFACE "-DASIO_STANDALONE")
+    target_include_directories(
+        networking_base SYSTEM
+        INTERFACE $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/ThirdParty/asio/asio/include>
+    )
+    
+
+# -------------------------------------------------------------
+# global include directories
+# -------------------------------------------------------------
+target_include_directories(
+    networking_base
+    INTERFACE 
+              $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/ThirdParty/concurrency>
+)
+
+
 option(GMLC_NETWORKING_INSTALL "Enable GMLC utilities to be installed" ON)
 option(GMLC_NETWORKING_INCLUDE_BOOST "Enable some boost library headers to be used" ON)
-)
 
 # Add boost to test boost::optional if available
 if(GMLC_NETWORKING_INCLUDE_BOOST)

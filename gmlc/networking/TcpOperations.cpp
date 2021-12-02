@@ -4,19 +4,16 @@ Battelle Memorial Institute; Lawrence Livermore National Security, LLC; Alliance
 Energy, LLC.  See the top-level NOTICE for additional details. All rights reserved.
 SPDX-License-Identifier: BSD-3-Clause
 */
-#include "TcpCommsCommon.h"
+#include "TcpOperations.h"
 
-#include "../../common/AsioContextManager.h"
-#include "../../core/ActionMessage.hpp"
-#include "../CommsInterface.hpp"
-#include "../NetworkBrokerData.hpp"
+#include "AsioContextManager.h"
+
 #include "TcpHelperClasses.h"
 
 #include <memory>
 #include <string>
 
-namespace helics {
-namespace tcp {
+namespace gmlc::networking {
     TcpConnection::pointer makeConnection(asio::io_context& io_context,
                                           const std::string& connection,
                                           const std::string& port,
@@ -57,20 +54,22 @@ namespace tcp {
         return connectionPtr;
     }
 
-    bool commErrorHandler(CommsInterface* comm,
-                          TcpConnection* /*connection*/,
-                          const std::error_code& error)
+
+     TcpConnection::pointer generateConnection(
+        std::shared_ptr<AsioContextManager>& ioctx,
+        const std::string& address)
     {
-        if (comm->isConnected()) {
-            if ((error != asio::error::eof) && (error != asio::error::operation_aborted)) {
-                if (error != asio::error::connection_reset) {
-                    comm->logError("error message while connected " + error.message() + "code " +
-                                   std::to_string(error.value()));
-                }
-            }
+        try {
+            std::string interface;
+            std::string port;
+            std::tie(interface, port) = extractInterfaceandPortString(address);
+            return TcpConnection::create(
+                ioctx->getBaseContext(), interface, port);
         }
-        return false;
+        catch (std::exception&) {
+            // TODO(PT):: do something???
+        }
+        return nullptr;
     }
 
-}  // namespace tcp
-}  // namespace helics
+}

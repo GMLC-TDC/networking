@@ -19,10 +19,7 @@ namespace asio {
 class io_context;
 }  // namespace asio
 
-namespace helics {
-class CommsInterface;
-
-namespace tcp {
+namespace gmlc::networking {
     /** establish a connection to a server by as associated timeout*/
     TcpConnection::pointer makeConnection(asio::io_context& io_context,
                                           const std::string& connection,
@@ -30,9 +27,12 @@ namespace tcp {
                                           size_t bufferSize,
                                           std::chrono::milliseconds timeOut);
 
-    /** do some checking and logging about errors if the interface is connected*/
-    bool commErrorHandler(CommsInterface* comm,
-                          TcpConnection* connection,
-                          const std::error_code& error);
-}  // namespace tcp
-}  // namespace helics
+
+    std::pair<std::string, std::string>
+        extractInterfaceandPortString(const std::string& address);
+
+     TcpConnection::pointer generateConnection(
+        std::shared_ptr<AsioContextManager>& ioctx,
+        const std::string& address);
+
+}  // namespace gmlc::networking

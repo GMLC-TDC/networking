@@ -9,14 +9,22 @@
 
 set(networking_source_files
    AsioContextManager.cpp
-   TcpCommsCommon.cpp
-   TcpHelperClasses.cpp
+   TcpOperations.cpp
+   TcpConnection.cpp
+    TcpServer.cpp
+    TcpAcceptor.cpp
+    addressOperations.cpp
 )
 
 set(networking_header_files
-    TcpCommsCommon.h
+    TcpOperations.h
     AsioContextManager.h
     TcpHelperClasses.h
+    GuardedTypes.hpp
+    TcpConnection.h
+    TcpServer.h
+    TcpAcceptor.h
+    addressOperations.hpp
 )
 
 if(GMLC_NETWORKING_OBJECT_LIB)

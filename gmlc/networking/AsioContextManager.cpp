@@ -26,12 +26,16 @@ SPDX-License-Identifier: BSD-3-Clause
 #include <thread>
 #include <utility>
 
-/** a storage system for the available core objects allowing references by name to the core
+namespace gmlc::networking {
+/** a storage system for the available core objects allowing references by name
+ * to the core
  */
-std::map<std::string, std::shared_ptr<AsioContextManager>> AsioContextManager::contexts;
+std::map<std::string, std::shared_ptr<AsioContextManager>>
+    AsioContextManager::contexts;
 
-/** we expect operations on core object that modify the map to be rare but we absolutely need them
-to be thread safe so we are going to use a lock that is entirely controlled by this file*/
+/** we expect operations on core object that modify the map to be rare but we
+absolutely need them to be thread safe so we are going to use a lock that is
+entirely controlled by this file*/
 static std::mutex contextLock;
 
 std::shared_ptr<AsioContextManager>
@@ -47,14 +51,16 @@ std::shared_ptr<AsioContextManager>
         return contextPtr;
     }
 
-    contextPtr = std::shared_ptr<AsioContextManager>(new AsioContextManager(contextName));
+    contextPtr = std::shared_ptr<AsioContextManager>(
+        new AsioContextManager(contextName));
     contexts.emplace(contextName, contextPtr);
     return contextPtr;
     // if it doesn't find it make a new one with the appropriate name
 }
 
 std::shared_ptr<AsioContextManager>
-    AsioContextManager::getExistingContextPointer(const std::string& contextName)
+    AsioContextManager::getExistingContextPointer(
+        const std::string& contextName)
 {
     std::lock_guard<std::mutex> ctxlock(
         contextLock);  // just to ensure that nothing funny happens if you try
@@ -72,13 +78,15 @@ asio::io_context& AsioContextManager::getContext(const std::string& contextName)
     return getContextPointer(contextName)->getBaseContext();
 }
 
-asio::io_context& AsioContextManager::getExistingContext(const std::string& contextName)
+asio::io_context&
+    AsioContextManager::getExistingContext(const std::string& contextName)
 {
     auto ptr = getExistingContextPointer(contextName);
     if (ptr) {
         return ptr->getBaseContext();
     }
-    throw(std::invalid_argument("the context name specified was not available"));
+    throw(
+        std::invalid_argument("the context name specified was not available"));
 }
 
 void AsioContextManager::closeContext(const std::string& contextName)
@@ -99,7 +107,8 @@ void AsioContextManager::closeContext(const std::string& contextName)
     }
 }
 
-void AsioContextManager::setContextToLeakOnDelete(const std::string& contextName)
+void AsioContextManager::setContextToLeakOnDelete(
+    const std::string& contextName)
 {
     std::lock_guard<std::mutex> ctxlock(contextLock);
     auto fnd = contexts.find(contextName);
@@ -123,20 +132,22 @@ AsioContextManager::~AsioContextManager()
     }
     if (leakOnDelete) {
         // yes I am purposefully leaking this PHILIP TOP
-        // this capability is needed for some operations on particular OS's with the shared library
-        // operations that will crash if this is closed before the library closes which really only
-        // happens at program termination
+        // this capability is needed for some operations on particular OS's with
+        // the shared library operations that will crash if this is closed
+        // before the library closes which really only happens at program
+        // termination
         auto val = ictx.release();
         (void)(val);
     }
 }
 
-AsioContextManager::AsioContextManager(const std::string& contextName):
+AsioContextManager::AsioContextManager(const std::string& contextName) :
     name(contextName), ictx(std::make_unique<asio::io_context>())
 {
 }
 
-AsioContextManager::LoopHandle AsioContextManager::runContextLoop(const std::string& contextName)
+AsioContextManager::LoopHandle
+    AsioContextManager::runContextLoop(const std::string& contextName)
 {
     std::unique_lock<std::mutex> ctxlock(contextLock);
     auto fnd = contexts.find(contextName);
@@ -145,7 +156,8 @@ AsioContextManager::LoopHandle AsioContextManager::runContextLoop(const std::str
         ctxlock.unlock();
         return ptr->startContextLoop();
     }
-    throw(std::invalid_argument("the context name specified was not available"));
+    throw(
+        std::invalid_argument("the context name specified was not available"));
 }
 
 AsioContextManager::LoopHandle AsioContextManager::startContextLoop()
@@ -169,7 +181,8 @@ AsioContextManager::LoopHandle AsioContextManager::startContextLoop()
     } else {
         std::unique_lock<std::mutex> nullLock(runningLoopLock);
         if (getBaseContext().stopped()) {
-            // std::cout << "run Context loop already stopped" << runCounter << "\n";
+            // std::cout << "run Context loop already stopped" << runCounter <<
+            // "\n";
             if (loopRet.valid()) {
                 loopRet.get();
             }
@@ -180,7 +193,8 @@ AsioContextManager::LoopHandle AsioContextManager::startContextLoop()
                 std::packaged_task<void()> contextTask(
                     [ptr = std::move(ptr)]() { contextProcessingLoop(ptr); });
                 nullLock.lock();
-                nullwork = std::make_unique<asio::io_context::work>(getBaseContext());
+                nullwork =
+                    std::make_unique<asio::io_context::work>(getBaseContext());
                 loopRet = contextTask.get_future();
                 nullLock.unlock();
                 std::thread contextThread(std::move(contextTask));
@@ -210,7 +224,8 @@ void AsioContextManager::haltContextLoop()
                         if (lcnt == 0) {
                             std::this_thread::yield();
                         } else {
-                            std::this_thread::sleep_for(std::chrono::milliseconds(50));
+                            std::this_thread::sleep_for(
+                                std::chrono::milliseconds(50));
                             ++lcnt;
                             ictx->stop();
                         }
@@ -236,13 +251,15 @@ void contextProcessingLoop(std::shared_ptr<AsioContextManager> ptr)
         }
         catch (const std::system_error& se) {
             auto nclk = std::chrono::steady_clock::now();
-            std::cerr << "asio system error in context loop " << se.what() << " ran for "
-                      << (nclk - clk).count() / 1000000 << "ms" << std::endl;
+            std::cerr << "asio system error in context loop " << se.what()
+                      << " ran for " << (nclk - clk).count() / 1000000 << "ms"
+                      << std::endl;
         }
         catch (const std::exception& e) {
             auto nclk = std::chrono::steady_clock::now();
-            std::cerr << "std::exception in context loop " << e.what() << " ran for "
-                      << (nclk - clk).count() / 1000000 << "ms" << std::endl;
+            std::cerr << "std::exception in context loop " << e.what()
+                      << " ran for " << (nclk - clk).count() / 1000000 << "ms"
+                      << std::endl;
         }
         catch (...) {
             std::cout << "caught other error in context loop" << std::endl;
@@ -252,3 +269,5 @@ void contextProcessingLoop(std::shared_ptr<AsioContextManager> ptr)
     //   std::cout << "context loop stopped\n";
     ptr->running.store(AsioContextManager::loop_mode::stopped);
 }
+
+}  // namespace gmlc::networking
