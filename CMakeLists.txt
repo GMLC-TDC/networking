@@ -102,20 +102,28 @@ endif()
 
 target_link_libraries(networking_base INTERFACE compile_flags_target)
 
-target_compile_definitions(networking_base INTERFACE "-DASIO_STANDALONE")
-    target_include_directories(
-        networking_base SYSTEM
-        INTERFACE $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/ThirdParty/asio/asio/include>
-    )
-    
-
 # -------------------------------------------------------------
 # global include directories
 # -------------------------------------------------------------
+
+target_compile_definitions(networking_base INTERFACE "-DASIO_STANDALONE")
+if (NOT GMLC_NETWORKING_ASIO_INCLUDE )
+    set(GMLC_NETWORKING_ASIO_INCLUDE ${PROJECT_SOURCE_DIR}/ThirdParty/asio/asio/include)
+endif()
+
+target_include_directories(
+    networking_base SYSTEM
+    INTERFACE $<BUILD_INTERFACE:${GMLC_NETWORKING_ASIO_INCLUDE}>
+)
+    
+if (NOT GMLC_NETWORKING_CONCURRENCY_INCLUDE )
+    set(GMLC_NETWORKING_CONCURRENCY_INCLUDE ${PROJECT_SOURCE_DIR}/ThirdParty/concurrency)
+endif()
+
 target_include_directories(
     networking_base
     INTERFACE 
-              $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/ThirdParty/concurrency>
+              $<BUILD_INTERFACE:${GMLC_NETWORKING_CONCURRENCY_INCLUDE}>
 )
 
 
