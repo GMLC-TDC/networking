@@ -12,6 +12,7 @@ SPDX-License-Identifier: BSD-3-Clause
 #include "addressOperations.hpp"
 #include <memory>
 #include <string>
+#include <thread>
 
 namespace gmlc::networking {
     TcpConnection::pointer makeConnection(asio::io_context& io_context,
