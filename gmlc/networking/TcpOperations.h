@@ -28,9 +28,6 @@ namespace gmlc::networking {
                                           std::chrono::milliseconds timeOut);
 
 
-    std::pair<std::string, std::string>
-        extractInterfaceandPortString(const std::string& address);
-
      TcpConnection::pointer generateConnection(
         std::shared_ptr<AsioContextManager>& ioctx,
         const std::string& address);

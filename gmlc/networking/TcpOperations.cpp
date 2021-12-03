@@ -9,7 +9,7 @@ SPDX-License-Identifier: BSD-3-Clause
 #include "AsioContextManager.h"
 
 #include "TcpHelperClasses.h"
-
+#include "addressOperations.hpp"
 #include <memory>
 #include <string>
 
@@ -72,4 +72,4 @@ namespace gmlc::networking {
         return nullptr;
     }
 
-}
+    }

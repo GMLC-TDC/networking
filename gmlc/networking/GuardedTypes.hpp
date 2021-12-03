@@ -12,6 +12,8 @@ SPDX-License-Identifier: BSD-3-Clause
 #include "gmlc/libguarded/shared_guarded.hpp"
 //#include "gmlc/libguarded/staged_guarded.hpp"
 
+namespace gmlc::networking {
+
 template<class T>
 using guarded = gmlc::libguarded::guarded<T>;
 
@@ -29,3 +31,5 @@ using shared_guarded = gmlc::libguarded::shared_guarded<T, std::shared_mutex>;
 
 template<class T>
 using ordered_guarded = gmlc::libguarded::ordered_guarded<T, std::shared_mutex>;
+
+}  // namespace gmlc::networking
