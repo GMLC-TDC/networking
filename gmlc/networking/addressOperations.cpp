@@ -12,7 +12,7 @@ All rights reserved. SPDX-License-Identifier: BSD-3-Clause
 namespace gmlc::networking {
 
 std::pair<std::string, std::string>
-    extractInterfaceandPortString(const std::string& address)
+    extractInterfaceAndPortString(const std::string& address)
 {
     auto lastColon = address.find_last_of(':');
     return {address.substr(0, lastColon), address.substr(lastColon + 1)};
@@ -28,7 +28,7 @@ std::string makePortAddress(const std::string& networkInterface, int portNumber)
     return newAddress;
 }
 
-std::pair<std::string, int> extractInterfaceandPort(const std::string& address)
+std::pair<std::string, int> extractInterfaceAndPort(const std::string& address)
 {
     std::pair<std::string, int> ret;
     auto lastColon = address.find_last_of(':');
@@ -70,7 +70,7 @@ void removeProtocol(std::string& networkAddress)
     }
 }
 
-bool isipv6(const std::string& address)
+bool isIpv6(const std::string& address)
 {
     auto cntcolon = std::count(address.begin(), address.end(), ':');
     if (cntcolon > 2) {

@@ -64,7 +64,7 @@ TcpConnection::pointer generateConnection(
     try {
         std::string interface;
         std::string port;
-        std::tie(interface, port) = extractInterfaceandPortString(address);
+        std::tie(interface, port) = extractInterfaceAndPortString(address);
         return TcpConnection::create(ioctx->getBaseContext(), interface, port);
     }
     catch (std::exception&) {

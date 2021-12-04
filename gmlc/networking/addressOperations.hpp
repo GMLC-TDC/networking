@@ -40,7 +40,7 @@ listed or the interface doesn't use port numbers
 @param address a string with an network location description i.e 127.0.0.1:34
 @return a pair with a string and int with the interface name and port number
 */
-std::pair<std::string, int> extractInterfaceandPort(const std::string& address);
+std::pair<std::string, int> extractInterfaceAndPort(const std::string& address);
 
 /** extract a port number string and interface string from an address number
 @details,  if there is no port number it default to empty string this is true if
@@ -50,7 +50,7 @@ none was listed or the interface doesn't use port numbers
 @return a pair with 2 strings with the interface name and port number
 */
 std::pair<std::string, std::string>
-    extractInterfaceandPortString(const std::string& address);
+    extractInterfaceAndPortString(const std::string& address);
 
 /** strip any protocol strings from the interface and return a new string
 for example tcp://127.0.0.1 -> 127.0.0.1*/
@@ -68,6 +68,6 @@ void insertProtocol(std::string& networkAddress, InterfaceTypes interfaceT);
 /** check if a specified address is v6 or v4
 @return true if the address is a v6 address
  */
-bool isipv6(const std::string& address);
+bool isIpv6(const std::string& address);
 
 }  // namespace gmlc::networking

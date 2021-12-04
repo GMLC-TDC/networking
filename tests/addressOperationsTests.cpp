@@ -36,10 +36,10 @@ TEST(address_operations, insertProtocol)
 
 TEST(address_operations, add_check_detection)
 {
-    EXPECT_TRUE(isipv6("FEDC:BA98:7654:3210:FEDC:BA98:7654:3210"));
-    EXPECT_TRUE(isipv6("::192.9.5.5"));
-    EXPECT_TRUE(isipv6("http://[1080::8:800:200C:417A]/foo"));
-    EXPECT_TRUE(isipv6("::0"));
-    EXPECT_TRUE(!isipv6("192.9.5.5"));
-    EXPECT_TRUE(!isipv6("tcp://192.9.5.5:80"));
+    EXPECT_TRUE(isIpv6("FEDC:BA98:7654:3210:FEDC:BA98:7654:3210"));
+    EXPECT_TRUE(isIpv6("::192.9.5.5"));
+    EXPECT_TRUE(isIpv6("http://[1080::8:800:200C:417A]/foo"));
+    EXPECT_TRUE(isIpv6("::0"));
+    EXPECT_TRUE(!isIpv6("192.9.5.5"));
+    EXPECT_TRUE(!isIpv6("tcp://192.9.5.5:80"));
 }

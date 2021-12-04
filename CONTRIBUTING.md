@@ -9,7 +9,7 @@ The following is a set of guidelines for contributing to GMLC-TDC and associated
 ## Licensing
 
 The networking library is distributed under the terms of the BSD-3 clause license.
-All new contributions must be made under this [LICENSE](LICENSE) in accordance with the github [terms of service](https://help.github.com/en/articles/github-terms-of-service#6-contributions-under-repository-license), which uses inbound=outbound policy.
+All new contributions must be made under this [LICENSE](LICENSE) in accordance with the GitHub [terms of service](https://help.github.com/en/articles/github-terms-of-service#6-contributions-under-repository-license), which uses inbound=outbound policy.
 By submitting a pull request you are acknowledging that you have the right to license your code under these terms.
 
 ## [Code of Conduct](.github/CODE_OF_CONDUCT.md)
