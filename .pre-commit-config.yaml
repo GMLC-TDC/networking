@@ -1,4 +1,4 @@
-exclude: ^(ThirdParty/|test/files/|.github/workflows/|.github/actions/)
+exclude: ^(ThirdParty/|tests/catch2/|.github/workflows/|.github/actions/)
 repos:
   - repo: https://github.com/jumanjihouse/pre-commit-hooks
     rev: 2.1.5

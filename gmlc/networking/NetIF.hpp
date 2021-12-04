@@ -133,7 +133,7 @@ namespace networking {
         ULONG iter = 0;
         do {
             *addrs =
-                (IP_ADAPTER_ADDRESSES*)HeapAlloc(GetProcessHeap(), 0, bufLen);
+                reinterpret_cast<IP_ADAPTER_ADDRESSES*>(HeapAlloc(GetProcessHeap(), 0, bufLen));
             if (*addrs == NULL) {
                 return -1;
             }
