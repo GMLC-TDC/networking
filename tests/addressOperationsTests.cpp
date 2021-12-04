@@ -4,42 +4,44 @@ Battelle Memorial Institute; Lawrence Livermore National Security, LLC; Alliance
 for Sustainable Energy, LLC.  See the top-level NOTICE for additional details.
 All rights reserved. SPDX-License-Identifier: BSD-3-Clause
 */
-#include "gmlc/networking/addressOperations.hpp"
 
-#include "gtest/gtest.h"
+#define CATCH_CONFIG_MAIN
+#include "catch2/catch.hpp"
+
+#include "gmlc/networking/addressOperations.hpp"
 
 using namespace gmlc::networking;
 
-TEST(address_operations, stripProtocol)
+TEST_CASE("stripProtocol", "[address_operations]")
 {
-    EXPECT_EQ(stripProtocol("tcp://127.0.0.1"), "127.0.0.1");
+    CHECK(stripProtocol("tcp://127.0.0.1")== "127.0.0.1");
 }
 
-TEST(address_operations, removeProtocol)
+TEST_CASE("removeProtocol", "[address_operations]")
 {
     std::string networkAddress = "tcp://127.0.0.1";
     removeProtocol(networkAddress);
-    EXPECT_EQ(networkAddress, "127.0.0.1");
+    CHECK(networkAddress=="127.0.0.1");
 }
 
-TEST(address_operations, addProtocol)
+TEST_CASE("addProtocol", "[address_operations]")
 {
-    EXPECT_EQ(addProtocol("127.0.0.1", InterfaceTypes::TCP), "tcp://127.0.0.1");
+    CHECK(addProtocol("127.0.0.1", InterfaceTypes::TCP)== "tcp://127.0.0.1");
 }
 
-TEST(address_operations, insertProtocol)
+TEST_CASE("insertProtocol", "[address_operations]")
 {
     std::string networkAddress = "127.0.0.1";
     insertProtocol(networkAddress, InterfaceTypes::TCP);
-    EXPECT_EQ(networkAddress, "tcp://127.0.0.1");
+    CHECK(networkAddress=="tcp://127.0.0.1");
 }
 
-TEST(address_operations, add_check_detection)
+TEST_CASE("add_check_detection", "[address_operations]")
 {
-    EXPECT_TRUE(isIpv6("FEDC:BA98:7654:3210:FEDC:BA98:7654:3210"));
-    EXPECT_TRUE(isIpv6("::192.9.5.5"));
-    EXPECT_TRUE(isIpv6("http://[1080::8:800:200C:417A]/foo"));
-    EXPECT_TRUE(isIpv6("::0"));
-    EXPECT_TRUE(!isIpv6("192.9.5.5"));
-    EXPECT_TRUE(!isIpv6("tcp://192.9.5.5:80"));
+    CHECK(isIpv6("FEDC:BA98:7654:3210:FEDC:BA98:7654:3210"));
+    CHECK(isIpv6("::192.9.5.5"));
+    CHECK(isIpv6("http://[1080::8:800:200C:417A]/foo"));
+    CHECK(isIpv6("::0"));
+    CHECK(!isIpv6("192.9.5.5"));
+    CHECK(!isIpv6("tcp://192.9.5.5:80"));
 }
