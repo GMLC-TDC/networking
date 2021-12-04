@@ -8,10 +8,7 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-set(NETWORKING_TESTS addressOperationsTests)
-
-# Only affects current directory, so safe
-include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+set(NETWORKING_TESTS addressOperationsTests GetAddressTests interfaceOperationsTests)
 
 foreach(T ${NETWORKING_TESTS})
 

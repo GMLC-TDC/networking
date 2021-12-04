@@ -42,6 +42,6 @@ TEST_CASE("add_check_detection", "[address_operations]")
     CHECK(isIpv6("::192.9.5.5"));
     CHECK(isIpv6("http://[1080::8:800:200C:417A]/foo"));
     CHECK(isIpv6("::0"));
-    CHECK(!isIpv6("192.9.5.5"));
-    CHECK(!isIpv6("tcp://192.9.5.5:80"));
+    CHECK_FALSE(isIpv6("192.9.5.5"));
+    CHECK_FALSE(isIpv6("tcp://192.9.5.5:80"));
 }
