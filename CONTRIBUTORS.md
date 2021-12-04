@@ -28,7 +28,6 @@ Some of the original code for this library was pulled from use inside HELICS. It
 
 The tests are written to use google test and mock frameworks and is pulled in as a subproject via git clone or CMake FetchContent. Googletest is released with a BSD-3-clause licensed
 
-
 ### CMake scripts
 
 Several cmake scripts came from other sources and were either used or modified for use in HELICS.
