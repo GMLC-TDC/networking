@@ -1,8 +1,8 @@
 /*
 Copyright (c) 2017-2021,
-Battelle Memorial Institute; Lawrence Livermore National Security, LLC; Alliance for Sustainable
-Energy, LLC.  See the top-level NOTICE for additional details. All rights reserved.
-SPDX-License-Identifier: BSD-3-Clause
+Battelle Memorial Institute; Lawrence Livermore National Security, LLC; Alliance
+for Sustainable Energy, LLC.  See the top-level NOTICE for additional details.
+All rights reserved. SPDX-License-Identifier: BSD-3-Clause
 */
 
 #include "TcpAcceptor.h"
@@ -16,14 +16,15 @@ namespace gmlc::networking {
 using asio::ip::tcp;
 using namespace std::chrono_literals;  // NOLINT
 
-TcpAcceptor::TcpAcceptor(asio::io_context& io_context, tcp::endpoint& ep):
+TcpAcceptor::TcpAcceptor(asio::io_context& io_context, tcp::endpoint& ep) :
     endpoint_(ep), acceptor_(io_context)
 {
     acceptor_.open(ep.protocol());
 }
 
-TcpAcceptor::TcpAcceptor(asio::io_context& io_context, uint16_t port):
-    endpoint_(asio::ip::address_v4::any(), port), acceptor_(io_context, endpoint_.protocol()),
+TcpAcceptor::TcpAcceptor(asio::io_context& io_context, uint16_t port) :
+    endpoint_(asio::ip::address_v4::any(), port),
+    acceptor_(io_context, endpoint_.protocol()),
     state(AcceptingStates::CONNECTED)
 {
 }
@@ -96,11 +97,12 @@ bool TcpAcceptor::start(TcpConnection::pointer conn)
         auto& socket = conn->socket();
         acceptor_.listen();
         auto ptr = shared_from_this();
-        acceptor_.async_accept(socket,
-                               [this, apointer = std::move(ptr), connection = std::move(conn)](
-                                   const std::error_code& error) {
-                                   handle_accept(apointer, connection, error);
-                               });
+        acceptor_.async_accept(
+            socket,
+            [this, apointer = std::move(ptr), connection = std::move(conn)](
+                const std::error_code& error) {
+                handle_accept(apointer, connection, error);
+            });
         return true;
     }
 
@@ -124,9 +126,10 @@ std::string TcpAcceptor::to_string() const
     str += std::to_string(endpoint_.port());
     return str;
 }
-void TcpAcceptor::handle_accept(TcpAcceptor::pointer ptr,
-                                TcpConnection::pointer new_connection,
-                                const std::error_code& error)
+void TcpAcceptor::handle_accept(
+    TcpAcceptor::pointer ptr,
+    TcpConnection::pointer new_connection,
+    const std::error_code& error)
 {
     if (state.load() != AcceptingStates::CONNECTED) {
         asio::socket_base::linger optionLinger(true, 0);
@@ -173,4 +176,4 @@ void TcpAcceptor::handle_accept(TcpAcceptor::pointer ptr,
     }
 }
 
-}  // namespace helics::tcp
+}  // namespace gmlc::networking

@@ -1,8 +1,8 @@
 /*
 Copyright (c) 2017-2021,
-Battelle Memorial Institute; Lawrence Livermore National Security, LLC; Alliance for Sustainable
-Energy, LLC.  See the top-level NOTICE for additional details. All rights reserved.
-SPDX-License-Identifier: BSD-3-Clause
+Battelle Memorial Institute; Lawrence Livermore National Security, LLC; Alliance
+for Sustainable Energy, LLC.  See the top-level NOTICE for additional details.
+All rights reserved. SPDX-License-Identifier: BSD-3-Clause
 */
 #pragma once
 
@@ -23,7 +23,7 @@ various helper classes and functions for handling TCP connections
 namespace gmlc {
 namespace networking {
     /** tcp socket generation for a receiving server*/
-    class TcpConnection: public std::enable_shared_from_this<TcpConnection> {
+    class TcpConnection : public std::enable_shared_from_this<TcpConnection> {
       public:
         /** enumeration of the possible states of a connection*/
         enum class ConnectionStates {
@@ -35,11 +35,13 @@ namespace networking {
         };
 
         using pointer = std::shared_ptr<TcpConnection>;
-        static pointer create(asio::io_context& io_context,
-                              const std::string& connection,
-                              const std::string& port,
-                              size_t bufferSize = 10192);
-        /** create an RxConnection object using the specified context and bufferSize*/
+        static pointer create(
+            asio::io_context& io_context,
+            const std::string& connection,
+            const std::string& port,
+            size_t bufferSize = 10192);
+        /** create an RxConnection object using the specified context and
+         * bufferSize*/
         static pointer create(asio::io_context& io_context, size_t bufferSize)
         {
             return pointer(new TcpConnection(io_context, bufferSize));
@@ -60,13 +62,16 @@ namespace networking {
         bool isReceiving() const { return receivingHalt.isActive(); }
         /** set the callback for the data object*/
         void setDataCall(
-            std::function<size_t(TcpConnection::pointer, const char*, size_t)> dataFunc);
+            std::function<size_t(TcpConnection::pointer, const char*, size_t)>
+                dataFunc);
         /** set the callback for an error*/
         void setErrorCall(
-            std::function<bool(TcpConnection::pointer, const std::error_code&)> errorFunc);
+            std::function<bool(TcpConnection::pointer, const std::error_code&)>
+                errorFunc);
         /** set a logging function */
         void setLoggingFunction(
-            std::function<void(int loglevel, const std::string& logMessage)> logFunc);
+            std::function<void(int loglevel, const std::string& logMessage)>
+                logFunc);
         /** send raw data
     @throws std::system_error on failure*/
         size_t send(const void* buffer, size_t dataLength);
@@ -90,7 +95,8 @@ namespace networking {
         template<typename Process>
         void send_async(const void* buffer, size_t dataLength, Process callback)
         {
-            socket_.async_write_some(asio::buffer(buffer, dataLength), callback);
+            socket_.async_write_some(
+                asio::buffer(buffer, dataLength), callback);
         }
         /**perform an asynchronous receive operation
     @param buffer the data to send
@@ -107,28 +113,33 @@ namespace networking {
         }
 
         /**perform an asynchronous receive operation
-   @param callback the callback function to execute when data has been received with signature
-   void(TcpConnection::pointer, const char *buffer, size_t dataLength, const std::error_code &error)
+   @param callback the callback function to execute when data has been received
+   with signature void(TcpConnection::pointer, const char *buffer, size_t
+   dataLength, const std::error_code &error)
     */
-        void async_receive(std::function<void(TcpConnection::pointer,
-                                              const char* buffer,
-                                              size_t dataLength,
-                                              const std::error_code& error)> callback)
+        void async_receive(std::function<void(
+                               TcpConnection::pointer,
+                               const char* buffer,
+                               size_t dataLength,
+                               const std::error_code& error)> callback)
         {
-            socket_.async_read_some(asio::buffer(data, data.size()),
-                                    [connection = shared_from_this(),
-                                     callback = std::move(callback)](const std::error_code& error,
-                                                                     size_t bytes_transferred) {
-                                        connection->handle_read(bytes_transferred, error, callback);
-                                    });
+            socket_.async_read_some(
+                asio::buffer(data, data.size()),
+                [connection = shared_from_this(),
+                 callback = std::move(callback)](
+                    const std::error_code& error, size_t bytes_transferred) {
+                    connection->handle_read(bytes_transferred, error, callback);
+                });
         }
         /** check if the socket has finished the connection process*/
         bool isConnected() const
         {
-            return (connected.isActive()) && (!connectionError.load(std::memory_order_acquire));
+            return (connected.isActive()) &&
+                (!connectionError.load(std::memory_order_acquire));
         }
         /** wait until the socket has finished the connection process
-    @param timeOut the number of ms to wait for the connection process to finish (<0) for no limit
+    @param timeOut the number of ms to wait for the connection process to finish
+    (<0) for no limit
     @return true if connected, false if the timeout was reached
     */
         bool waitUntilConnected(std::chrono::milliseconds timeOut);
@@ -136,22 +147,27 @@ namespace networking {
         int getIdentifier() const { return idcode; }
 
       private:
-        TcpConnection(asio::io_context& io_context, size_t bufferSize):
-            socket_(io_context), context_(io_context), data(bufferSize), idcode(idcounter++)
+        TcpConnection(asio::io_context& io_context, size_t bufferSize) :
+            socket_(io_context), context_(io_context), data(bufferSize),
+            idcode(idcounter++)
         {
         }
-        TcpConnection(asio::io_context& io_context,
-                      const std::string& connection,
-                      const std::string& port,
-                      size_t bufferSize);
+        TcpConnection(
+            asio::io_context& io_context,
+            const std::string& connection,
+            const std::string& port,
+            size_t bufferSize);
         /** function for handling the asynchronous return from a read request*/
-        void handle_read(const std::error_code& error, size_t bytes_transferred);
+        void
+            handle_read(const std::error_code& error, size_t bytes_transferred);
         void handle_read(
             size_t message_size,
             const std::error_code& error,
-            std::function<
-                void(TcpConnection::pointer, const char*, size_t, const std::error_code& error)>
-                callback)
+            std::function<void(
+                TcpConnection::pointer,
+                const char*,
+                size_t,
+                const std::error_code& error)> callback)
         {
             callback(shared_from_this(), data.data(), message_size, error);
         }
@@ -165,14 +181,18 @@ namespace networking {
         const bool connecting{false};
         gmlc::concurrency::TriggerVariable receivingHalt;
         std::atomic<bool> connectionError{false};
-        gmlc::concurrency::TriggerVariable connected;  //!< variable indicating connectivity
-        std::function<size_t(TcpConnection::pointer, const char*, size_t)> dataCall;
-        std::function<bool(TcpConnection::pointer, const std::error_code&)> errorCall;
-        std::function<void(int level, const std::string& logMessage)> logFunction;
+        gmlc::concurrency::TriggerVariable connected;  //!< variable indicating
+                                                       //!< connectivity
+        std::function<size_t(TcpConnection::pointer, const char*, size_t)>
+            dataCall;
+        std::function<bool(TcpConnection::pointer, const std::error_code&)>
+            errorCall;
+        std::function<void(int level, const std::string& logMessage)>
+            logFunction;
         std::atomic<ConnectionStates> state{ConnectionStates::PRESTART};
         const int idcode;
         void connect_handler(const std::error_code& error);
     };
 
-}  // namespace tcp
-}  // namespace helics
+}  // namespace networking
+}  // namespace gmlc

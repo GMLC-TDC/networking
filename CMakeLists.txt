@@ -25,7 +25,9 @@ project(
 set(GMLC_NETWORKING_VERSION_BUILD)
 set(GMLC_NETWORKING_DATE "12-02-2021")
 
-set(GMLC_NETWORKING_VERSION_STRING "${GMLC_NETWORKING_VERSION} (${GMLC_NETWORKING_DATE})")
+set(GMLC_NETWORKING_VERSION_STRING
+    "${GMLC_NETWORKING_VERSION} (${GMLC_NETWORKING_DATE})"
+)
 
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 
@@ -107,25 +109,23 @@ target_link_libraries(networking_base INTERFACE compile_flags_target)
 # -------------------------------------------------------------
 
 target_compile_definitions(networking_base INTERFACE "-DASIO_STANDALONE")
-if (NOT GMLC_NETWORKING_ASIO_INCLUDE )
+if(NOT GMLC_NETWORKING_ASIO_INCLUDE)
     set(GMLC_NETWORKING_ASIO_INCLUDE ${PROJECT_SOURCE_DIR}/ThirdParty/asio/asio/include)
 endif()
 
 target_include_directories(
-    networking_base SYSTEM
-    INTERFACE $<BUILD_INTERFACE:${GMLC_NETWORKING_ASIO_INCLUDE}>
+    networking_base SYSTEM INTERFACE $<BUILD_INTERFACE:${GMLC_NETWORKING_ASIO_INCLUDE}>
 )
-    
-if (NOT GMLC_NETWORKING_CONCURRENCY_INCLUDE )
-    set(GMLC_NETWORKING_CONCURRENCY_INCLUDE ${PROJECT_SOURCE_DIR}/ThirdParty/concurrency)
+
+if(NOT GMLC_NETWORKING_CONCURRENCY_INCLUDE)
+    set(GMLC_NETWORKING_CONCURRENCY_INCLUDE
+        ${PROJECT_SOURCE_DIR}/ThirdParty/concurrency
+    )
 endif()
 
 target_include_directories(
-    networking_base
-    INTERFACE 
-              $<BUILD_INTERFACE:${GMLC_NETWORKING_CONCURRENCY_INCLUDE}>
+    networking_base INTERFACE $<BUILD_INTERFACE:${GMLC_NETWORKING_CONCURRENCY_INCLUDE}>
 )
-
 
 option(GMLC_NETWORKING_INSTALL "Enable GMLC utilities to be installed" ON)
 option(GMLC_NETWORKING_INCLUDE_BOOST "Enable some boost library headers to be used" ON)
@@ -167,8 +167,8 @@ cmake_dependent_option(
 )
 
 cmake_dependent_option(
-    GMLC_NETWORKING_OBJECT_LIB "Enable construction of the utilities object library" OFF
-    "NOT CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME" OFF
+    GMLC_NETWORKING_OBJECT_LIB "Enable construction of the utilities object library"
+    OFF "NOT CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME" OFF
 )
 
 cmake_dependent_option(

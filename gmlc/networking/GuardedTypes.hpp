@@ -1,8 +1,8 @@
 /*
 Copyright (c) 2017-2021,
-Battelle Memorial Institute; Lawrence Livermore National Security, LLC; Alliance for Sustainable
-Energy, LLC.  See the top-level NOTICE for additional details. All rights reserved.
-SPDX-License-Identifier: BSD-3-Clause
+Battelle Memorial Institute; Lawrence Livermore National Security, LLC; Alliance
+for Sustainable Energy, LLC.  See the top-level NOTICE for additional details.
+All rights reserved. SPDX-License-Identifier: BSD-3-Clause
 */
 #pragma once
 
@@ -10,7 +10,6 @@ SPDX-License-Identifier: BSD-3-Clause
 #include "gmlc/libguarded/guarded.hpp"
 #include "gmlc/libguarded/ordered_guarded.hpp"
 #include "gmlc/libguarded/shared_guarded.hpp"
-//#include "gmlc/libguarded/staged_guarded.hpp"
 
 namespace gmlc::networking {
 

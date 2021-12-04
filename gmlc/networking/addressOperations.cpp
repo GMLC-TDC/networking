@@ -1,8 +1,8 @@
 /*
 Copyright (c) 2017-2021,
-Battelle Memorial Institute; Lawrence Livermore National Security, LLC; Alliance for Sustainable
-Energy, LLC.  See the top-level NOTICE for additional details. All rights reserved.
-SPDX-License-Identifier: BSD-3-Clause
+Battelle Memorial Institute; Lawrence Livermore National Security, LLC; Alliance
+for Sustainable Energy, LLC.  See the top-level NOTICE for additional details.
+All rights reserved. SPDX-License-Identifier: BSD-3-Clause
 */
 #include "addressOperations.hpp"
 
@@ -11,14 +11,12 @@ SPDX-License-Identifier: BSD-3-Clause
 
 namespace gmlc::networking {
 
-
 std::pair<std::string, std::string>
     extractInterfaceandPortString(const std::string& address)
 {
     auto lastColon = address.find_last_of(':');
     return {address.substr(0, lastColon), address.substr(lastColon + 1)};
 }
-
 
 std::string makePortAddress(const std::string& networkInterface, int portNumber)
 {
@@ -72,7 +70,6 @@ void removeProtocol(std::string& networkAddress)
     }
 }
 
-
 bool isipv6(const std::string& address)
 {
     auto cntcolon = std::count(address.begin(), address.end(), ':');
@@ -89,7 +86,6 @@ bool isipv6(const std::string& address)
     }
     return false;
 }
-
 
 std::string
     addProtocol(const std::string& networkAddress, InterfaceTypes interfaceT)
