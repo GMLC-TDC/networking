@@ -26,12 +26,12 @@ namespace networking {
     class TcpConnection: public std::enable_shared_from_this<TcpConnection> {
       public:
         /** enumeration of the possible states of a connection*/
-        enum class connection_state_t {
-            prestart = -1,
-            waiting = 0,
-            operating = 1,
-            halted = 3,
-            closed = 4,
+        enum class ConnectionStates {
+            PRESTART = -1,
+            WAITING = 0,
+            OPERATING = 1,
+            HALTED = 3,
+            CLOSED = 4,
         };
 
         using pointer = std::shared_ptr<TcpConnection>;
@@ -169,7 +169,7 @@ namespace networking {
         std::function<size_t(TcpConnection::pointer, const char*, size_t)> dataCall;
         std::function<bool(TcpConnection::pointer, const std::error_code&)> errorCall;
         std::function<void(int level, const std::string& logMessage)> logFunction;
-        std::atomic<connection_state_t> state{connection_state_t::prestart};
+        std::atomic<ConnectionStates> state{ConnectionStates::PRESTART};
         const int idcode;
         void connect_handler(const std::error_code& error);
     };

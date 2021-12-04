@@ -24,13 +24,13 @@ void TcpConnection::startReceive()
         receivingHalt.trigger();
         return;
     }
-    if (state == connection_state_t::prestart) {
+    if (state == ConnectionStates::PRESTART) {
         receivingHalt.activate();
         connected.activate();
-        state = connection_state_t::waiting;
+        state = ConnectionStates::WAITING;
     }
-    connection_state_t exp = connection_state_t::waiting;
-    if (state.compare_exchange_strong(exp, connection_state_t::operating)) {
+    ConnectionStates exp = ConnectionStates::WAITING;
+    if (state.compare_exchange_strong(exp, ConnectionStates::OPERATING)) {
         if (!receivingHalt.isActive()) {
             receivingHalt.activate();
         }
@@ -49,10 +49,10 @@ void TcpConnection::startReceive()
                 // receivingHalt.trigger();
             }
         } else {
-            state = connection_state_t::halted;
+            state = ConnectionStates::HALTED;
             receivingHalt.trigger();
         }
-    } else if (exp != connection_state_t::operating) {
+    } else if (exp != ConnectionStates::OPERATING) {
         /*either halted or closed*/
         receivingHalt.trigger();
     }
@@ -61,7 +61,7 @@ void TcpConnection::startReceive()
 void TcpConnection::setDataCall(
     std::function<size_t(TcpConnection::pointer, const char*, size_t)> dataFunc)
 {
-    if (state.load() == connection_state_t::prestart) {
+    if (state.load() == ConnectionStates::PRESTART) {
         dataCall = std::move(dataFunc);
     } else {
         throw(std::runtime_error(
@@ -72,7 +72,7 @@ void TcpConnection::setErrorCall(
     std::function<bool(TcpConnection::pointer, const std::error_code&)>
         errorFunc)
 {
-    if (state.load() == connection_state_t::prestart) {
+    if (state.load() == ConnectionStates::PRESTART) {
         errorCall = std::move(errorFunc);
     } else {
         throw(std::runtime_error(
@@ -83,7 +83,7 @@ void TcpConnection::setErrorCall(
 void TcpConnection::setLoggingFunction(
     std::function<void(int loglevel, const std::string& logMessage)> logFunc)
 {
-    if (state.load() == connection_state_t::prestart) {
+    if (state.load() == ConnectionStates::PRESTART) {
         logFunction = std::move(logFunc);
     } else {
         throw(std::runtime_error(
@@ -96,7 +96,7 @@ void TcpConnection::handle_read(
     size_t bytes_transferred)
 {
     if (triggerhalt.load(std::memory_order_acquire)) {
-        state = connection_state_t::halted;
+        state = ConnectionStates::HALTED;
         receivingHalt.trigger();
         return;
     }
@@ -117,10 +117,10 @@ void TcpConnection::handle_read(
             residBufferSize = 0;
             data.assign(data.size(), 0);
         }
-        state = connection_state_t::waiting;
+        state = ConnectionStates::WAITING;
         startReceive();
     } else if (error == asio::error::operation_aborted) {
-        state = connection_state_t::halted;
+        state = ConnectionStates::HALTED;
         receivingHalt.trigger();
         return;
     } else {
@@ -144,20 +144,20 @@ void TcpConnection::handle_read(
         }
         if (errorCall) {
             if (errorCall(shared_from_this(), error)) {
-                state = connection_state_t::waiting;
+                state = ConnectionStates::WAITING;
                 startReceive();
             } else {
-                state = connection_state_t::halted;
+                state = ConnectionStates::HALTED;
                 receivingHalt.trigger();
             }
         } else if (error != asio::error::eof) {
             if (error != asio::error::connection_reset) {
                 std::cerr << "receive error " << error.message() << std::endl;
             }
-            state = connection_state_t::halted;
+            state = ConnectionStates::HALTED;
             receivingHalt.trigger();
         } else {
-            state = connection_state_t::halted;
+            state = ConnectionStates::HALTED;
             receivingHalt.trigger();
         }
     }
@@ -175,13 +175,13 @@ void TcpConnection::closeNoWait()
 {
     triggerhalt.store(true);
     switch (state.load()) {
-        case connection_state_t::prestart:
+        case ConnectionStates::PRESTART:
             if (receivingHalt.isActive()) {
                 receivingHalt.trigger();
             }
             break;
-        case connection_state_t::halted:
-        case connection_state_t::closed:
+        case ConnectionStates::HALTED:
+        case ConnectionStates::CLOSED:
             receivingHalt.trigger();
             break;
         default:
@@ -224,7 +224,7 @@ void TcpConnection::waitOnClose()
     } else {
         close();
     }
-    state.store(connection_state_t::closed);
+    state.store(ConnectionStates::CLOSED);
 }
 
 TcpConnection::pointer TcpConnection::create(

@@ -20,19 +20,18 @@ SPDX-License-Identifier: BSD-3-Clause
 /** @file
 various helper classes and functions for handling TCP connections
 */
-namespace gmlc {
-namespace networking {
-    
+namespace gmlc::networking {
 
     /** tcp acceptor*/
     class TcpAcceptor: public std::enable_shared_from_this<TcpAcceptor> {
       public:
-        enum class accepting_state_t {
-            opened = 0,
-            connecting = 1,
-            connected = 2,
-            halted = 3,
-            closed = 4,
+        /// enumeration of available states in the acceptor
+        enum class AcceptingStates {
+            OPENED = 0,
+            CONNECTING = 1,
+            CONNECTED = 2,
+            HALTED = 3,
+            CLOSED = 4,
         };
         using pointer = std::shared_ptr<TcpAcceptor>;
         /** create an RxConnection object using the specified context and bufferSize*/
@@ -68,7 +67,7 @@ namespace networking {
         /** check if the acceptor is current accepting new connections*/
         bool isAccepting() const { return accepting.isActive(); }
         /** check if the acceptor is ready to begin accepting*/
-        bool isConnected() const { return (state.load() == accepting_state_t::connected); }
+        bool isConnected() const { return (state.load() == AcceptingStates::CONNECTED); }
         /** set the callback for the data object*/
         void
             setAcceptCall(std::function<void(TcpAcceptor::pointer, TcpConnection::pointer)> accFunc)
@@ -102,9 +101,8 @@ namespace networking {
         asio::ip::tcp::acceptor acceptor_;
         std::function<void(TcpAcceptor::pointer, TcpConnection::pointer)> acceptCall;
         std::function<bool(TcpAcceptor::pointer, const std::error_code&)> errorCall;
-        std::atomic<accepting_state_t> state{accepting_state_t::opened};
+        std::atomic<AcceptingStates> state{AcceptingStates::OPENED};
         gmlc::concurrency::TriggerVariable accepting;
     };
 
 }  // namespace tcp
-}  // namespace helics

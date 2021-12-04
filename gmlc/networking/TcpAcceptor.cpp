@@ -24,34 +24,34 @@ TcpAcceptor::TcpAcceptor(asio::io_context& io_context, tcp::endpoint& ep):
 
 TcpAcceptor::TcpAcceptor(asio::io_context& io_context, uint16_t port):
     endpoint_(asio::ip::address_v4::any(), port), acceptor_(io_context, endpoint_.protocol()),
-    state(accepting_state_t::connected)
+    state(AcceptingStates::CONNECTED)
 {
 }
 
 bool TcpAcceptor::connect()
 {
-    accepting_state_t exp = accepting_state_t::opened;
-    if (state.compare_exchange_strong(exp, accepting_state_t::connecting)) {
+    AcceptingStates exp = AcceptingStates::OPENED;
+    if (state.compare_exchange_strong(exp, AcceptingStates::CONNECTING)) {
         std::error_code ec;
         acceptor_.bind(endpoint_, ec);
         if (ec) {
-            state = accepting_state_t::opened;
+            state = AcceptingStates::OPENED;
             std::cout << "acceptor error" << ec << std::endl;
             return false;
         }
-        state = accepting_state_t::connected;
+        state = AcceptingStates::CONNECTED;
         return true;
     }
-    return (state == accepting_state_t::connected);
+    return (state == AcceptingStates::CONNECTED);
 }
 
 bool TcpAcceptor::connect(std::chrono::milliseconds timeOut)
 {
-    if (state == accepting_state_t::halted) {
-        state = accepting_state_t::opened;
+    if (state == AcceptingStates::HALTED) {
+        state = AcceptingStates::OPENED;
     }
-    accepting_state_t exp = accepting_state_t::opened;
-    if (state.compare_exchange_strong(exp, accepting_state_t::connecting)) {
+    AcceptingStates exp = AcceptingStates::OPENED;
+    if (state.compare_exchange_strong(exp, AcceptingStates::CONNECTING)) {
         bool bindsuccess = false;
         std::chrono::milliseconds tcount{0};
         while (!bindsuccess) {
@@ -59,19 +59,19 @@ bool TcpAcceptor::connect(std::chrono::milliseconds timeOut)
             acceptor_.bind(endpoint_, ec);
             if (ec) {
                 if (tcount > timeOut) {
-                    state = accepting_state_t::opened;
+                    state = AcceptingStates::OPENED;
                     break;
                 }
                 std::this_thread::sleep_for(std::chrono::milliseconds(200));
                 tcount += std::chrono::milliseconds(200);
             } else {
-                state = accepting_state_t::connected;
+                state = AcceptingStates::CONNECTED;
                 bindsuccess = true;
             }
         }
         return bindsuccess;
     }
-    return (state == accepting_state_t::connected);
+    return (state == AcceptingStates::CONNECTED);
 }
 
 /** start the acceptor*/
@@ -84,7 +84,7 @@ bool TcpAcceptor::start(TcpConnection::pointer conn)
         std::cout << "tcpconnection is not valid" << std::endl;
         return false;
     }
-    if (state != accepting_state_t::connected) {
+    if (state != AcceptingStates::CONNECTED) {
         conn->close();
         if (accepting.isActive()) {
             accepting.trigger();
@@ -112,7 +112,7 @@ bool TcpAcceptor::start(TcpConnection::pointer conn)
 /** close the acceptor*/
 void TcpAcceptor::close()
 {
-    state = accepting_state_t::halted;
+    state = AcceptingStates::HALTED;
     acceptor_.close();
     accepting.wait();
 }
@@ -128,7 +128,7 @@ void TcpAcceptor::handle_accept(TcpAcceptor::pointer ptr,
                                 TcpConnection::pointer new_connection,
                                 const std::error_code& error)
 {
-    if (state.load() != accepting_state_t::connected) {
+    if (state.load() != AcceptingStates::CONNECTED) {
         asio::socket_base::linger optionLinger(true, 0);
         std::error_code ec;
         new_connection->socket().set_option(optionLinger, ec);

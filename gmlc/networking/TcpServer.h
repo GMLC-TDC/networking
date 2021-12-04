@@ -23,8 +23,7 @@ SPDX-License-Identifier: BSD-3-Clause
 /** @file
 various helper classes and functions for handling TCP connections
 */
-namespace gmlc {
-namespace networking {
+namespace gmlc::networking {
     
     /** helper class for a server*/
 
@@ -103,4 +102,3 @@ namespace networking {
     };
 
 }  // namespace tcp
-}  // namespace helics
