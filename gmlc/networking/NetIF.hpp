@@ -132,8 +132,8 @@ namespace networking {
             15000;  // recommended size from Windows API docs to avoid error
         ULONG iter = 0;
         do {
-            *addrs =
-                reinterpret_cast<IP_ADAPTER_ADDRESSES*>(HeapAlloc(GetProcessHeap(), 0, bufLen));
+            *addrs = reinterpret_cast<IP_ADAPTER_ADDRESSES*>(
+                HeapAlloc(GetProcessHeap(), 0, bufLen));
             if (*addrs == NULL) {
                 return -1;
             }
