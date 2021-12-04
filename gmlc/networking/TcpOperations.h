@@ -13,8 +13,8 @@ TCP comms */
 #include "TcpHelperClasses.h"
 
 #include <chrono>
-#include <string>
 #include <memory>
+#include <string>
 
 class AsioContextManager;
 namespace asio {
