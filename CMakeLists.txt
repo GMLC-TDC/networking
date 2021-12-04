@@ -108,15 +108,18 @@ target_link_libraries(networking_base INTERFACE compile_flags_target)
 # global include directories
 # -------------------------------------------------------------
 
-if (NOT GMLC_NETWORKING_DISABLE_ASIO)
-target_compile_definitions(networking_base INTERFACE "-DASIO_STANDALONE")
-if(NOT GMLC_NETWORKING_ASIO_INCLUDE)
-    set(GMLC_NETWORKING_ASIO_INCLUDE ${PROJECT_SOURCE_DIR}/ThirdParty/asio/asio/include)
-endif()
+if(NOT GMLC_NETWORKING_DISABLE_ASIO)
+    target_compile_definitions(networking_base INTERFACE "-DASIO_STANDALONE")
+    if(NOT GMLC_NETWORKING_ASIO_INCLUDE)
+        set(GMLC_NETWORKING_ASIO_INCLUDE
+            ${PROJECT_SOURCE_DIR}/ThirdParty/asio/asio/include
+        )
+    endif()
 
-target_include_directories(
-    networking_base SYSTEM INTERFACE $<BUILD_INTERFACE:${GMLC_NETWORKING_ASIO_INCLUDE}>
-)
+    target_include_directories(
+        networking_base SYSTEM
+        INTERFACE $<BUILD_INTERFACE:${GMLC_NETWORKING_ASIO_INCLUDE}>
+    )
 endif()
 
 if(NOT GMLC_NETWORKING_CONCURRENCY_INCLUDE)
