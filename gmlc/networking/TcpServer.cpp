@@ -1,8 +1,8 @@
 /*
 Copyright (c) 2017-2021,
-Battelle Memorial Institute; Lawrence Livermore National Security, LLC; Alliance for Sustainable
-Energy, LLC.  See the top-level NOTICE for additional details. All rights reserved.
-SPDX-License-Identifier: BSD-3-Clause
+Battelle Memorial Institute; Lawrence Livermore National Security, LLC; Alliance
+for Sustainable Energy, LLC.  See the top-level NOTICE for additional details.
+All rights reserved. SPDX-License-Identifier: BSD-3-Clause
 */
 
 #include "TcpServer.h"
@@ -16,11 +16,12 @@ namespace gmlc::networking {
 using asio::ip::tcp;
 using namespace std::chrono_literals;  // NOLINT
 
-TcpServer::TcpServer(asio::io_context& io_context,
-                     const std::string& address,
-                     uint16_t portNum,
-                     bool port_reuse,
-                     int nominalBufferSize):
+TcpServer::TcpServer(
+    asio::io_context& io_context,
+    const std::string& address,
+    uint16_t portNum,
+    bool port_reuse,
+    int nominalBufferSize) :
     ioctx(io_context),
     bufferSize(nominalBufferSize), reuse_address(port_reuse)
 {
@@ -31,10 +32,11 @@ TcpServer::TcpServer(asio::io_context& io_context,
         endpoints.emplace_back(asio::ip::tcp::v4(), portNum);
     } else {
         tcp::resolver resolver(io_context);
-        tcp::resolver::query query(tcp::v4(),
-                                   address,
-                                   std::to_string(portNum),
-                                   tcp::resolver::query::canonical_name);
+        tcp::resolver::query query(
+            tcp::v4(),
+            address,
+            std::to_string(portNum),
+            tcp::resolver::query::canonical_name);
         tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
         tcp::resolver::iterator end;
         if (endpoint_iterator != end) {
@@ -50,16 +52,18 @@ TcpServer::TcpServer(asio::io_context& io_context,
     initialConnect();
 }
 
-TcpServer::TcpServer(asio::io_context& io_context,
-                     const std::string& address,
-                     const std::string& port,
-                     bool port_reuse,
-                     int nominalBufferSize):
+TcpServer::TcpServer(
+    asio::io_context& io_context,
+    const std::string& address,
+    const std::string& port,
+    bool port_reuse,
+    int nominalBufferSize) :
     ioctx(io_context),
     bufferSize(nominalBufferSize), reuse_address(port_reuse)
 {
     tcp::resolver resolver(io_context);
-    tcp::resolver::query query(tcp::v4(), address, port, tcp::resolver::query::canonical_name);
+    tcp::resolver::query query(
+        tcp::v4(), address, port, tcp::resolver::query::canonical_name);
     tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
     tcp::resolver::iterator end;
     if (endpoint_iterator != end) {
@@ -74,8 +78,12 @@ TcpServer::TcpServer(asio::io_context& io_context,
     initialConnect();
 }
 
-TcpServer::TcpServer(asio::io_context& io_context, uint16_t portNum, int nominalBufferSize):
-    ioctx(io_context), bufferSize(nominalBufferSize)
+TcpServer::TcpServer(
+    asio::io_context& io_context,
+    uint16_t portNum,
+    int nominalBufferSize) :
+    ioctx(io_context),
+    bufferSize(nominalBufferSize)
 {
     endpoints.emplace_back(asio::ip::tcp::v4(), portNum);
     initialConnect();
@@ -103,9 +111,10 @@ void TcpServer::initialConnect()
         } else {
             acc->set_option(tcp::acceptor::reuse_address(false));
         }
-        acc->setAcceptCall([this](TcpAcceptor::pointer accPtr, TcpConnection::pointer conn) {
-            handle_accept(std::move(accPtr), std::move(conn));
-        });
+        acc->setAcceptCall(
+            [this](TcpAcceptor::pointer accPtr, TcpConnection::pointer conn) {
+                handle_accept(std::move(accPtr), std::move(conn));
+            });
         acceptors.push_back(std::move(acc));
     }
     bool anyConnect = false;
@@ -114,8 +123,8 @@ void TcpServer::initialConnect()
     for (auto& acc : acceptors) {
         ++index;
         if (!acc->connect()) {
-            std::cout << "unable to connect acceptor " << index << " of " << acceptors.size()
-                      << std::endl;
+            std::cout << "unable to connect acceptor " << index << " of "
+                      << acceptors.size() << std::endl;
             continue;
         }
         ++connectedAcceptors;
@@ -127,8 +136,9 @@ void TcpServer::initialConnect()
         return;
     }
     if (connectedAcceptors < acceptors.size()) {
-        std::cout << "partial connection on the server " << connectedAcceptors << " of "
-                  << acceptors.size() << " were connected" << std::endl;
+        std::cout << "partial connection on the server " << connectedAcceptors
+                  << " of " << acceptors.size() << " were connected"
+                  << std::endl;
     }
 }
 
@@ -140,9 +150,11 @@ bool TcpServer::reConnect(std::chrono::milliseconds timeOut)
         if (!acc->isConnected()) {
             if (!acc->connect(timeOut)) {
                 if (partialConnect) {
-                    std::cerr << "unable to connect all acceptors on " << acc->to_string() << '\n';
+                    std::cerr << "unable to connect all acceptors on "
+                              << acc->to_string() << '\n';
                 } else {
-                    std::cerr << "unable to connect on " << acc->to_string() << '\n';
+                    std::cerr << "unable to connect on " << acc->to_string()
+                              << '\n';
                 }
 
                 halted = true;
@@ -157,26 +169,32 @@ bool TcpServer::reConnect(std::chrono::milliseconds timeOut)
     return !halted;
 }
 
-TcpServer::pointer TcpServer::create(asio::io_context& io_context,
-                                     const std::string& address,
-                                     uint16_t PortNum,
-                                     bool reuse_port,
-                                     int nominalBufferSize)
+TcpServer::pointer TcpServer::create(
+    asio::io_context& io_context,
+    const std::string& address,
+    uint16_t PortNum,
+    bool reuse_port,
+    int nominalBufferSize)
 {
-    return pointer(new TcpServer(io_context, address, PortNum, reuse_port, nominalBufferSize));
+    return pointer(new TcpServer(
+        io_context, address, PortNum, reuse_port, nominalBufferSize));
 }
 
-TcpServer::pointer TcpServer::create(asio::io_context& io_context,
-                                     const std::string& address,
-                                     const std::string& port,
-                                     bool reuse_port,
-                                     int nominalBufferSize)
+TcpServer::pointer TcpServer::create(
+    asio::io_context& io_context,
+    const std::string& address,
+    const std::string& port,
+    bool reuse_port,
+    int nominalBufferSize)
 {
-    return pointer(new TcpServer(io_context, address, port, reuse_port, nominalBufferSize));
+    return pointer(new TcpServer(
+        io_context, address, port, reuse_port, nominalBufferSize));
 }
 
-TcpServer::pointer
-    TcpServer::create(asio::io_context& io_context, uint16_t PortNum, int nominalBufferSize)
+TcpServer::pointer TcpServer::create(
+    asio::io_context& io_context,
+    uint16_t PortNum,
+    int nominalBufferSize)
 {
     return pointer(new TcpServer(io_context, PortNum, nominalBufferSize));
 }
@@ -219,7 +237,9 @@ bool TcpServer::start()
     return success;
 }
 
-void TcpServer::handle_accept(TcpAcceptor::pointer acc, TcpConnection::pointer new_connection)
+void TcpServer::handle_accept(
+    TcpAcceptor::pointer acc,
+    TcpConnection::pointer new_connection)
 {
     /*setting linger to 1 second*/
     asio::socket_base::linger optionLinger(true, 0);
@@ -251,8 +271,10 @@ void TcpServer::handle_accept(TcpAcceptor::pointer acc, TcpConnection::pointer n
 TcpConnection::pointer TcpServer::findSocket(int connectorID) const
 {
     std::unique_lock<std::mutex> lock(accepting);
-    auto ptr =
-        std::find_if(connections.begin(), connections.end(), [connectorID](const auto& conn) {
+    auto ptr = std::find_if(
+        connections.begin(),
+        connections.end(),
+        [connectorID](const auto& conn) {
             return (conn->getIdentifier() == connectorID);
         });
     if (ptr != connections.end()) {
@@ -291,4 +313,4 @@ void TcpServer::close()
     }
 }
 
-}  // namespace helics::tcp
+}  // namespace gmlc::networking

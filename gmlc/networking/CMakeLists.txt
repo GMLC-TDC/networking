@@ -7,13 +7,8 @@
 # SPDX-License-Identifier: BSD-3-Clause
 # ~~~
 
-set(networking_source_files
-   AsioContextManager.cpp
-   TcpOperations.cpp
-   TcpConnection.cpp
-    TcpServer.cpp
-    TcpAcceptor.cpp
-    addressOperations.cpp
+set(networking_source_files AsioContextManager.cpp TcpOperations.cpp TcpConnection.cpp
+                            TcpServer.cpp TcpAcceptor.cpp addressOperations.cpp
 )
 
 set(networking_header_files
@@ -29,7 +24,8 @@ set(networking_header_files
 
 if(GMLC_NETWORKING_OBJECT_LIB)
     add_library(
-        gmlc_networking_obj OBJECT ${networking_source_files} ${networking_header_files}
+        gmlc_networking_obj OBJECT ${networking_source_files}
+                                   ${networking_header_files}
     )
     target_include_directories(
         gmlc_networking_obj PUBLIC $<BUILD_INTERFACE:${GMLC_UTILITIES_SOURCE_DIR}>
@@ -54,7 +50,7 @@ if(GMLC_NETWORKING_STATIC_LIB)
 
     add_library(
         gmlc_networking STATIC ${networking_source_files} ${networking_header_files}
-                              ${string_comparison_files}
+                               ${string_comparison_files}
     )
     target_include_directories(
         gmlc_networking PUBLIC $<BUILD_INTERFACE:${GMLC_NETWORKING_SOURCE_DIR}>

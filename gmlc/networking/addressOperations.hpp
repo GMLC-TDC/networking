@@ -7,12 +7,12 @@ All rights reserved. SPDX-License-Identifier: BSD-3-Clause
 
 #pragma once
 
-#include <utility>
 #include <string>
+#include <utility>
 
 namespace gmlc::networking {
 
-    /** define keys for particular interfaces*/
+/** define keys for particular interfaces*/
 enum class InterfaceTypes : char {
     TCP = 0,  //!< using tcp ports for communication
     UDP = 1,  //!< using udp ports for communication
@@ -70,4 +70,4 @@ void insertProtocol(std::string& networkAddress, InterfaceTypes interfaceT);
  */
 bool isipv6(const std::string& address);
 
-}
+}  // namespace gmlc::networking

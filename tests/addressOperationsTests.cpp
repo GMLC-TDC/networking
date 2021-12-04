@@ -24,9 +24,7 @@ TEST(address_operations, removeProtocol)
 
 TEST(address_operations, addProtocol)
 {
-    EXPECT_EQ(
-        addProtocol("127.0.0.1", InterfaceTypes::TCP),
-        "tcp://127.0.0.1");
+    EXPECT_EQ(addProtocol("127.0.0.1", InterfaceTypes::TCP), "tcp://127.0.0.1");
 }
 
 TEST(address_operations, insertProtocol)

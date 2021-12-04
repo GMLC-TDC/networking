@@ -10,9 +10,7 @@
 set(GOOGLE_TEST_INDIVIDUAL OFF)
 include(AddGoogletest)
 
-set(NETWORKING_TESTS
-    addressOperationsTests
-)
+set(NETWORKING_TESTS addressOperationsTests)
 
 # Only affects current directory, so safe
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
