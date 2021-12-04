@@ -108,6 +108,7 @@ target_link_libraries(networking_base INTERFACE compile_flags_target)
 # global include directories
 # -------------------------------------------------------------
 
+if (NOT GMLC_NETWORKING_DISABLE_ASIO)
 target_compile_definitions(networking_base INTERFACE "-DASIO_STANDALONE")
 if(NOT GMLC_NETWORKING_ASIO_INCLUDE)
     set(GMLC_NETWORKING_ASIO_INCLUDE ${PROJECT_SOURCE_DIR}/ThirdParty/asio/asio/include)
@@ -116,6 +117,7 @@ endif()
 target_include_directories(
     networking_base SYSTEM INTERFACE $<BUILD_INTERFACE:${GMLC_NETWORKING_ASIO_INCLUDE}>
 )
+endif()
 
 if(NOT GMLC_NETWORKING_CONCURRENCY_INCLUDE)
     set(GMLC_NETWORKING_CONCURRENCY_INCLUDE
@@ -128,7 +130,7 @@ target_include_directories(
 )
 
 option(GMLC_NETWORKING_INSTALL "Enable GMLC utilities to be installed" ON)
-option(GMLC_NETWORKING_INCLUDE_BOOST "Enable some boost library headers to be used" ON)
+option(GMLC_NETWORKING_INCLUDE_BOOST "Enable some boost library headers to be used" OFF)
 
 # Add boost to test boost::optional if available
 if(GMLC_NETWORKING_INCLUDE_BOOST)
@@ -138,10 +140,6 @@ if(GMLC_NETWORKING_INCLUDE_BOOST)
         target_include_directories(
             networking_base SYSTEM INTERFACE $<BUILD_INTERFACE:${Boost_INCLUDE_DIRS}>
         )
-
-        if(GMLC_NETWORKING_USE_BOOST_SPIRIT)
-            target_compile_definitions(networking_base INTERFACE -DUSE_BOOST_SPIRIT=1)
-        endif()
 
     endif()
 endif()

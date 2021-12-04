@@ -1,5 +1,5 @@
 # ~~~
-# Copyright (c) 2017-2019, Battelle Memorial Institute; Lawrence Livermore
+# Copyright (c) 2017-2021, Battelle Memorial Institute; Lawrence Livermore
 # National Security, LLC; Alliance for Sustainable Energy, LLC.
 # See the top-level NOTICE for additional details.
 # All rights reserved.
@@ -7,26 +7,38 @@
 # SPDX-License-Identifier: BSD-3-Clause
 # ~~~
 
-set(networking_source_files AsioContextManager.cpp TcpOperations.cpp TcpConnection.cpp
-                            TcpServer.cpp TcpAcceptor.cpp addressOperations.cpp
+set(networking_nonasio_source_files addressOperations.cpp)
+
+set(networking_asio_source_files AsioContextManager.cpp TcpOperations.cpp TcpConnection.cpp
+                            TcpServer.cpp TcpAcceptor.cpp 
 )
 
-set(networking_header_files
-    TcpOperations.h
-    AsioContextManager.h
-    TcpHelperClasses.h
+set(networking_nonasio_header_files
     GuardedTypes.hpp
-    TcpConnection.h
-    TcpServer.h
-    TcpAcceptor.h
     addressOperations.hpp
 )
 
+set(networking_asio_header_files
+    TcpOperations.h
+    AsioContextManager.h
+    TcpHelperClasses.h
+    TcpConnection.h
+    TcpServer.h
+    TcpAcceptor.h
+)
+
 if(GMLC_NETWORKING_OBJECT_LIB)
+    if (GMLC_NETWORKING_DISABLE_ASIO)
     add_library(
-        gmlc_networking_obj OBJECT ${networking_source_files}
-                                   ${networking_header_files}
+        gmlc_networking_obj OBJECT ${networking_nonasio_source_files}
+                                   ${networking_nonasio_header_files}
     )
+    else()
+    add_library(
+        gmlc_networking_obj OBJECT ${networking_asio_source_files} ${networking_nonasio_source_files}
+                                   ${networking_asio_header_files} ${networking_nonasio_header_files}
+    )
+    endif()
     target_include_directories(
         gmlc_networking_obj PUBLIC $<BUILD_INTERFACE:${GMLC_UTILITIES_SOURCE_DIR}>
     )
@@ -48,10 +60,17 @@ endif()
 
 if(GMLC_NETWORKING_STATIC_LIB)
 
+    if (GMLC_NETWORKING_DISABLE_ASIO)
     add_library(
-        gmlc_networking STATIC ${networking_source_files} ${networking_header_files}
-                               ${string_comparison_files}
+        gmlc_networking STATIC ${networking_nonasio_source_files}
+                                   ${networking_nonasio_header_files}
     )
+    else()
+    add_library(
+        gmlc_networking STATIC ${networking_asio_source_files} ${networking_nonasio_source_files}
+                                   ${networking_asio_header_files} ${networking_nonasio_header_files}
+    )
+    endif()
     target_include_directories(
         gmlc_networking PUBLIC $<BUILD_INTERFACE:${GMLC_NETWORKING_SOURCE_DIR}>
     )
@@ -66,8 +85,11 @@ if(GMLC_NETWORKING_STATIC_LIB)
             ARCHIVE DESTINATION lib
             LIBRARY DESTINATION lib
         )
-
-        install(FILES ${networking_header_files} DESTINATION include)
+        if (GMLC_NETWORKING_DISABLE_ASIO)
+        install(FILES ${networking_nonasio_header_files} DESTINATION include)
+        else()
+        install(FILES ${networking_asio_header_files} ${networking_nonasio_header_files} DESTINATION include)
+        endif()
 
         if(GMLC_NETWORKING_CLANG_TIDY)
             set_property(
