@@ -10,7 +10,6 @@ All rights reserved. SPDX-License-Identifier: BSD-3-Clause
 #include "gmlc/libguarded/guarded.hpp"
 #include "gmlc/libguarded/ordered_guarded.hpp"
 #include "gmlc/libguarded/shared_guarded.hpp"
-//#include "gmlc/libguarded/staged_guarded.hpp"
 
 namespace gmlc::networking {
 

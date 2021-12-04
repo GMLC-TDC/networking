@@ -68,7 +68,7 @@ TcpConnection::pointer generateConnection(
         return TcpConnection::create(ioctx->getBaseContext(), interface, port);
     }
     catch (std::exception&) {
-        // TODO(PT):: do something???
+        // TODO(PT) do something???
     }
     return nullptr;
 }

@@ -14,6 +14,7 @@ TCP comms */
 
 #include <chrono>
 #include <string>
+#include <memory>
 
 class AsioContextManager;
 namespace asio {
