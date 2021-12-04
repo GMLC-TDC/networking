@@ -8,7 +8,7 @@ The following is a set of guidelines for contributing to GMLC-TDC and associated
 
 ## Licensing
 
-The Utilities library is distributed under the terms of the BSD-3 clause license. All new contributions must be made under this [LICENSE](LICENSE) in accordance with the Github [terms of service](https://help.github.com/en/articles/github-terms-of-service#6-contributions-under-repository-license), which uses inbound=outbound policy. By submitting a pull request you are acknowledging that you have the right to license your code under these terms.
+The networking library is distributed under the terms of the BSD-3 clause license. All new contributions must be made under this [LICENSE](LICENSE) in accordance with the Github [terms of service](https://help.github.com/en/articles/github-terms-of-service#6-contributions-under-repository-license), which uses inbound=outbound policy. By submitting a pull request you are acknowledging that you have the right to license your code under these terms.
 
 ## [Code of Conduct](.github/CODE_OF_CONDUCT.md)
 
@@ -46,4 +46,4 @@ Typically you would want to submit a pull request against the develop branch. Th
 
 ## Styleguides
 
-Code formatting is controlled via clang-format and a CI check is run on the code to verify the formmatting.
+Code formatting is controlled via clang-format and a CI check is run on the code to verify the formatting.
