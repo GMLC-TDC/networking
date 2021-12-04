@@ -13,7 +13,9 @@ set(networking_asio_source_files AsioContextManager.cpp TcpOperations.cpp
                                  TcpConnection.cpp TcpServer.cpp TcpAcceptor.cpp
 )
 
-set(networking_nonasio_header_files GuardedTypes.hpp addressOperations.hpp NetIF.hpp interfaceOperations.hpp)
+set(networking_nonasio_header_files GuardedTypes.hpp addressOperations.hpp NetIF.hpp
+                                    interfaceOperations.hpp
+)
 
 set(networking_asio_header_files
     TcpOperations.h AsioContextManager.h TcpHelperClasses.h TcpConnection.h TcpServer.h
@@ -26,7 +28,7 @@ if(GMLC_NETWORKING_OBJECT_LIB)
             gmlc_networking_obj OBJECT ${networking_nonasio_source_files}
                                        ${networking_nonasio_header_files}
         )
-        
+
     else()
         add_library(
             gmlc_networking_obj OBJECT
@@ -60,7 +62,9 @@ if(GMLC_NETWORKING_STATIC_LIB)
             gmlc_networking STATIC ${networking_nonasio_source_files}
                                    ${networking_nonasio_header_files}
         )
-        target_compile_definitions(gmlc_networking PUBLIC "-DGMLC_NETWORKING_DISABLE_ASIO=1")
+        target_compile_definitions(
+            gmlc_networking PUBLIC "-DGMLC_NETWORKING_DISABLE_ASIO=1"
+        )
     else()
         add_library(
             gmlc_networking STATIC

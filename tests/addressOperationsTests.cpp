@@ -14,26 +14,26 @@ using namespace gmlc::networking;
 
 TEST_CASE("stripProtocol", "[address_operations]")
 {
-    CHECK(stripProtocol("tcp://127.0.0.1")== "127.0.0.1");
+    CHECK(stripProtocol("tcp://127.0.0.1") == "127.0.0.1");
 }
 
 TEST_CASE("removeProtocol", "[address_operations]")
 {
     std::string networkAddress = "tcp://127.0.0.1";
     removeProtocol(networkAddress);
-    CHECK(networkAddress=="127.0.0.1");
+    CHECK(networkAddress == "127.0.0.1");
 }
 
 TEST_CASE("addProtocol", "[address_operations]")
 {
-    CHECK(addProtocol("127.0.0.1", InterfaceTypes::TCP)== "tcp://127.0.0.1");
+    CHECK(addProtocol("127.0.0.1", InterfaceTypes::TCP) == "tcp://127.0.0.1");
 }
 
 TEST_CASE("insertProtocol", "[address_operations]")
 {
     std::string networkAddress = "127.0.0.1";
     insertProtocol(networkAddress, InterfaceTypes::TCP);
-    CHECK(networkAddress=="tcp://127.0.0.1");
+    CHECK(networkAddress == "tcp://127.0.0.1");
 }
 
 TEST_CASE("add_check_detection", "[address_operations]")

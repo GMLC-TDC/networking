@@ -7,8 +7,8 @@ All rights reserved. SPDX-License-Identifier: BSD-3-Clause
 
 #pragma once
 
-#include <vector>
 #include <string>
+#include <vector>
 
 namespace gmlc::networking {
 /** define the network access*/
@@ -58,6 +58,4 @@ std::string generateMatchingInterfaceAddress(
     const std::string& server,
     InterfaceNetworks network = InterfaceNetworks::LOCAL);
 
-}
-
-
+}  // namespace gmlc::networking

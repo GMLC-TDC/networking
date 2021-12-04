@@ -11,8 +11,8 @@ All rights reserved. SPDX-License-Identifier: BSD-3-Clause
 
 #ifndef GMLC_NETWORKING_DISABLE_ASIO
 #include "AsioContextManager.h"
-#    include <asio/ip/host_name.hpp>
-#    include <asio/ip/tcp.hpp>
+#include <asio/ip/host_name.hpp>
+#include <asio/ip/tcp.hpp>
 #endif
 
 #include <algorithm>
@@ -51,11 +51,8 @@ std::vector<std::string> prioritizeExternalAddresses(
 }
 
 template<class InputIt1, class InputIt2>
-static auto matchcount(
-    InputIt1 first1,
-    InputIt1 last1,
-    InputIt2 first2,
-    InputIt2 last2)
+static auto
+    matchcount(InputIt1 first1, InputIt1 last1, InputIt2 first2, InputIt2 last2)
 {
     int cnt = 0;
     while (first1 != last1 && first2 != last2 && *first1 == *first2) {
@@ -329,4 +326,4 @@ std::string generateMatchingInterfaceAddress(
     }
     return newInterface;
 }
-}
+}  // namespace gmlc::networking
