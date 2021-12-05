@@ -1,10 +1,10 @@
 
 [submodule "ThirdParty/asio"]
 	path = ThirdParty/asio
-	url = https://github.com/chriskohlhoff/asio
+	url = ../../chriskohlhoff/asio
 [submodule "ThirdParty/concurrency"]
 	path = ThirdParty/concurrency
-	url = https://github.com/GMLC-TDC/concurrency.git
+	url = ../../GMLC-TDC/concurrency.git
 [submodule "ThirdParty/NetIF"]
 	path = ThirdParty/NetIF
-	url = https://github.com/GMLC-TDC/NetIF.git
+	url = ../../GMLC-TDC/NetIF.git
