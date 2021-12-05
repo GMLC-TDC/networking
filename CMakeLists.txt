@@ -130,6 +130,7 @@ endif()
 
 target_include_directories(
     networking_base INTERFACE $<BUILD_INTERFACE:${GMLC_NETWORKING_CONCURRENCY_INCLUDE}>
+    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/ThirdParty/NetIF>
 )
 
 option(GMLC_NETWORKING_INSTALL "Enable GMLC utilities to be installed" ON)

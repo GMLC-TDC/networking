@@ -13,7 +13,7 @@ set(networking_asio_source_files AsioContextManager.cpp TcpOperations.cpp
                                  TcpConnection.cpp TcpServer.cpp TcpAcceptor.cpp
 )
 
-set(networking_nonasio_header_files GuardedTypes.hpp addressOperations.hpp NetIF.hpp
+set(networking_nonasio_header_files GuardedTypes.hpp addressOperations.hpp
                                     interfaceOperations.hpp
 )
 

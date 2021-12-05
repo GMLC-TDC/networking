@@ -6,7 +6,7 @@ All rights reserved. SPDX-License-Identifier: BSD-3-Clause
 */
 #include "interfaceOperations.hpp"
 
-#include "NetIF.hpp"
+#include "gmlc/netif/NetIF.hpp"
 #include "addressOperations.hpp"
 
 #ifndef GMLC_NETWORKING_DISABLE_ASIO
@@ -78,7 +78,7 @@ std::string getLocalExternalAddressV4()
         resolved_address = endpoint.address().to_string();
     }
 #endif
-    auto interface_addresses = getInterfaceAddressesV4();
+    auto interface_addresses = gmlc::netif::getInterfaceAddressesV4();
 
     // Return the resolved address if no interface addresses were found
     if (interface_addresses.empty()) {
@@ -143,7 +143,7 @@ std::string getLocalExternalAddressV4(const std::string& server)
     std::string sstring = server;
 #endif
 
-    auto interface_addresses = getInterfaceAddressesV4();
+    auto interface_addresses = gmlc::netif::getInterfaceAddressesV4();
 
     std::vector<std::string> resolved_addresses;
 #ifndef HELICS_DISABLE_ASIO
@@ -193,7 +193,7 @@ std::string getLocalExternalAddressV6()
 #else
     std::string resolved_address;
 #endif
-    auto interface_addresses = getInterfaceAddressesV6();
+    auto interface_addresses = gmlc::netif::getInterfaceAddressesV6();
 
     // Return the resolved address if no interface addresses were found
     if (interface_addresses.empty()) {
@@ -250,7 +250,7 @@ std::string getLocalExternalAddressV6(const std::string& server)
 #else
     std::string sstring = server;
 #endif
-    auto interface_addresses = getInterfaceAddressesV6();
+    auto interface_addresses = gmlc::netif::getInterfaceAddressesV6();
     std::vector<std::string> resolved_addresses;
 #ifndef HELICS_DISABLE_ASIO
     asio::ip::tcp::resolver::query query(
