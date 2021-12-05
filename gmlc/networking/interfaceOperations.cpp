@@ -6,8 +6,8 @@ All rights reserved. SPDX-License-Identifier: BSD-3-Clause
 */
 #include "interfaceOperations.hpp"
 
-#include "gmlc/netif/NetIF.hpp"
 #include "addressOperations.hpp"
+#include "gmlc/netif/NetIF.hpp"
 
 #ifndef GMLC_NETWORKING_DISABLE_ASIO
 #include "AsioContextManager.h"
