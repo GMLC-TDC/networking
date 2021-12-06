@@ -18,6 +18,7 @@ foreach(T ${NETWORKING_TESTS})
     if(GMLC_NETWORKING_CLANG_TIDY)
         set_property(TARGET ${T} PROPERTY CXX_CLANG_TIDY "${DO_CLANG_TIDY}")
     endif()
+    target_include_directories(${T} PRIVATE ${PROJECT_SOURCE_DIR}/ThirdParty/catch2)
 endforeach()
 
 if(CMAKE_BUILD_TYPE STREQUAL Coverage)

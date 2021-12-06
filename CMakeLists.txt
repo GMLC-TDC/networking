@@ -114,6 +114,9 @@ if(NOT GMLC_NETWORKING_DISABLE_ASIO)
         set(GMLC_NETWORKING_ASIO_INCLUDE
             ${PROJECT_SOURCE_DIR}/ThirdParty/asio/asio/include
         )
+        if(NOT EXISTS "${PROJECT_SOURCE_DIR}/ThirdParty/asio/asio/include/asio.hpp")
+            submod_update(ThirdParty/asio)
+        endif()
     endif()
 
     target_include_directories(
@@ -126,7 +129,14 @@ if(NOT GMLC_NETWORKING_CONCURRENCY_INCLUDE)
     set(GMLC_NETWORKING_CONCURRENCY_INCLUDE
         ${PROJECT_SOURCE_DIR}/ThirdParty/concurrency
     )
+    if(NOT EXISTS "${PROJECT_SOURCE_DIR}/ThirdParty/concurrency/gmlc/concurrency/Barrier.hpp")
+        submod_update(ThirdParty/concurrency)
+    endif()
 endif()
+
+if(NOT EXISTS "${PROJECT_SOURCE_DIR}/ThirdParty/NetIF/gmlc/netif/NetIF.hpp")
+        submod_update(ThirdParty/NetIF)
+    endif()
 
 target_include_directories(
     networking_base INTERFACE $<BUILD_INTERFACE:${GMLC_NETWORKING_CONCURRENCY_INCLUDE}>
