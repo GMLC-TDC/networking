@@ -104,6 +104,10 @@ endif()
 
 target_link_libraries(networking_base INTERFACE compile_flags_target)
 
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads REQUIRED)
+target_link_libraries(networking_base INTERFACE Threads::Threads)
+
 # -------------------------------------------------------------
 # global include directories
 # -------------------------------------------------------------
