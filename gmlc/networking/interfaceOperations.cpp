@@ -64,7 +64,7 @@ static auto
 std::string getLocalExternalAddressV4()
 {
     std::string resolved_address;
-#ifndef HELICS_DISABLE_ASIO
+#ifndef GMLC_NETWORKING_DISABLE_ASIO
     auto srv = AsioContextManager::getContextPointer();
 
     asio::ip::tcp::resolver resolver(srv->getBaseContext());
@@ -121,7 +121,7 @@ std::string getLocalExternalAddressV4()
 
 std::string getLocalExternalAddressV4(const std::string& server)
 {
-#ifndef HELICS_DISABLE_ASIO
+#ifndef GMLC_NETWORKING_DISABLE_ASIO
     auto srv = gmlc::networking::AsioContextManager::getContextPointer();
 
     asio::ip::tcp::resolver resolver(srv->getBaseContext());
@@ -146,7 +146,7 @@ std::string getLocalExternalAddressV4(const std::string& server)
     auto interface_addresses = gmlc::netif::getInterfaceAddressesV4();
 
     std::vector<std::string> resolved_addresses;
-#ifndef HELICS_DISABLE_ASIO
+#ifndef GMLC_NETWORKING_DISABLE_ASIO
     asio::ip::tcp::resolver::query query(
         asio::ip::tcp::v4(), asio::ip::host_name(), "");
     asio::ip::tcp::resolver::iterator it = resolver.resolve(query, ec);
@@ -180,7 +180,7 @@ std::string getLocalExternalAddressV4(const std::string& server)
 
 std::string getLocalExternalAddressV6()
 {
-#ifndef HELICS_DISABLE_ASIO
+#ifndef GMLC_NETWORKING_DISABLE_ASIO
     auto srv = gmlc::networking::AsioContextManager::getContextPointer();
 
     asio::ip::tcp::resolver resolver(srv->getBaseContext());
@@ -234,7 +234,7 @@ std::string getLocalExternalAddressV6()
 
 std::string getLocalExternalAddressV6(const std::string& server)
 {
-#ifndef HELICS_DISABLE_ASIO
+#ifndef GMLC_NETWORKING_DISABLE_ASIO
     auto srv = gmlc::networking::AsioContextManager::getContextPointer();
 
     asio::ip::tcp::resolver resolver(srv->getBaseContext());
@@ -252,7 +252,7 @@ std::string getLocalExternalAddressV6(const std::string& server)
 #endif
     auto interface_addresses = gmlc::netif::getInterfaceAddressesV6();
     std::vector<std::string> resolved_addresses;
-#ifndef HELICS_DISABLE_ASIO
+#ifndef GMLC_NETWORKING_DISABLE_ASIO
     asio::ip::tcp::resolver::query query(
         asio::ip::tcp::v6(), asio::ip::host_name(), "");
     asio::ip::tcp::resolver::iterator it = resolver.resolve(query);

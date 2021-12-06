@@ -108,6 +108,8 @@ target_link_libraries(networking_base INTERFACE compile_flags_target)
 # global include directories
 # -------------------------------------------------------------
 
+include(updateGitSubmodules)
+
 if(NOT GMLC_NETWORKING_DISABLE_ASIO)
     target_compile_definitions(networking_base INTERFACE "-DASIO_STANDALONE")
     if(NOT GMLC_NETWORKING_ASIO_INCLUDE)
