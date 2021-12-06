@@ -131,14 +131,16 @@ if(NOT GMLC_NETWORKING_CONCURRENCY_INCLUDE)
     set(GMLC_NETWORKING_CONCURRENCY_INCLUDE
         ${PROJECT_SOURCE_DIR}/ThirdParty/concurrency
     )
-    if(NOT EXISTS "${PROJECT_SOURCE_DIR}/ThirdParty/concurrency/gmlc/concurrency/Barrier.hpp")
+    if(NOT EXISTS
+       "${PROJECT_SOURCE_DIR}/ThirdParty/concurrency/gmlc/concurrency/Barrier.hpp"
+    )
         submod_update(ThirdParty/concurrency)
     endif()
 endif()
 
 if(NOT EXISTS "${PROJECT_SOURCE_DIR}/ThirdParty/NetIF/gmlc/netif/NetIF.hpp")
-        submod_update(ThirdParty/NetIF)
-    endif()
+    submod_update(ThirdParty/NetIF)
+endif()
 
 target_include_directories(
     networking_base INTERFACE $<BUILD_INTERFACE:${GMLC_NETWORKING_CONCURRENCY_INCLUDE}>
