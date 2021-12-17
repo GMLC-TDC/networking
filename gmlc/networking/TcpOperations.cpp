@@ -15,22 +15,32 @@ All rights reserved. SPDX-License-Identifier: BSD-3-Clause
 #include <thread>
 
 namespace gmlc::networking {
-TcpConnection::pointer makeConnection(
+
+TcpConnection::pointer establishConnection(
     asio::io_context& io_context,
     const std::string& connection,
     const std::string& port,
-    size_t bufferSize,
     std::chrono::milliseconds timeOut)
 {
     using std::chrono::milliseconds;
     using std::chrono::steady_clock;
 
     using namespace std::chrono_literals;  // NOLINT
+    
+    TcpConnection::pointer connectionPtr;
+    try {
+        connectionPtr = TcpConnection::create(io_context, connection, port);
+    }
+    catch (std::exception&) {
+        return nullptr;
+    }
+    if (timeOut<=std::chrono::milliseconds(0)) {
+        return connectionPtr;
+    }
+
     auto tick = steady_clock::now();
     milliseconds timeRemaining(timeOut);
     milliseconds timeRemPrev(timeOut);
-    TcpConnection::pointer connectionPtr =
-        TcpConnection::create(io_context, connection, port, bufferSize);
     int trycnt = 1;
     while (!connectionPtr->waitUntilConnected(timeRemaining)) {
         auto tock = steady_clock::now();
@@ -52,25 +62,19 @@ TcpConnection::pointer makeConnection(
         // lets try to connect again
         ++trycnt;
         connectionPtr =
-            TcpConnection::create(io_context, connection, port, bufferSize);
+            TcpConnection::create(io_context, connection, port);
     }
     return connectionPtr;
 }
 
-TcpConnection::pointer generateConnection(
-    std::shared_ptr<AsioContextManager>& ioctx,
-    const std::string& address)
+TcpConnection::pointer establishConnection(
+    asio::io_context& io_context,
+    const std::string& address,
+    std::chrono::milliseconds timeOut)
 {
-    try {
-        std::string interface;
-        std::string port;
-        std::tie(interface, port) = extractInterfaceAndPortString(address);
-        return TcpConnection::create(ioctx->getBaseContext(), interface, port);
-    }
-    catch (std::exception&) {
-        // TODO(PT) do something???
-    }
-    return nullptr;
+    std::string interface;
+    std::string port;
+    std::tie(interface, port) = extractInterfaceAndPortString(address);
+    return establishConnection(io_context, interface, port, timeOut);
 }
-
 }  // namespace gmlc::networking

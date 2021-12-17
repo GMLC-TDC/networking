@@ -22,16 +22,25 @@ class io_context;
 }  // namespace asio
 
 namespace gmlc::networking {
-/** establish a connection to a server by as associated timeout*/
-TcpConnection::pointer makeConnection(
+
+/** establish a connection to a server by as associated optional timeout
+@param[in] io_context the context to establish the connection
+@param[in] connection the address of the connection to establish
+@param[in] port the port number to connect to
+@param[in] timeOut the time to wait for the connection to be established if set of <=0 the connection will not wait for verification*/
+TcpConnection::pointer establishConnection(
     asio::io_context& io_context,
     const std::string& connection,
     const std::string& port,
-    size_t bufferSize,
-    std::chrono::milliseconds timeOut);
+    std::chrono::milliseconds timeOut=std::chrono::milliseconds(0));
 
-TcpConnection::pointer generateConnection(
-    std::shared_ptr<AsioContextManager>& ioctx,
-    const std::string& address);
+/** establish a connection to a server by as associated optional timeout
+@param[in] io_context the context to establish the connection
+@param[in] address the address of the connection to establish usually network address:port
+@param[in] timeOut the time to wait for the connection to be established if set of <=0 the connection will not wait for verification*/
+TcpConnection::pointer establishConnection(
+    asio::io_context& io_context,
+    const std::string& address,
+    std::chrono::milliseconds timeOut=std::chrono::milliseconds(0));
 
 }  // namespace gmlc::networking
