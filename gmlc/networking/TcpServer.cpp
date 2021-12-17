@@ -101,7 +101,7 @@ TcpServer::~TcpServer()
 void TcpServer::initialConnect()
 {
     if (halted.load(std::memory_order_acquire)) {
-        std::cout << "previously halted server" << std::endl;
+        logger(0,"previously halted server");
         return;
     }
     for (auto& ep : endpoints) {
@@ -115,6 +115,9 @@ void TcpServer::initialConnect()
             [this](TcpAcceptor::pointer accPtr, TcpConnection::pointer conn) {
                 handle_accept(std::move(accPtr), std::move(conn));
             });
+        if (logFunction) {
+            acc->setLoggingFunction(logFunction);
+        }
         acceptors.push_back(std::move(acc));
     }
     bool anyConnect = false;
@@ -123,8 +126,8 @@ void TcpServer::initialConnect()
     for (auto& acc : acceptors) {
         ++index;
         if (!acc->connect()) {
-            std::cout << "unable to connect acceptor " << index << " of "
-                      << acceptors.size() << std::endl;
+            logger(0,std::string("unable to connect acceptor ")+std::to_string(index)+" of "
+                      +std::to_string(acceptors.size()));
             continue;
         }
         ++connectedAcceptors;
@@ -132,13 +135,12 @@ void TcpServer::initialConnect()
     }
     if (!anyConnect) {
         halted = true;
-        std::cout << "halting server operation";
+        logger(1, "halting server operation");
         return;
     }
     if (connectedAcceptors < acceptors.size()) {
-        std::cout << "partial connection on the server " << connectedAcceptors
-                  << " of " << acceptors.size() << " were connected"
-                  << std::endl;
+        logger(1,std::string("partial connection on the server ") +std::to_string(connectedAcceptors)
+                  + " of " + std::to_string(acceptors.size()) + " were connected");
     }
 }
 
@@ -150,11 +152,10 @@ bool TcpServer::reConnect(std::chrono::milliseconds timeOut)
         if (!acc->isConnected()) {
             if (!acc->connect(timeOut)) {
                 if (partialConnect) {
-                    std::cerr << "unable to connect all acceptors on "
-                              << acc->to_string() << '\n';
+                    logger(0,std::string("unable to connect all acceptors on ")
+                              +acc->to_string());
                 } else {
-                    std::cerr << "unable to connect on " << acc->to_string()
-                              << '\n';
+                    logger(0, std::string("unable to connect on ") + acc->to_string());
                 }
 
                 halted = true;
@@ -164,7 +165,7 @@ bool TcpServer::reConnect(std::chrono::milliseconds timeOut)
         partialConnect = true;
     }
     if ((halted.load()) && (partialConnect)) {
-        std::cerr << "partial connection on acceptor\n";
+        logger(0,"partial connection on acceptor");
     }
     return !halted;
 }
@@ -203,14 +204,14 @@ bool TcpServer::start()
 {
     if (halted.load(std::memory_order_acquire)) {
         if (!reConnect(std::chrono::milliseconds(1000))) {
-            std::cout << "reconnect failed" << std::endl;
+            logger(0,"reconnect failed");
             acceptors.clear();
             std::this_thread::sleep_for(std::chrono::milliseconds(200));
             halted.store(false);
             initialConnect();
             if (halted) {
                 if (!reConnect(std::chrono::milliseconds(1000))) {
-                    std::cout << "reconnect part 2 failed" << std::endl;
+                    logger(0,"reconnect part 2 failed");
                     return false;
                 }
             }
@@ -230,7 +231,7 @@ bool TcpServer::start()
     bool success = true;
     for (auto& acc : acceptors) {
         if (!acc->start(TcpConnection::create(ioctx, bufferSize))) {
-            std::cout << "acceptor has failed to start" << std::endl;
+            logger(0, "acceptor has failed to start");
             success = false;
         }
     }
@@ -253,6 +254,9 @@ void TcpServer::handle_accept(
 
     new_connection->setDataCall(dataCall);
     new_connection->setErrorCall(errorCall);
+    if (logFunction) {
+        new_connection->setLoggingFunction(logFunction);
+    }
     new_connection->startReceive();
     {  // scope for the lock_guard
 
@@ -311,6 +315,25 @@ void TcpServer::close()
         }
         connections.clear();
     }
+}
+
+void TcpServer::logger(int logLevel, const std::string& message)
+{
+    if (logFunction) {
+        logFunction(logLevel, message);
+    } else {
+        if (logLevel == 0) {
+            std::cerr << message << std::endl;
+        } else {
+            std::cout << message << '\n';
+        }
+    }
+}
+
+void TcpServer::setLoggingFunction(
+    std::function<void(int loglevel, const std::string& logMessage)> logFunc)
+{
+    logFunction = std::move(logFunc);
 }
 
 }  // namespace gmlc::networking

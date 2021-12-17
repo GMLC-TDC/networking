@@ -76,6 +76,10 @@ class TcpServer : public std::enable_shared_from_this<TcpServer> {
     {
         errorCall = std::move(errorFunc);
     }
+    /** set a logging function */
+    void setLoggingFunction(
+        std::function<void(int loglevel, const std::string& logMessage)>
+            logFunc);
     void handle_accept(
         TcpAcceptor::pointer acc,
         TcpConnection::pointer new_connection);
@@ -101,6 +105,8 @@ class TcpServer : public std::enable_shared_from_this<TcpServer> {
         int nominalBufferSize);
 
     void initialConnect();
+    void logger(int level, const std::string& message);
+
     asio::io_context& ioctx;
     mutable std::mutex accepting;
     std::vector<TcpAcceptor::pointer> acceptors;
@@ -109,6 +115,7 @@ class TcpServer : public std::enable_shared_from_this<TcpServer> {
     std::function<size_t(TcpConnection::pointer, const char*, size_t)> dataCall;
     std::function<bool(TcpConnection::pointer, const std::error_code& error)>
         errorCall;
+    std::function<void(int level, const std::string& logMessage)> logFunction;
     std::atomic<bool> halted{false};
     bool reuse_address = false;
     // this data structure is protected by the accepting mutex

@@ -37,7 +37,7 @@ bool TcpAcceptor::connect()
         acceptor_.bind(endpoint_, ec);
         if (ec) {
             state = AcceptingStates::OPENED;
-            std::cout << "acceptor error" << ec << std::endl;
+            logger(0,std::string("acceptor error")+ec.message());
             return false;
         }
         state = AcceptingStates::CONNECTED;
@@ -82,7 +82,7 @@ bool TcpAcceptor::start(TcpConnection::pointer conn)
         if (accepting.isActive()) {
             accepting.trigger();
         }
-        std::cout << "tcpconnection is not valid" << std::endl;
+        logger(0,"tcpconnection is not valid");
         return false;
     }
     if (state != AcceptingStates::CONNECTED) {
@@ -90,7 +90,7 @@ bool TcpAcceptor::start(TcpConnection::pointer conn)
         if (accepting.isActive()) {
             accepting.trigger();
         }
-        std::cout << "acceptor is not in a connected state" << std::endl;
+        logger(1, "acceptor is not in a connected state");
         return false;
     }
     if (accepting.activate()) {
@@ -106,7 +106,7 @@ bool TcpAcceptor::start(TcpConnection::pointer conn)
         return true;
     }
 
-    std::cout << "acceptor is already active" << std::endl;
+    logger(1,"acceptor is already active");
     conn->close();
     return false;
 }
@@ -160,7 +160,7 @@ void TcpAcceptor::handle_accept(
         if (errorCall) {
             errorCall(std::move(ptr), error);
         } else {
-            std::cerr << " error in accept::" << error.message() << std::endl;
+            logger(0,std::string(" error in accept::")+ error.message());
         }
         asio::socket_base::linger optionLinger(true, 0);
         try {
@@ -173,6 +173,31 @@ void TcpAcceptor::handle_accept(
     } else {
         new_connection->close();
         accepting.reset();
+    }
+}
+
+
+void TcpAcceptor::logger(int logLevel, const std::string& message)
+{
+    if (logFunction) {
+        logFunction(logLevel, message);
+    } else {
+        if (logLevel == 0) {
+            std::cerr << message << std::endl;
+        } else {
+            std::cout << message << '\n';
+        }
+    }
+}
+
+void TcpAcceptor::setLoggingFunction(
+    std::function<void(int loglevel, const std::string& logMessage)> logFunc)
+{
+    if (state.load() == AcceptingStates::OPENED) {
+        logFunction = std::move(logFunc);
+    } else {
+        throw(std::runtime_error(
+            "cannot set logging function after socket is started"));
     }
 }
 

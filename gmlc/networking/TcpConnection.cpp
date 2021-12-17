@@ -9,6 +9,7 @@ All rights reserved. SPDX-License-Identifier: BSD-3-Clause
 
 #include <algorithm>
 #include <iostream>
+#include <sstream>
 #include <thread>
 #include <utility>
 
@@ -152,7 +153,7 @@ void TcpConnection::handle_read(
             }
         } else if (error != asio::error::eof) {
             if (error != asio::error::connection_reset) {
-                std::cerr << "receive error " << error.message() << std::endl;
+                logger(0,std::string("receive error ") + error.message());
             }
             state = ConnectionStates::HALTED;
             receivingHalt.trigger();
@@ -163,6 +164,18 @@ void TcpConnection::handle_read(
     }
 }
 
+void TcpConnection::logger(int logLevel, const std::string& message) {
+    if (logFunction) {
+        logFunction(logLevel, message);
+    } else {
+        if (logLevel == 0)
+        {
+            std::cerr << message << std::endl;
+        } else {
+            std::cout << message << '\n';
+        }
+    }
+}
 // asio::socket_base::linger optionLinger(true, 2);
 // socket_.lowest_layer().set_option(optionLinger, ec);
 void TcpConnection::close()
@@ -194,8 +207,10 @@ void TcpConnection::closeNoWait()
         if (ec) {
             if ((ec.value() != asio::error::not_connected) &&
                 (ec.value() != asio::error::connection_reset)) {
-                std::cerr << "error occurred sending shutdown::" << ec.message()
-                          << " " << ec.value() << std::endl;
+                logger(
+                    0,
+                    std::string("error occurred sending shutdown::") +
+                        ec.message() + " "+std::to_string(ec.value()));
             }
             ec.clear();
         }
@@ -214,12 +229,15 @@ void TcpConnection::waitOnClose()
         }
 
         while (!receivingHalt.wait_for(std::chrono::milliseconds(200))) {
-            std::cout << "wait timeout " << static_cast<int>(state.load())
-                      << " " << socket_.lowest_layer().is_open() << " "
-                      << receivingHalt.isTriggered() << std::endl;
+            std::stringstream str;
+            str << "wait timeout " << static_cast<int>(state.load()) << " "
+                << socket_.lowest_layer().is_open() << " "
+                << receivingHalt.isTriggered();
+            logger(1, str.str());
+            str.clear();
 
-            std::cout << "wait info " << context_.stopped() << " " << connecting
-                      << std::endl;
+            str << "wait info " << context_.stopped() << " " << connecting;
+            logger(1, str.str());
         }
     } else {
         close();
@@ -259,8 +277,11 @@ void TcpConnection::connect_handler(const std::error_code& error)
         connected.activate();
         socket_.lowest_layer().set_option(asio::ip::tcp::no_delay(true));
     } else {
-        std::cerr << "connection error " << error.message()
-                  << ": code =" << error.value() << '\n';
+        std::stringstream str;
+        
+        str << "connection error " << error.message()
+                  << ": code =" << error.value();
+        logger(0, str.str());
         connectionError = true;
         connected.activate();
     }
@@ -269,10 +290,10 @@ size_t TcpConnection::send(const void* buffer, size_t dataLength)
 {
     if (!isConnected()) {
         if (!waitUntilConnected(300ms)) {
-            std::cerr << "connection timeout waiting again" << std::endl;
+            logger(0, "connection timeout waiting again");
         }
         if (!waitUntilConnected(200ms)) {
-            std::cerr << "connection timeout twice, now returning" << std::endl;
+            logger(0,"connection timeout twice, now returning");
             return 0;
         }
     }
@@ -290,7 +311,7 @@ size_t TcpConnection::send(const void* buffer, size_t dataLength)
         //   std::cerr << "DEBUG partial buffer sent" << std::endl;
     }
     if (count >= 5) {
-        std::cerr << "TcpConnection send terminated " << std::endl;
+        logger(0,"TcpConnection send terminated" );
         return 0;
     }
     return dataLength;
