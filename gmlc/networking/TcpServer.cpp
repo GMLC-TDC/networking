@@ -101,7 +101,7 @@ TcpServer::~TcpServer()
 void TcpServer::initialConnect()
 {
     if (halted.load(std::memory_order_acquire)) {
-        logger(0,"previously halted server");
+        logger(0, "previously halted server");
         return;
     }
     for (auto& ep : endpoints) {
@@ -126,8 +126,11 @@ void TcpServer::initialConnect()
     for (auto& acc : acceptors) {
         ++index;
         if (!acc->connect()) {
-            logger(0,std::string("unable to connect acceptor ")+std::to_string(index)+" of "
-                      +std::to_string(acceptors.size()));
+            logger(
+                0,
+                std::string("unable to connect acceptor ") +
+                    std::to_string(index) + " of " +
+                    std::to_string(acceptors.size()));
             continue;
         }
         ++connectedAcceptors;
@@ -139,8 +142,11 @@ void TcpServer::initialConnect()
         return;
     }
     if (connectedAcceptors < acceptors.size()) {
-        logger(1,std::string("partial connection on the server ") +std::to_string(connectedAcceptors)
-                  + " of " + std::to_string(acceptors.size()) + " were connected");
+        logger(
+            1,
+            std::string("partial connection on the server ") +
+                std::to_string(connectedAcceptors) + " of " +
+                std::to_string(acceptors.size()) + " were connected");
     }
 }
 
@@ -152,10 +158,15 @@ bool TcpServer::reConnect(std::chrono::milliseconds timeOut)
         if (!acc->isConnected()) {
             if (!acc->connect(timeOut)) {
                 if (partialConnect) {
-                    logger(0,std::string("unable to connect all acceptors on ")
-                              +acc->to_string());
+                    logger(
+                        0,
+                        std::string("unable to connect all acceptors on ") +
+                            acc->to_string());
                 } else {
-                    logger(0, std::string("unable to connect on ") + acc->to_string());
+                    logger(
+                        0,
+                        std::string("unable to connect on ") +
+                            acc->to_string());
                 }
 
                 halted = true;
@@ -165,7 +176,7 @@ bool TcpServer::reConnect(std::chrono::milliseconds timeOut)
         partialConnect = true;
     }
     if ((halted.load()) && (partialConnect)) {
-        logger(0,"partial connection on acceptor");
+        logger(0, "partial connection on acceptor");
     }
     return !halted;
 }
@@ -204,14 +215,14 @@ bool TcpServer::start()
 {
     if (halted.load(std::memory_order_acquire)) {
         if (!reConnect(std::chrono::milliseconds(1000))) {
-            logger(0,"reconnect failed");
+            logger(0, "reconnect failed");
             acceptors.clear();
             std::this_thread::sleep_for(std::chrono::milliseconds(200));
             halted.store(false);
             initialConnect();
             if (halted) {
                 if (!reConnect(std::chrono::milliseconds(1000))) {
-                    logger(0,"reconnect part 2 failed");
+                    logger(0, "reconnect part 2 failed");
                     return false;
                 }
             }

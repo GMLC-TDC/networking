@@ -153,7 +153,7 @@ void TcpConnection::handle_read(
             }
         } else if (error != asio::error::eof) {
             if (error != asio::error::connection_reset) {
-                logger(0,std::string("receive error ") + error.message());
+                logger(0, std::string("receive error ") + error.message());
             }
             state = ConnectionStates::HALTED;
             receivingHalt.trigger();
@@ -164,12 +164,12 @@ void TcpConnection::handle_read(
     }
 }
 
-void TcpConnection::logger(int logLevel, const std::string& message) {
+void TcpConnection::logger(int logLevel, const std::string& message)
+{
     if (logFunction) {
         logFunction(logLevel, message);
     } else {
-        if (logLevel == 0)
-        {
+        if (logLevel == 0) {
             std::cerr << message << std::endl;
         } else {
             std::cout << message << '\n';
@@ -210,7 +210,7 @@ void TcpConnection::closeNoWait()
                 logger(
                     0,
                     std::string("error occurred sending shutdown::") +
-                        ec.message() + " "+std::to_string(ec.value()));
+                        ec.message() + " " + std::to_string(ec.value()));
             }
             ec.clear();
         }
@@ -278,9 +278,9 @@ void TcpConnection::connect_handler(const std::error_code& error)
         socket_.lowest_layer().set_option(asio::ip::tcp::no_delay(true));
     } else {
         std::stringstream str;
-        
+
         str << "connection error " << error.message()
-                  << ": code =" << error.value();
+            << ": code =" << error.value();
         logger(0, str.str());
         connectionError = true;
         connected.activate();
@@ -293,7 +293,7 @@ size_t TcpConnection::send(const void* buffer, size_t dataLength)
             logger(0, "connection timeout waiting again");
         }
         if (!waitUntilConnected(200ms)) {
-            logger(0,"connection timeout twice, now returning");
+            logger(0, "connection timeout twice, now returning");
             return 0;
         }
     }
@@ -311,7 +311,7 @@ size_t TcpConnection::send(const void* buffer, size_t dataLength)
         //   std::cerr << "DEBUG partial buffer sent" << std::endl;
     }
     if (count >= 5) {
-        logger(0,"TcpConnection send terminated" );
+        logger(0, "TcpConnection send terminated");
         return 0;
     }
     return dataLength;

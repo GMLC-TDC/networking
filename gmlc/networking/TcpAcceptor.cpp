@@ -37,7 +37,7 @@ bool TcpAcceptor::connect()
         acceptor_.bind(endpoint_, ec);
         if (ec) {
             state = AcceptingStates::OPENED;
-            logger(0,std::string("acceptor error")+ec.message());
+            logger(0, std::string("acceptor error") + ec.message());
             return false;
         }
         state = AcceptingStates::CONNECTED;
@@ -82,7 +82,7 @@ bool TcpAcceptor::start(TcpConnection::pointer conn)
         if (accepting.isActive()) {
             accepting.trigger();
         }
-        logger(0,"tcpconnection is not valid");
+        logger(0, "tcpconnection is not valid");
         return false;
     }
     if (state != AcceptingStates::CONNECTED) {
@@ -106,7 +106,7 @@ bool TcpAcceptor::start(TcpConnection::pointer conn)
         return true;
     }
 
-    logger(1,"acceptor is already active");
+    logger(1, "acceptor is already active");
     conn->close();
     return false;
 }
@@ -160,7 +160,7 @@ void TcpAcceptor::handle_accept(
         if (errorCall) {
             errorCall(std::move(ptr), error);
         } else {
-            logger(0,std::string(" error in accept::")+ error.message());
+            logger(0, std::string(" error in accept::") + error.message());
         }
         asio::socket_base::linger optionLinger(true, 0);
         try {
@@ -175,7 +175,6 @@ void TcpAcceptor::handle_accept(
         accepting.reset();
     }
 }
-
 
 void TcpAcceptor::logger(int logLevel, const std::string& message)
 {
