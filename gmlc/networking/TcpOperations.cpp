@@ -18,7 +18,7 @@ namespace gmlc::networking {
 
 TcpConnection::pointer establishConnection(
     asio::io_context& io_context,
-    const std::string& connection,
+    const std::string& host,
     const std::string& port,
     std::chrono::milliseconds timeOut)
 {
@@ -29,7 +29,7 @@ TcpConnection::pointer establishConnection(
 
     TcpConnection::pointer connectionPtr;
     try {
-        connectionPtr = TcpConnection::create(io_context, connection, port);
+        connectionPtr = TcpConnection::create(io_context, host, port);
     }
     catch (std::exception&) {
         return nullptr;
@@ -61,7 +61,7 @@ TcpConnection::pointer establishConnection(
 
         // lets try to connect again
         ++trycnt;
-        connectionPtr = TcpConnection::create(io_context, connection, port);
+        connectionPtr = TcpConnection::create(io_context, host, port);
     }
     return connectionPtr;
 }
