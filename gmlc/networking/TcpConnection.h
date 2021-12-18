@@ -171,6 +171,8 @@ namespace networking {
         {
             callback(shared_from_this(), data.data(), message_size, error);
         }
+
+        void logger(int level, const std::string& message);
         static std::atomic<int> idcounter;
 
         std::atomic<size_t> residBufferSize{0};

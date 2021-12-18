@@ -89,6 +89,10 @@ class TcpAcceptor : public std::enable_shared_from_this<TcpAcceptor> {
     {
         errorCall = std::move(errorFunc);
     }
+    /** set a logging function */
+    void setLoggingFunction(
+        std::function<void(int loglevel, const std::string& logMessage)>
+            logFunc);
     /** set an option on the underlying acceptor*/
     template<class X>
     void set_option(const X& option)
@@ -106,11 +110,14 @@ class TcpAcceptor : public std::enable_shared_from_this<TcpAcceptor> {
         TcpAcceptor::pointer ptr,
         TcpConnection::pointer new_connection,
         const std::error_code& error);
+
+    void logger(int level, const std::string& message);
     asio::ip::tcp::endpoint endpoint_;
     asio::ip::tcp::acceptor acceptor_;
     std::function<void(TcpAcceptor::pointer, TcpConnection::pointer)>
         acceptCall;
     std::function<bool(TcpAcceptor::pointer, const std::error_code&)> errorCall;
+    std::function<void(int level, const std::string& logMessage)> logFunction;
     std::atomic<AcceptingStates> state{AcceptingStates::OPENED};
     gmlc::concurrency::TriggerVariable accepting;
 };
