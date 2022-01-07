@@ -11,6 +11,27 @@ on:
       - main
 
 jobs:
+  build:
+    name: Build and test
+    runs-on: ${{ matrix.os  }}
+    strategy:
+      matrix:
+        os: [windows-latest, macos-latest, ubuntu-latest]
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: CMake Configure
+      run: cmake -B build -S .
+
+    - name: Build 
+      run: cmake --build build --parallel
+
+    - name: Run unit tests
+      run: ctest --test-dir build --output-on-failure
+      
+
+
+  # Test running CMake configure step with a variety of CMake versions
   cmake-config:
     name: CMake config check
     runs-on: ubuntu-latest
