@@ -22,7 +22,7 @@ steps:
     image: alpine:3.12
     commands:
       - apk update
-      - apk add --no-cache build-base git bash cmake ninja
+      - apk add --no-cache build-base git bash cmake ninja linux-headers
       - cmake -GNinja -B build -S .
       - cmake --build build --parallel
       - ctest --test-dir build --output-on-failure
@@ -58,7 +58,7 @@ steps:
     image: alpine
     commands:
       - apk update
-      - apk add --no-cache build-base git bash cmake ninja
+      - apk add --no-cache build-base git bash cmake ninja linux-headers
       - cmake -GNinja -B build -S .
       - cmake --build build --parallel
       - ctest --test-dir build --output-on-failure
