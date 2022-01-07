@@ -63,7 +63,7 @@ jobs:
         packages: git make cmake gcc-g++ ninja
    
     - name: CMake Configure
-      run: cmake -G Ninja -B build -S .
+      run: cmake -G Ninja -B build -S '${{ github.workspace }}'
 
     - name: Build
       run: cmake --build build --parallel
