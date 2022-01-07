@@ -29,6 +29,7 @@ jobs:
       run:
         shell: msys2 {0}
     steps:
+    - uses: actions/checkout@v2
     - uses: msys2/setup-msys2@v2
       with:
         msystem: ${{matrix.msystem}}
@@ -40,8 +41,6 @@ jobs:
           mingw-w64-${{matrix.env}}-cmake
           mingw-w64-${{matrix.env}}-ninja
 
-    - uses: actions/checkout@v2
- 
     - name: CMake Configure
       run: cmake -G Ninja -B build -S .
 
@@ -57,13 +56,12 @@ jobs:
       run:
         shell: C:\tools\cygwin\bin\bash.exe --login --norc -eo pipefail -o igncr '{0}'
     steps:
+    - uses: actions/checkout@v2
     - uses: egor-tensin/setup-cygwin@v3
       with:
         platform: x64
         packages: git make cmake gcc-g++ ninja
-    
-    - uses: actions/checkout@v2
-
+   
     - name: CMake Configure
       run: cmake -G Ninja -B build -S .
 
