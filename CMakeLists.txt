@@ -110,7 +110,7 @@ target_link_libraries(networking_base INTERFACE Threads::Threads)
 
 # MinGW/MSYS/Cygwin support
 if(MINGW OR MSYS OR CYGWIN)
-    target_link_libraries(networking_base PUBLIC wsock32 ws2_32 iphlpapi)
+    target_link_libraries(networking_base INTERFACE wsock32 ws2_32 iphlpapi)
     if(NOT MSYS)
         target_compile_definitions(networking_base INTERFACE -D_WIN32_WINNT=0x0601)
     endif()
