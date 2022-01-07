@@ -23,7 +23,7 @@ steps:
     commands:
       - apk update
       - apk add --no-cache build-base git bash cmake ninja linux-headers
-      - ctest --build-and-test . build --build-generator Ninja --output-on-failure
+      - ctest --build-and-test . build --build-generator Ninja --output-on-failure --test-command ctest
 
 trigger:
   ref:
@@ -57,7 +57,7 @@ steps:
     commands:
       - apk update
       - apk add --no-cache build-base git bash cmake ninja linux-headers
-      - ctest --build-and-test . build --build-generator Ninja --output-on-failure
+      - ctest --build-and-test . build --build-generator Ninja --output-on-failure --test-command ctest
 
 trigger:
   ref:
