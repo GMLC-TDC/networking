@@ -23,9 +23,7 @@ steps:
     commands:
       - apk update
       - apk add --no-cache build-base git bash cmake ninja linux-headers
-      - cmake -GNinja -B build -S .
-      - cmake --build build --parallel
-      - ctest --test-dir build --output-on-failure
+      - ctest --build-and-test . build --build-generator Ninja --output-on-failure
 
 trigger:
   ref:
@@ -59,9 +57,7 @@ steps:
     commands:
       - apk update
       - apk add --no-cache build-base git bash cmake ninja linux-headers
-      - cmake -GNinja -B build -S .
-      - cmake --build build --parallel
-      - ctest --test-dir build --output-on-failure
+      - ctest --build-and-test . build --build-generator Ninja --output-on-failure
 
 trigger:
   ref:
