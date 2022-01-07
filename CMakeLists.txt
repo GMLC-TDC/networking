@@ -115,7 +115,7 @@ if(MINGW OR MSYS OR CYGWIN)
         target_compile_definitions(networking_base INTERFACE -D_WIN32_WINNT=0x0601)
     endif()
     if(CYGWIN)
-	    target_compile_definitions(networking_base INTERFACE -D_XOPEN_SOURCE=500 -D__USE_W32_SOCKETS -DASIO_DISABLE_IOCP)
+	    target_compile_definitions(networking_base INTERFACE -D_XOPEN_SOURCE=500 -D__USE_W32_SOCKETS -DASIO_DISABLE_IOCP -DASIO_NO_WIN32_LEAN_AND_MEAN)
     endif()
 endif()
 
