@@ -108,6 +108,17 @@ set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 target_link_libraries(networking_base INTERFACE Threads::Threads)
 
+# MinGW/MSYS/Cygwin support
+if(MINGW OR MSYS OR CYGWIN)
+    target_link_libraries(networking_base PUBLIC wsock32 ws2_32 iphlpapi)
+    if(NOT MSYS)
+        target_compile_definitions(networking_base INTERFACE -D_WIN32_WINNT=0x0601)
+    endif()
+    if(CYGWIN)
+        target_compile_definitions(networking_base INTERFACE -D_XOPEN_SOURCE=500 -D__USE_W32_SOCKETS)
+    endif()
+endif()
+
 # -------------------------------------------------------------
 # global include directories
 # -------------------------------------------------------------
