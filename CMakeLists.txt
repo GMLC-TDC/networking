@@ -131,8 +131,8 @@ endif()
 include(updateGitSubmodules)
 
 cmake_dependent_option(
-    GMLC_NETWORKING_DISABLE_ASIO "Disable parts of the library that use ASIO (most of it)"
-    OFF "NOT CYGWIN" ON
+    GMLC_NETWORKING_DISABLE_ASIO
+    "Disable parts of the library that use ASIO (most of it)" OFF "NOT CYGWIN" ON
 )
 if(NOT GMLC_NETWORKING_DISABLE_ASIO)
     target_compile_definitions(networking_base INTERFACE "-DASIO_STANDALONE")
