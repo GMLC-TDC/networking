@@ -10,4 +10,3 @@ task:
     cmake --build build --parallel
   test_script: |
     ctest --test-dir build --output-on-failure
-
