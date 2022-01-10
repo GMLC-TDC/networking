@@ -108,12 +108,32 @@ set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 target_link_libraries(networking_base INTERFACE Threads::Threads)
 
+# MinGW/MSYS/Cygwin support
+if(MINGW
+   OR MSYS
+   OR CYGWIN
+)
+    target_link_libraries(networking_base INTERFACE wsock32 ws2_32 mswsock iphlpapi)
+    if(NOT MSYS)
+        target_compile_definitions(networking_base INTERFACE -D_WIN32_WINNT=0x0601)
+    endif()
+    if(CYGWIN)
+        target_compile_definitions(
+            networking_base INTERFACE -D_XOPEN_SOURCE=500 -D__USE_W32_SOCKETS
+        )
+    endif()
+endif()
+
 # -------------------------------------------------------------
 # global include directories
 # -------------------------------------------------------------
 
 include(updateGitSubmodules)
 
+cmake_dependent_option(
+    GMLC_NETWORKING_DISABLE_ASIO
+    "Disable parts of the library that use ASIO (most of it)" OFF "NOT CYGWIN" ON
+)
 if(NOT GMLC_NETWORKING_DISABLE_ASIO)
     target_compile_definitions(networking_base INTERFACE "-DASIO_STANDALONE")
     if(NOT GMLC_NETWORKING_ASIO_INCLUDE)

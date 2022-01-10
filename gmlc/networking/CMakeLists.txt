@@ -79,9 +79,6 @@ if(GMLC_NETWORKING_STATIC_LIB)
     add_library(gmlc::networking ALIAS gmlc_networking)
 
     target_link_libraries(gmlc_networking PUBLIC networking_base)
-    if(MSYS OR CYGWIN)
-        target_link_libraries(gmlc_networking PUBLIC wsock32 ws2_32 iphlpapi)
-    endif()
     if(GMLC_NETWORKING_INSTALL)
         install(
             TARGETS gmlc_networking ${GMLC_NETWORKING_LIBRARY_EXPORT_COMMAND}

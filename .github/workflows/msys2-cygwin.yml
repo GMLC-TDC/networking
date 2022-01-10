@@ -61,7 +61,7 @@ jobs:
     - uses: actions/checkout@v2
     - uses: egor-tensin/setup-cygwin@v3
       with:
-        platform: x64
+        platform: x86
         packages: git make cmake gcc-g++ ninja
    
     - name: CMake Configure
