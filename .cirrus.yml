@@ -1,0 +1,13 @@
+freebsd_instance:
+  image_family: freebsd-13-0
+
+task:
+  skip: $CIRRUS_BRANCH == 'pre-commit/.*'
+  install_script: |
+    pkg install -y cmake ninja git
+  build_script: |
+    cmake -GNinja -B build -S .
+    cmake --build build build --parallel
+  test_script: |
+    ctest --test-dir build --output-on-failure
+
