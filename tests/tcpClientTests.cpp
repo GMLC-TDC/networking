@@ -8,9 +8,9 @@ All rights reserved. SPDX-License-Identifier: BSD-3-Clause
 #define CATCH_CONFIG_MAIN
 #include "catch2/catch.hpp"
 
+#include "gmlc/networking/TcpOperations.h"
 #include "gmlc/networking/addressOperations.hpp"
 #include "gmlc/networking/interfaceOperations.hpp"
-#include "gmlc/networking/TcpOperations.h"
 using namespace gmlc::networking;
 
 TEST_CASE("localHost", "[TcpClient]")
@@ -26,7 +26,8 @@ TEST_CASE("localHostString", "[TcpClient]")
     CHECK_NOTHROW(TcpConnection::create(io_context, "localhost", "0"));
 }
 
-TEST_CASE("externalAddress", "[TcpClient]") {
+TEST_CASE("externalAddress", "[TcpClient]")
+{
     asio::io_context io_context;
     auto ex = getLocalExternalAddressV4();
     CHECK_NOTHROW(TcpConnection::create(io_context, ex, "0"));
@@ -38,12 +39,10 @@ TEST_CASE("invalidString", "[TcpClient]")
     CHECK_THROWS(TcpConnection::create(io_context, "testString", "0"));
 }
 
-TEST_CASE("startReceive", "[TcpClient]") {
+TEST_CASE("startReceive", "[TcpClient]")
+{
     asio::io_context io_context;
     auto localhost = "127.0.0.1";
     auto connection = TcpConnection::create(io_context, localhost, "0");
     CHECK_NOTHROW(connection->startReceive());
 }
-
-
-
