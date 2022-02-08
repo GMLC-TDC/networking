@@ -7,12 +7,12 @@ All rights reserved. SPDX-License-Identifier: BSD-3-Clause
 
 #define CATCH_CONFIG_MAIN
 #include "catch2/catch.hpp"
-#include <thread>
 #include <stdlib.h>
+#include <thread>
 
+#include "gmlc/networking/TcpOperations.h"
 #include "gmlc/networking/addressOperations.hpp"
 #include "gmlc/networking/interfaceOperations.hpp"
-#include "gmlc/networking/TcpOperations.h"
 using namespace gmlc::networking;
 
 size_t dataFunc(TcpConnection::pointer pt, const char* c, size_t t)
@@ -43,7 +43,8 @@ void server() {
     io_context.run();
     spt->close();
 }
-void client() {
+void client()
+{
     asio::io_context io_context;
     auto cpt =
         TcpConnection::create(io_context, std::string("localhost"), "49888");
