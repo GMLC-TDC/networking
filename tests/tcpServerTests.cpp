@@ -41,3 +41,25 @@ TEST_CASE("invalidString", "[TcpServer]") {
     asio::io_context io_context;
     CHECK_THROWS(TcpServer::create(io_context, "testString", "0", false, 10192));
 }
+size_t dataFunc(TcpConnection::pointer cpt, const char* c, size_t t)
+{
+    std::cout << "test";
+    return 10;
+}
+
+TEST_CASE("dataCall", "[TcpServer]") {
+    asio::io_context io_context;
+    asio::io_context io_context2;
+
+    auto spt = TcpServer::create(io_context, "localhost", "0", false, 10192);
+    auto cpt = TcpConnection::create(io_context2, "localhost", "0");
+    spt->setDataCall(&dataFunc);
+
+
+    
+}
+
+TEST_CASE("errorCall", "[TcpServer]") {
+    asio::io_context io_context;
+
+}
