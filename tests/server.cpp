@@ -13,33 +13,50 @@ All rights reserved. SPDX-License-Identifier: BSD-3-Clause
 #include "gmlc/networking/addressOperations.hpp"
 #include "gmlc/networking/interfaceOperations.hpp"
 #include "gmlc/networking/TcpOperations.h"
+#include "gmlc/networking/AsioContextManager.h"
+
 using namespace gmlc::networking;
+
+void handler(const std::error_code& e, std::size_t bytes_transferred)
+{
+    std::cout << "transferred: " << bytes_transferred << '\n';
+}
 
 
 size_t dataFunc(TcpConnection::pointer pt, const char* c, size_t t)
 {
-    std::cout << "data received: " << c << '\n';
-    return 10;
+    std::cout << "SERVER DATA: " << c << '\n';
+    std::string s = "server reply\n";
+    const int dataSize = s.size();
+    char* data = new char[dataSize];
+    strcpy(data, s.c_str());
+    pt->send_async(data, dataSize, handler);
+    gmlc::networking::AsioContextManager::getContextPointer("io_context_server")
+        ->getBaseContext()
+        .stop();
+    pt->closeNoWait();
+    return t;
 }
 bool errorFunc(TcpConnection::pointer cpt, const std::error_code e)
 {
-    std::cout << "ERROR: " << e << '\n';
+    std::cout << "SERVER ERROR: " << e << '\n';
     return true;
 }
 
 void logFunc(int loglevel, const std::string logmessage)
 {
-    std::cout << logmessage;
+    std::cout << "SERVER LOG: " << logmessage << '\n';
 }
 
 
-void server()
+void server(
+    std::shared_ptr<gmlc::networking::AsioContextManager>& io_context_server)
 {
-    asio::io_context io_context;
-    auto all = "tcp://0.0.0.0";
-    std::string localhost = "127.0.0.1";
     TcpServer::pointer spt = TcpServer::create(
-        io_context, std::string("localhost"), "49888", true, 10192);
+        io_context_server->getBaseContext(),
+        std::string("localhost"),
+        "49888",
+        true);
     spt->setDataCall(dataFunc);
     spt->setErrorCall(errorFunc);
     spt->setLoggingFunction(logFunc);
@@ -47,12 +64,22 @@ void server()
     if (spt->isReady()) {
         spt->start();
     }
-    io_context.run();
-    spt->close();
+    io_context_server->getBaseContext().run();
 }
 
 
-TEST_CASE("serverTest", "[tcpOps]")
+TEST_CASE("serverTest", "[standaloneServer]")
 {
-    server();
+    std::cout << "server will wait 10 seconds before closing\n";
+    auto io_context_server =
+        gmlc::networking::AsioContextManager::getContextPointer(
+            "io_context_server");
+    std::thread s(server, io_context_server);
+    s.detach();
+    std::this_thread::sleep_for(std::chrono::milliseconds(10000));   
+    //give enough time to set up client if needed
+    std::cout << "server finishing\n";
+    io_context_server->getBaseContext().stop();
+    io_context_server->closeContext();
 }
+
