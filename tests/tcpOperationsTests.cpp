@@ -49,7 +49,7 @@ bool errorFunc(TcpConnection::pointer cpt, const std::error_code e)
     return true;
 }
 
-void logFunc(int loglevel, const std::string logmessage)
+void logFunc(int loglevel, const std::string& logmessage)
 {
     std::cout << "LOG: " << logmessage << '\n';
 }
