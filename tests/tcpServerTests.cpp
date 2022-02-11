@@ -17,52 +17,24 @@ TEST_CASE("localHost", "[TcpServer]")
 {
     asio::io_context io_context;
     auto localhost = "127.0.0.1";
-    TcpServer::pointer spt =
-        TcpServer::create(io_context, localhost, "0", false, 10192);
-    CHECK(spt->isReady());
+    CHECK_NOTHROW(TcpServer::create(io_context, localhost, "0", false));
 }
 
-TEST_CASE("externalAddress", "[TcpServer]")
+TEST_CASE("externalAddressV4", "[TcpServer]")
 {
     asio::io_context io_context;
     auto ex = getLocalExternalAddressV4();
-    TcpServer::pointer spt =
-        TcpServer::create(io_context, ex, "0", false, 10192);
-    CHECK(spt->isReady());
+    CHECK_NOTHROW(TcpServer::create(io_context, ex, "0", false));
 }
 
 TEST_CASE("localHostString", "[TcpServer]")
 {
     asio::io_context io_context;
-    TcpServer::pointer spt =
-        TcpServer::create(io_context, "localhost", "0", false, 10192);
-    CHECK(spt->isReady());
+    CHECK_NOTHROW(TcpServer::create(io_context, "localhost", "0", false));
 }
 TEST_CASE("invalidString", "[TcpServer]")
 {
     asio::io_context io_context;
     CHECK_THROWS(
-        TcpServer::create(io_context, "testString", "0", false, 10192));
-}
-size_t dataFunc(TcpConnection::pointer cpt, const char* c, size_t t)
-{
-    std::cout << "test";
-    return 10;
-}
-
-TEST_CASE("dataCall", "[TcpServer]") {
-    asio::io_context io_context;
-    asio::io_context io_context2;
-
-    auto spt = TcpServer::create(io_context, "localhost", "0", false, 10192);
-    auto cpt = TcpConnection::create(io_context2, "localhost", "0");
-    spt->setDataCall(&dataFunc);
-
-
-    
-}
-
-TEST_CASE("errorCall", "[TcpServer]") {
-    asio::io_context io_context;
-
+        TcpServer::create(io_context, "testString", "0", false));
 }

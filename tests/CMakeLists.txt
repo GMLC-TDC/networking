@@ -7,7 +7,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-set(NETWORKING_TESTS addressOperationsTests interfaceOperationsTests tcpOperationsTests tcpServerTests tcpClientTests server client)
+set(NETWORKING_TESTS addressOperationsTests interfaceOperationsTests tcpOperationsTests tcpServerTests tcpClientTests contextManagerTests server client)
 
 foreach(T ${NETWORKING_TESTS})
 
