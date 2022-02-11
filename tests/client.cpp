@@ -10,11 +10,10 @@ All rights reserved. SPDX-License-Identifier: BSD-3-Clause
 #include <stdlib.h>
 #include <thread>
 
+#include "gmlc/networking/AsioContextManager.h"
 #include "gmlc/networking/TcpOperations.h"
 #include "gmlc/networking/addressOperations.hpp"
 #include "gmlc/networking/interfaceOperations.hpp"
-#include "gmlc/networking/TcpOperations.h"
-#include "gmlc/networking/AsioContextManager.h"
 
 using namespace gmlc::networking;
 
@@ -38,8 +37,6 @@ void logFunc(int loglevel, const std::string logmessage)
 {
     std::cout << "CLIENT LOG: " << logmessage << '\n';
 }
-
-
 
 TEST_CASE("SendTest", "[standaloneClient]")
 {
@@ -70,7 +67,6 @@ TEST_CASE("SendTest", "[standaloneClient]")
                 CHECK_NOTHROW(cpt->send("msg from client\n"));
             } else {
                 CHECK_THROWS(cpt->send("msg from client\n"));
-
             }
         }
         io_context_connection->startContextLoop();
