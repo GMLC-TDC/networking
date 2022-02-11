@@ -35,6 +35,5 @@ TEST_CASE("localHostString", "[TcpServer]")
 TEST_CASE("invalidString", "[TcpServer]")
 {
     asio::io_context io_context;
-    CHECK_THROWS(
-        TcpServer::create(io_context, "testString", "0", false));
+    CHECK_THROWS(TcpServer::create(io_context, "testString", "0", false));
 }

@@ -1,12 +1,13 @@
 #define CATCH_CONFIG_MAIN
 #include "catch2/catch.hpp"
-#include <thread>
-#include <stdlib.h>
 #include "gmlc/networking/AsioContextManager.h"
+#include <stdlib.h>
+#include <thread>
 
 using namespace gmlc::networking;
 
-TEST_CASE("getContextPointerTest", "[contextManager]") {
+TEST_CASE("getContextPointerTest", "[contextManager]")
+{
     auto io_context =
         gmlc::networking::AsioContextManager::getContextPointer("io_context");
     auto new_context =
@@ -16,7 +17,8 @@ TEST_CASE("getContextPointerTest", "[contextManager]") {
     CHECK(cntxt_p == new_cntxt_p);
 }
 
-TEST_CASE("closeContext", "[contextManager]") {
+TEST_CASE("closeContext", "[contextManager]")
+{
     auto io_context =
         gmlc::networking::AsioContextManager::getContextPointer("io_context");
     io_context->startContextLoop();
@@ -24,7 +26,8 @@ TEST_CASE("closeContext", "[contextManager]") {
     CHECK_FALSE(io_context->isRunning());
 }
 
-TEST_CASE("getNameTest", "[contextManager]") {
+TEST_CASE("getNameTest", "[contextManager]")
+{
     auto context_pointer =
         gmlc::networking::AsioContextManager::getContextPointer("io_context");
     CHECK(context_pointer->getName() == "io_context");
@@ -33,8 +36,8 @@ TEST_CASE("getContext", "[contextManager]")
 {
     auto context_pointer =
         gmlc::networking::AsioContextManager::getContextPointer("io_context");
-    auto *p1 = &context_pointer->getBaseContext();
-    auto *p2 = &gmlc::networking::AsioContextManager::getContext("io_context");
+    auto* p1 = &context_pointer->getBaseContext();
+    auto* p2 = &gmlc::networking::AsioContextManager::getContext("io_context");
     CHECK(p1 == p2);
 }
 
@@ -45,9 +48,11 @@ TEST_CASE("startContextTest", "[contextManager]")
     CHECK_NOTHROW(context_pointer->startContextLoop());
     context_pointer->closeContext();
 }
-TEST_CASE("runContextTest", "[contextManager]") {
+TEST_CASE("runContextTest", "[contextManager]")
+{
     auto context_pointer =
-        gmlc::networking::AsioContextManager::getContextPointer(std::string("io_context"));
+        gmlc::networking::AsioContextManager::getContextPointer(
+            std::string("io_context"));
     CHECK_NOTHROW(gmlc::networking::AsioContextManager::runContextLoop(
         std::string("io_context")));
     context_pointer->closeContext();

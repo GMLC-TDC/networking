@@ -7,14 +7,13 @@ All rights reserved. SPDX-License-Identifier: BSD-3-Clause
 
 #define CATCH_CONFIG_MAIN
 #include "catch2/catch.hpp"
-#include <thread>
 #include <stdlib.h>
+#include <thread>
 
+#include "gmlc/networking/TcpOperations.h"
 #include "gmlc/networking/addressOperations.hpp"
 #include "gmlc/networking/interfaceOperations.hpp"
-#include "gmlc/networking/TcpOperations.h"
 using namespace gmlc::networking;
-
 
 size_t dataFunc(TcpConnection::pointer pt, const char* c, size_t t)
 {
@@ -31,7 +30,6 @@ void logFunc(int loglevel, const std::string logmessage)
 {
     std::cout << logmessage;
 }
-
 
 void server()
 {
@@ -50,7 +48,6 @@ void server()
     io_context.run();
     spt->close();
 }
-
 
 TEST_CASE("serverTest", "[tcpOps]")
 {

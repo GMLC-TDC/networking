@@ -7,14 +7,13 @@ All rights reserved. SPDX-License-Identifier: BSD-3-Clause
 
 #define CATCH_CONFIG_MAIN
 #include "catch2/catch.hpp"
-#include <thread>
 #include <stdlib.h>
+#include <thread>
 
+#include "gmlc/networking/TcpOperations.h"
 #include "gmlc/networking/addressOperations.hpp"
 #include "gmlc/networking/interfaceOperations.hpp"
-#include "gmlc/networking/TcpOperations.h"
 using namespace gmlc::networking;
-
 
 size_t dataFunc(TcpConnection::pointer pt, const char* c, size_t t)
 {
@@ -35,7 +34,8 @@ void logFunc(int loglevel, const std::string logmessage)
 TEST_CASE("TcpConnectionCreateTest", "[tcpOps]")
 {
     asio::io_context io_context;
-    auto cpt = TcpConnection::create(io_context, std::string("localhost"), "49888");
+    auto cpt =
+        TcpConnection::create(io_context, std::string("localhost"), "49888");
     cpt->setDataCall(dataFunc);
     cpt->setErrorCall(errorFunc);
     cpt->setLoggingFunction(logFunc);
@@ -46,11 +46,12 @@ TEST_CASE("TcpConnectionCreateTest", "[tcpOps]")
     cpt->closeNoWait();
 }
 
-
-TEST_CASE("establishConnectionTest", "[tcpOps]") {
+TEST_CASE("establishConnectionTest", "[tcpOps]")
+{
     asio::io_context io_context;
     std::chrono::milliseconds timeOut = std::chrono::milliseconds(300);
-    auto cpt = establishConnection(io_context, std::string("localhost"), "49888", timeOut);
+    auto cpt = establishConnection(
+        io_context, std::string("localhost"), "49888", timeOut);
     cpt->setDataCall(dataFunc);
     cpt->setErrorCall(errorFunc);
     cpt->setLoggingFunction(logFunc);
@@ -60,4 +61,3 @@ TEST_CASE("establishConnectionTest", "[tcpOps]") {
     io_context.run();
     cpt->closeNoWait();
 }
-

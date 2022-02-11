@@ -10,10 +10,10 @@ All rights reserved. SPDX-License-Identifier: BSD-3-Clause
 #include <stdlib.h>
 #include <thread>
 
+#include "gmlc/networking/AsioContextManager.h"
 #include "gmlc/networking/TcpOperations.h"
 #include "gmlc/networking/addressOperations.hpp"
 #include "gmlc/networking/interfaceOperations.hpp"
-#include "gmlc/networking/AsioContextManager.h"
 using namespace gmlc::networking;
 
 void handler(const std::error_code& e, std::size_t bytes_transferred)
@@ -43,22 +43,21 @@ size_t serverDataFunc(TcpConnection::pointer pt, const char* c, size_t t)
     return sizeof(c);
 }
 
-bool errorFunc(TcpConnection::pointer cpt, const std::error_code e) {
+bool errorFunc(TcpConnection::pointer cpt, const std::error_code e)
+{
     std::cout << "ERROR: " << e << '\n';
     return true;
 }
 
-void logFunc(int loglevel, const std::string logmessage) {
+void logFunc(int loglevel, const std::string logmessage)
+{
     std::cout << "LOG: " << logmessage << '\n';
 }
 
-void server(std::shared_ptr<gmlc::networking::AsioContextManager> &io_context)
+void server(std::shared_ptr<gmlc::networking::AsioContextManager>& io_context)
 {
     TcpServer::pointer spt = TcpServer::create(
-        io_context->getBaseContext(),
-        std::string("localhost"),
-        "49888",
-        true);
+        io_context->getBaseContext(), std::string("localhost"), "49888", true);
     spt->setDataCall(serverDataFunc);
     spt->setErrorCall(errorFunc);
     spt->setLoggingFunction(logFunc);
@@ -68,10 +67,10 @@ void server(std::shared_ptr<gmlc::networking::AsioContextManager> &io_context)
     io_context->getBaseContext().run();
 }
 
-void client(std::shared_ptr<gmlc::networking::AsioContextManager> &io_context)
+void client(std::shared_ptr<gmlc::networking::AsioContextManager>& io_context)
 {
-   std::chrono::milliseconds timeOut = std::chrono::milliseconds(0);
-   auto cpt = establishConnection(
+    std::chrono::milliseconds timeOut = std::chrono::milliseconds(0);
+    auto cpt = establishConnection(
         io_context->getBaseContext(),
         std::string("localhost"),
         "49888",
@@ -94,11 +93,13 @@ void client(std::shared_ptr<gmlc::networking::AsioContextManager> &io_context)
 
 TEST_CASE("tcpOperationsTest", "[TcpOps]")
 {
-    auto io_context_client = gmlc::networking::AsioContextManager::getContextPointer(
-        "io_context_client");
-    auto io_context_server = gmlc::networking::AsioContextManager::getContextPointer(
-        "io_context_server");
-    std::thread s (server, io_context_server);
+    auto io_context_client =
+        gmlc::networking::AsioContextManager::getContextPointer(
+            "io_context_client");
+    auto io_context_server =
+        gmlc::networking::AsioContextManager::getContextPointer(
+            "io_context_server");
+    std::thread s(server, io_context_server);
     s.detach();
     std::this_thread::sleep_for(std::chrono::milliseconds(300));
     std::thread c(client, io_context_client);
@@ -107,10 +108,10 @@ TEST_CASE("tcpOperationsTest", "[TcpOps]")
     io_context_server->closeContext();
 }
 
-TEST_CASE("estabilshConnectionTest0", "[TcpOps]") {
+TEST_CASE("estabilshConnectionTest0", "[TcpOps]")
+{
     auto io_context =
-        gmlc::networking::AsioContextManager::getContextPointer(
-            "io_context");
+        gmlc::networking::AsioContextManager::getContextPointer("io_context");
     std::chrono::milliseconds timeOut = std::chrono::milliseconds(0);
     auto cpt = establishConnection(
         io_context->getBaseContext(),
