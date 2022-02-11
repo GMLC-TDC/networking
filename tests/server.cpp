@@ -10,11 +10,10 @@ All rights reserved. SPDX-License-Identifier: BSD-3-Clause
 #include <stdlib.h>
 #include <thread>
 
+#include "gmlc/networking/AsioContextManager.h"
 #include "gmlc/networking/TcpOperations.h"
 #include "gmlc/networking/addressOperations.hpp"
 #include "gmlc/networking/interfaceOperations.hpp"
-#include "gmlc/networking/TcpOperations.h"
-#include "gmlc/networking/AsioContextManager.h"
 
 using namespace gmlc::networking;
 
@@ -22,7 +21,6 @@ void handler(const std::error_code& e, std::size_t bytes_transferred)
 {
     std::cout << "transferred: " << bytes_transferred << '\n';
 }
-
 
 size_t dataFunc(TcpConnection::pointer pt, const char* c, size_t t)
 {
@@ -49,7 +47,6 @@ void logFunc(int loglevel, const std::string& logmessage)
     std::cout << "SERVER LOG: " << logmessage << '\n';
 }
 
-
 void server(
     std::shared_ptr<gmlc::networking::AsioContextManager>& io_context_server)
 {
@@ -68,7 +65,6 @@ void server(
     io_context_server->getBaseContext().run();
 }
 
-
 TEST_CASE("serverTest", "[standaloneServer]")
 {
     std::cout << "server will wait 10 seconds before closing\n";
@@ -77,10 +73,9 @@ TEST_CASE("serverTest", "[standaloneServer]")
             "io_context_server");
     std::thread s(server, io_context_server);
     s.detach();
-    std::this_thread::sleep_for(std::chrono::milliseconds(10000));   
-    //give enough time to set up client if needed
+    std::this_thread::sleep_for(std::chrono::milliseconds(10000));
+    // give enough time to set up client if needed
     std::cout << "server finishing\n";
     io_context_server->getBaseContext().stop();
     io_context_server->closeContext();
 }
-
