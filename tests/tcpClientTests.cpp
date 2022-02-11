@@ -51,7 +51,7 @@ TEST_CASE("startReceive", "[TcpClient]")
 
 void handler(const std::error_code& e, std::size_t bytes_transferred)
 {
-    std::cout << "client transfered: " << bytes_transferred << '\n';
+    std::cout << "client transferred: " << bytes_transferred << '\n';
 }
 
 size_t dataFunc(TcpConnection::pointer pt, const char* c, size_t t)
