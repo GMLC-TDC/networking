@@ -20,8 +20,15 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    - name: Install OpenSSL (Windows)
+      if: runner.os == 'Windows'
+      run: choco install openssl
+
     - name: CMake Configure
-      run: cmake -B build -S .
+      shell: bash
+      run: |
+        if [[ "${{ runner.os }}" == "macOS" ]]; then export OPENSSL_ROOT_DIR=/usr/local/opt/openssl; fi
+        cmake -B build -S . -DGMLC_NETWORKING_ENABLE_ENCRYPTION=ON
 
     - name: Build 
       run: cmake --build build --parallel
