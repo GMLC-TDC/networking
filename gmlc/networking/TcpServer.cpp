@@ -32,7 +32,7 @@ TcpServer::TcpServer(
 {
 }
 TcpServer::TcpServer(
-    SocketFactory sf,
+    const SocketFactory& sf,
     asio::io_context& io_context,
     const std::string& address,
     uint16_t portNum,
@@ -84,7 +84,7 @@ TcpServer::TcpServer(
 {
 }
 TcpServer::TcpServer(
-    SocketFactory sf,
+    const SocketFactory& sf,
     asio::io_context& io_context,
     const std::string& address,
     const std::string& port,
@@ -122,7 +122,7 @@ TcpServer::TcpServer(
 {
 }
 TcpServer::TcpServer(
-    SocketFactory sf,
+    const SocketFactory& sf,
     asio::io_context& io_context,
     uint16_t portNum,
     int nominalBufferSize) :
@@ -241,7 +241,7 @@ TcpServer::pointer TcpServer::create(
         nominalBufferSize);
 }
 TcpServer::pointer TcpServer::create(
-    SocketFactory sf,
+    const SocketFactory& sf,
     asio::io_context& io_context,
     const std::string& address,
     uint16_t portNum,
@@ -268,7 +268,7 @@ TcpServer::pointer TcpServer::create(
         nominalBufferSize);
 }
 TcpServer::pointer TcpServer::create(
-    SocketFactory sf,
+    const SocketFactory& sf,
     asio::io_context& io_context,
     const std::string& address,
     const std::string& port,
@@ -288,7 +288,7 @@ TcpServer::pointer TcpServer::create(
         SocketFactory(), io_context, portNum, nominalBufferSize);
 }
 TcpServer::pointer TcpServer::create(
-    SocketFactory sf,
+    const SocketFactory& sf,
     asio::io_context& io_context,
     uint16_t portNum,
     int nominalBufferSize)

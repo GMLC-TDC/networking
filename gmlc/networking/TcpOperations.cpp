@@ -27,7 +27,7 @@ TcpConnection::pointer establishConnection(
 }
 
 TcpConnection::pointer establishConnection(
-    SocketFactory sf,
+    const SocketFactory& sf,
     asio::io_context& io_context,
     const std::string& host,
     const std::string& port,
@@ -86,7 +86,7 @@ TcpConnection::pointer establishConnection(
 }
 
 TcpConnection::pointer establishConnection(
-    SocketFactory sf,
+    const SocketFactory& sf,
     asio::io_context& io_context,
     const std::string& address,
     std::chrono::milliseconds timeOut)

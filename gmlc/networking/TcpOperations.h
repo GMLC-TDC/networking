@@ -43,7 +43,7 @@ TcpConnection::pointer establishConnection(
 @param[in] timeOut the time to wait for the connection to be established if set
 of <=0 the connection will not wait for verification*/
 TcpConnection::pointer establishConnection(
-    SocketFactory sf,
+    const SocketFactory& sf,
     asio::io_context& io_context,
     const std::string& host,
     const std::string& port,
@@ -68,7 +68,7 @@ address:port
 @param[in] timeOut the time to wait for the connection to be established if set
 of <=0 the connection will not wait for verification*/
 TcpConnection::pointer establishConnection(
-    SocketFactory sf,
+    const SocketFactory& sf,
     asio::io_context& io_context,
     const std::string& address,
     std::chrono::milliseconds timeOut = std::chrono::milliseconds(0));

@@ -39,7 +39,7 @@ class TcpServer : public std::enable_shared_from_this<TcpServer> {
         bool reuse_port = false,
         int nominalBufferSize = 10192);
     static pointer create(
-        SocketFactory sf,
+        const SocketFactory& sf,
         asio::io_context& io_context,
         const std::string& address,
         const std::string& port,
@@ -53,7 +53,7 @@ class TcpServer : public std::enable_shared_from_this<TcpServer> {
         bool reuse_port = false,
         int nominalBufferSize = 10192);
     static pointer create(
-        SocketFactory sf,
+        const SocketFactory& sf,
         asio::io_context& io_context,
         const std::string& address,
         uint16_t portNum,
@@ -65,7 +65,7 @@ class TcpServer : public std::enable_shared_from_this<TcpServer> {
         uint16_t portNum,
         int nominalBufferSize = 10192);
     static pointer create(
-        SocketFactory sf,
+        const SocketFactory& sf,
         asio::io_context& io_context,
         uint16_t portNum,
         int nominalBufferSize = 10192);
@@ -115,7 +115,7 @@ class TcpServer : public std::enable_shared_from_this<TcpServer> {
         bool port_reuse,
         int nominalBufferSize);
     TcpServer(
-        SocketFactory sf,
+        const SocketFactory& sf,
         asio::io_context& io_context,
         const std::string& address,
         uint16_t portNum,
@@ -129,7 +129,7 @@ class TcpServer : public std::enable_shared_from_this<TcpServer> {
         bool port_reuse,
         int nominalBufferSize);
     TcpServer(
-        SocketFactory sf,
+        const SocketFactory& sf,
         asio::io_context& io_context,
         const std::string& address,
         const std::string& port,
@@ -141,7 +141,7 @@ class TcpServer : public std::enable_shared_from_this<TcpServer> {
         uint16_t portNum,
         int nominalBufferSize);
     TcpServer(
-        SocketFactory sf,
+        const SocketFactory& sf,
         asio::io_context& io_context,
         uint16_t portNum,
         int nominalBufferSize);

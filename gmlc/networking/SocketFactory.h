@@ -49,7 +49,7 @@ class SocketFactory : std::enable_shared_from_this<SocketFactory> {
      * socket
      * @return std::shared_ptr<Socket> for the created socket
      */
-    std::shared_ptr<Socket> create_socket(asio::io_context& io_context)
+    std::shared_ptr<Socket> create_socket(asio::io_context& io_context) const
     {
         if (!encrypted) {
             return std::make_shared<AsioSocket<asio::ip::tcp::socket>>(

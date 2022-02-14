@@ -244,7 +244,7 @@ void TcpConnection::waitOnClose()
 }
 
 TcpConnection::pointer TcpConnection::create(
-    SocketFactory sf,
+    const SocketFactory& sf,
     asio::io_context& io_context,
     const std::string& connection,
     const std::string& port,
@@ -255,7 +255,7 @@ TcpConnection::pointer TcpConnection::create(
 }
 
 TcpConnection::TcpConnection(
-    SocketFactory sf,
+    const SocketFactory& sf,
     asio::io_context& io_context,
     const std::string& connection,  // host
     const std::string& port,  // asio resolver can use unix services such as

@@ -48,7 +48,7 @@ namespace networking {
                 SocketFactory(), io_context, connection, port, bufferSize);
         }
         static pointer create(
-            SocketFactory sf,
+            const SocketFactory& sf,
             asio::io_context& io_context,
             const std::string& connection,
             const std::string& port,
@@ -60,7 +60,7 @@ namespace networking {
             return create(SocketFactory(), io_context, bufferSize);
         }
         static pointer create(
-            SocketFactory sf,
+            const SocketFactory& sf,
             asio::io_context& io_context,
             size_t bufferSize)
         {
@@ -181,7 +181,7 @@ namespace networking {
         {
         }
         TcpConnection(
-            SocketFactory sf,
+            const SocketFactory& sf,
             asio::io_context& io_context,
             size_t bufferSize) :
             socket_(sf.create_socket(io_context)),
@@ -205,7 +205,7 @@ namespace networking {
         {
         }
         TcpConnection(
-            SocketFactory sf,
+            const SocketFactory& sf,
             asio::io_context& io_context,
             const std::string& connection,
             const std::string& port,
