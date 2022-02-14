@@ -140,7 +140,7 @@ class Socket : std::enable_shared_from_this<Socket> {
      * @param t time to linger on close for pending data to be sent
      * @throw std::system_error thrown on failure
      */
-    virtual void set_option_linger(bool b, unsigned short t) = 0;
+    virtual void set_option_linger(bool b, uint16_t t) = 0;
 
     /** set the TCP linger option and timeout for pending data to be sent
      * see this stackoverflow post for advice on what values to use
@@ -151,7 +151,7 @@ class Socket : std::enable_shared_from_this<Socket> {
      * @param ec set to what error occurred, if any
      */
     virtual std::error_code
-        set_option_linger(bool b, unsigned short t, std::error_code& ec) = 0;
+        set_option_linger(bool b, uint16_t t, std::error_code& ec) = 0;
 
     /** sets whether the socket acts as a client or server during a handshake to
      * establish a connection
@@ -312,12 +312,12 @@ T>::value) { socket_.set_verify_callback(cb);
     {
         return set_option(asio::ip::tcp::no_delay(b), ec);
     }
-    void set_option_linger(bool b, unsigned short timeout)
+    void set_option_linger(bool b, uint16_t timeout)
     {
         set_option(asio::socket_base::linger(b, timeout));
     }
     std::error_code
-        set_option_linger(bool b, unsigned short timeout, std::error_code& ec)
+        set_option_linger(bool b, uint16_t timeout, std::error_code& ec)
     {
         return set_option(asio::socket_base::linger(b, timeout), ec);
     }

@@ -34,7 +34,7 @@ class SocketFactory : std::enable_shared_from_this<SocketFactory> {
      * @param is_file whether to treat the conf parameter as a file path or JSON
      * string; default is true
      */
-    SocketFactory(std::string conf, bool is_file = true)
+    SocketFactory(const std::string& conf, bool is_file = true)
     {
         if (is_file) {
             load_json_config_file(conf);

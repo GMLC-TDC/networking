@@ -257,9 +257,9 @@ TcpConnection::pointer TcpConnection::create(
 TcpConnection::TcpConnection(
     SocketFactory sf,
     asio::io_context& io_context,
-    const std::string& connection, /* host */
-    const std::string& port, /* asio resolver can use unix services such as
-                                "daytime" instead of port number */
+    const std::string& connection,  // host
+    const std::string& port,  // asio resolver can use unix services such as
+                              // "daytime" instead of port number
     size_t bufferSize) :
     socket_(sf.create_socket(io_context)),
     context_(io_context), data(bufferSize), connecting(true),
