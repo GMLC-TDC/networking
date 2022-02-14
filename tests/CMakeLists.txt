@@ -9,6 +9,17 @@
 
 set(NETWORKING_TESTS addressOperationsTests interfaceOperationsTests)
 
+if(NOT GMLC_NETWORKING_DISABLE_ASIO)
+    list(APPEND NETWORKING_TESTS simpleConnectionTests)
+endif()
+
+if(GMLC_NETWORKING_ENABLE_ENCRYPTION)
+    configure_file(
+        "test_files/ssl_encryption_config.json.in"
+        "test_files/ssl_encryption_config.json"
+    )
+endif()
+
 foreach(T ${NETWORKING_TESTS})
 
     add_executable(${T} ${T}.cpp)
@@ -18,6 +29,9 @@ foreach(T ${NETWORKING_TESTS})
     if(GMLC_NETWORKING_CLANG_TIDY)
         set_property(TARGET ${T} PROPERTY CXX_CLANG_TIDY "${DO_CLANG_TIDY}")
     endif()
+    target_compile_definitions(
+        ${T} PRIVATE "TEST_BINDIR=\"${CMAKE_CURRENT_BINARY_DIR}\""
+    )
     target_include_directories(${T} PRIVATE ${PROJECT_SOURCE_DIR}/ThirdParty/catch2)
 endforeach()
 

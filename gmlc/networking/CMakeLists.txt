@@ -9,8 +9,9 @@
 
 set(networking_nonasio_source_files addressOperations.cpp interfaceOperations.cpp)
 
-set(networking_asio_source_files AsioContextManager.cpp TcpOperations.cpp
-                                 TcpConnection.cpp TcpServer.cpp TcpAcceptor.cpp
+set(networking_asio_source_files
+    AsioContextManager.cpp SocketFactory.cpp TcpOperations.cpp TcpConnection.cpp
+    TcpServer.cpp TcpAcceptor.cpp
 )
 
 set(networking_nonasio_header_files GuardedTypes.hpp addressOperations.hpp
@@ -18,8 +19,14 @@ set(networking_nonasio_header_files GuardedTypes.hpp addressOperations.hpp
 )
 
 set(networking_asio_header_files
-    TcpOperations.h AsioContextManager.h TcpHelperClasses.h TcpConnection.h TcpServer.h
+    TcpOperations.h
+    AsioContextManager.h
+    TcpHelperClasses.h
+    TcpConnection.h
+    TcpServer.h
     TcpAcceptor.h
+    Socket.h
+    SocketFactory.h
 )
 
 if(GMLC_NETWORKING_OBJECT_LIB)
@@ -78,6 +85,17 @@ if(GMLC_NETWORKING_STATIC_LIB)
 
     add_library(gmlc::networking ALIAS gmlc_networking)
 
+    if(GMLC_NETWORKING_ENABLE_ENCRYPTION)
+        target_compile_definitions(
+            gmlc_networking PUBLIC GMLC_NETWORKING_ENABLE_ENCRYPTION
+        )
+        target_link_libraries(gmlc_networking PUBLIC OpenSSL::SSL OpenSSL::Crypto)
+        if(TARGET OpenSSL::applink)
+            target_link_libraries(gmlc_networking PRIVATE OpenSSL::applink)
+        endif()
+    endif()
+
+    target_link_libraries(gmlc_networking PRIVATE nlohmann_json::nlohmann_json)
     target_link_libraries(gmlc_networking PUBLIC networking_base)
     if(GMLC_NETWORKING_INSTALL)
         install(

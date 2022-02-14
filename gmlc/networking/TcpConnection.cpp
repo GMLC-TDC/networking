@@ -36,17 +36,16 @@ void TcpConnection::startReceive()
             receivingHalt.activate();
         }
         if (!triggerhalt) {
-            socket_.async_read_some(
-                asio::buffer(
-                    data.data() + residBufferSize,
-                    data.size() - residBufferSize),
+            socket_->async_read_some(
+                data.data() + residBufferSize,
+                data.size() - residBufferSize,
                 [ptr = shared_from_this()](
                     const std::error_code& err, size_t bytes) {
                     ptr->handle_read(err, bytes);
                 });
             if (triggerhalt) {
                 // cancel previous operation if triggerhalt is now active
-                socket_.lowest_layer().cancel();
+                socket_->cancel();
                 // receivingHalt.trigger();
             }
         } else {
@@ -176,8 +175,8 @@ void TcpConnection::logger(int logLevel, const std::string& message)
         }
     }
 }
-// asio::socket_base::linger optionLinger(true, 2);
-// socket_.lowest_layer().set_option(optionLinger, ec);
+
+// socket_.set_option_linger(true, 2, ec);
 void TcpConnection::close()
 {
     closeNoWait();
@@ -202,8 +201,8 @@ void TcpConnection::closeNoWait()
     }
 
     std::error_code ec;
-    if (socket_.lowest_layer().is_open()) {
-        socket_.lowest_layer().shutdown(tcp::socket::shutdown_both, ec);
+    if (socket_->is_open()) {
+        socket_->shutdown(ec);
         if (ec) {
             if ((ec.value() != asio::error::not_connected) &&
                 (ec.value() != asio::error::connection_reset)) {
@@ -214,9 +213,9 @@ void TcpConnection::closeNoWait()
             }
             ec.clear();
         }
-        socket_.lowest_layer().close(ec);
+        socket_->close(ec);
     } else {
-        socket_.lowest_layer().close(ec);
+        socket_->close(ec);
     }
 }
 
@@ -231,8 +230,7 @@ void TcpConnection::waitOnClose()
         while (!receivingHalt.wait_for(std::chrono::milliseconds(200))) {
             std::stringstream str;
             str << "wait timeout " << static_cast<int>(state.load()) << " "
-                << socket_.lowest_layer().is_open() << " "
-                << receivingHalt.isTriggered();
+                << socket_->is_open() << " " << receivingHalt.isTriggered();
             logger(1, str.str());
             str.clear();
 
@@ -246,36 +244,40 @@ void TcpConnection::waitOnClose()
 }
 
 TcpConnection::pointer TcpConnection::create(
+    SocketFactory sf,
     asio::io_context& io_context,
     const std::string& connection,
     const std::string& port,
     size_t bufferSize)
 {
-    return pointer(new TcpConnection(io_context, connection, port, bufferSize));
+    return pointer(
+        new TcpConnection(sf, io_context, connection, port, bufferSize));
 }
 
 TcpConnection::TcpConnection(
+    SocketFactory sf,
     asio::io_context& io_context,
-    const std::string& connection,
-    const std::string& port,
+    const std::string& connection, /* host */
+    const std::string& port, /* asio resolver can use unix services such as
+                                "daytime" instead of port number */
     size_t bufferSize) :
-    socket_(io_context),
+    socket_(sf.create_socket(io_context)),
     context_(io_context), data(bufferSize), connecting(true),
     idcode(idcounter++)
 {
-    tcp::resolver resolver(io_context);
-    tcp::resolver::query query(tcp::v4(), connection, port);
-    tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
-    socket_.lowest_layer().async_connect(
-        *endpoint_iterator,
-        [this](const std::error_code& error) { connect_handler(error); });
+    socket_->async_connect(
+        connection, port, [this](const std::error_code& error) {
+            connect_handler(error);
+        });
 }
 
+// connect callback used by the client establishing a TCP connection
 void TcpConnection::connect_handler(const std::error_code& error)
 {
     if (!error) {
+        socket_->handshake();
         connected.activate();
-        socket_.lowest_layer().set_option(asio::ip::tcp::no_delay(true));
+        socket_->set_option_no_delay(true);
     } else {
         std::stringstream str;
 
@@ -303,8 +305,8 @@ size_t TcpConnection::send(const void* buffer, size_t dataLength)
     size_t p{0};
     int count{0};
     while (count++ < 5 &&
-           (sz = socket_.write_some(asio::buffer(
-                reinterpret_cast<const char*>(buffer) + p, sent_size))) !=
+           (sz = socket_->write_some(
+                reinterpret_cast<const char*>(buffer) + p, sent_size)) !=
                sent_size) {
         sent_size -= sz;
         p += sz;
@@ -325,26 +327,11 @@ size_t TcpConnection::send(const std::string& dataString)
     size_t sz;
     sz = send(&dataString[0], dataString.size());
     return sz;
-    /*
-            if (!isConnected()) {
-                if (!waitUntilConnected(300ms)) {
-                    std::cerr << "connection timeout waiting again" <<
-       std::endl;
-                }
-                if (!waitUntilConnected(200ms)) {
-                    std::cerr << "connection timeout twice, now returning" <<
-       std::endl; return 0;
-                }
-            }
-            auto sz = socket_.write_some(asio::buffer(dataString));
-            assert(sz == dataString.size());
-            return sz;
-    */
 }
 
 size_t TcpConnection::receive(void* buffer, size_t maxDataSize)
 {
-    return socket_.read_some(asio::buffer(buffer, maxDataSize));
+    return socket_->read_some(buffer, maxDataSize);
 }
 
 bool TcpConnection::waitUntilConnected(std::chrono::milliseconds timeOut)

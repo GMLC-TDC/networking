@@ -6,6 +6,7 @@ All rights reserved. SPDX-License-Identifier: BSD-3-Clause
 */
 #pragma once
 
+#include "SocketFactory.h"
 #include "TcpAcceptor.h"
 #include "TcpConnection.h"
 
@@ -37,16 +38,36 @@ class TcpServer : public std::enable_shared_from_this<TcpServer> {
         const std::string& port,
         bool reuse_port = false,
         int nominalBufferSize = 10192);
+    static pointer create(
+        SocketFactory sf,
+        asio::io_context& io_context,
+        const std::string& address,
+        const std::string& port,
+        bool reuse_port = false,
+        int nominalBufferSize = 10192);
 
     static pointer create(
         asio::io_context& io_context,
         const std::string& address,
-        uint16_t PortNum,
+        uint16_t portNum,
         bool reuse_port = false,
         int nominalBufferSize = 10192);
     static pointer create(
+        SocketFactory sf,
         asio::io_context& io_context,
-        uint16_t PortNum,
+        const std::string& address,
+        uint16_t portNum,
+        bool reuse_port = false,
+        int nominalBufferSize = 10192);
+
+    static pointer create(
+        asio::io_context& io_context,
+        uint16_t portNum,
+        int nominalBufferSize = 10192);
+    static pointer create(
+        SocketFactory sf,
+        asio::io_context& io_context,
+        uint16_t portNum,
         int nominalBufferSize = 10192);
 
   public:
@@ -94,12 +115,33 @@ class TcpServer : public std::enable_shared_from_this<TcpServer> {
         bool port_reuse,
         int nominalBufferSize);
     TcpServer(
+        SocketFactory sf,
+        asio::io_context& io_context,
+        const std::string& address,
+        uint16_t portNum,
+        bool port_reuse,
+        int nominalBufferSize);
+
+    TcpServer(
         asio::io_context& io_context,
         const std::string& address,
         const std::string& port,
         bool port_reuse,
         int nominalBufferSize);
     TcpServer(
+        SocketFactory sf,
+        asio::io_context& io_context,
+        const std::string& address,
+        const std::string& port,
+        bool port_reuse,
+        int nominalBufferSize);
+
+    TcpServer(
+        asio::io_context& io_context,
+        uint16_t portNum,
+        int nominalBufferSize);
+    TcpServer(
+        SocketFactory sf,
         asio::io_context& io_context,
         uint16_t portNum,
         int nominalBufferSize);
@@ -108,6 +150,7 @@ class TcpServer : public std::enable_shared_from_this<TcpServer> {
     void logger(int level, const std::string& message);
 
     asio::io_context& ioctx;
+    SocketFactory socket_factory;
     mutable std::mutex accepting;
     std::vector<TcpAcceptor::pointer> acceptors;
     std::vector<asio::ip::tcp::endpoint> endpoints;

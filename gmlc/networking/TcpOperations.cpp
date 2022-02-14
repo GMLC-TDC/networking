@@ -22,6 +22,17 @@ TcpConnection::pointer establishConnection(
     const std::string& port,
     std::chrono::milliseconds timeOut)
 {
+    return establishConnection(
+        SocketFactory(), io_context, host, port, timeOut);
+}
+
+TcpConnection::pointer establishConnection(
+    SocketFactory sf,
+    asio::io_context& io_context,
+    const std::string& host,
+    const std::string& port,
+    std::chrono::milliseconds timeOut)
+{
     using std::chrono::milliseconds;
     using std::chrono::steady_clock;
 
@@ -29,7 +40,7 @@ TcpConnection::pointer establishConnection(
 
     TcpConnection::pointer connectionPtr;
     try {
-        connectionPtr = TcpConnection::create(io_context, host, port);
+        connectionPtr = TcpConnection::create(sf, io_context, host, port);
     }
     catch (std::exception&) {
         return nullptr;
@@ -61,7 +72,7 @@ TcpConnection::pointer establishConnection(
 
         // lets try to connect again
         ++trycnt;
-        connectionPtr = TcpConnection::create(io_context, host, port);
+        connectionPtr = TcpConnection::create(sf, io_context, host, port);
     }
     return connectionPtr;
 }
@@ -71,9 +82,18 @@ TcpConnection::pointer establishConnection(
     const std::string& address,
     std::chrono::milliseconds timeOut)
 {
+    return establishConnection(SocketFactory(), io_context, address, timeOut);
+}
+
+TcpConnection::pointer establishConnection(
+    SocketFactory sf,
+    asio::io_context& io_context,
+    const std::string& address,
+    std::chrono::milliseconds timeOut)
+{
     std::string interface;
     std::string port;
     std::tie(interface, port) = extractInterfaceAndPortString(address);
-    return establishConnection(io_context, interface, port, timeOut);
+    return establishConnection(sf, io_context, interface, port, timeOut);
 }
 }  // namespace gmlc::networking

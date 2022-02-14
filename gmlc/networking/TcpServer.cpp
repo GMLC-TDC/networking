@@ -22,8 +22,24 @@ TcpServer::TcpServer(
     uint16_t portNum,
     bool port_reuse,
     int nominalBufferSize) :
+    TcpServer::TcpServer(
+        SocketFactory(),
+        io_context,
+        address,
+        portNum,
+        port_reuse,
+        nominalBufferSize)
+{
+}
+TcpServer::TcpServer(
+    SocketFactory sf,
+    asio::io_context& io_context,
+    const std::string& address,
+    uint16_t portNum,
+    bool port_reuse,
+    int nominalBufferSize) :
     ioctx(io_context),
-    bufferSize(nominalBufferSize), reuse_address(port_reuse)
+    socket_factory(sf), bufferSize(nominalBufferSize), reuse_address(port_reuse)
 {
     if ((address == "*") || (address == "tcp://*")) {
         endpoints.emplace_back(asio::ip::address_v4::any(), portNum);
@@ -58,8 +74,24 @@ TcpServer::TcpServer(
     const std::string& port,
     bool port_reuse,
     int nominalBufferSize) :
+    TcpServer::TcpServer(
+        SocketFactory(),
+        io_context,
+        address,
+        port,
+        port_reuse,
+        nominalBufferSize)
+{
+}
+TcpServer::TcpServer(
+    SocketFactory sf,
+    asio::io_context& io_context,
+    const std::string& address,
+    const std::string& port,
+    bool port_reuse,
+    int nominalBufferSize) :
     ioctx(io_context),
-    bufferSize(nominalBufferSize), reuse_address(port_reuse)
+    socket_factory(sf), bufferSize(nominalBufferSize), reuse_address(port_reuse)
 {
     tcp::resolver resolver(io_context);
     tcp::resolver::query query(
@@ -82,8 +114,20 @@ TcpServer::TcpServer(
     asio::io_context& io_context,
     uint16_t portNum,
     int nominalBufferSize) :
+    TcpServer::TcpServer(
+        SocketFactory(),
+        io_context,
+        portNum,
+        nominalBufferSize)
+{
+}
+TcpServer::TcpServer(
+    SocketFactory sf,
+    asio::io_context& io_context,
+    uint16_t portNum,
+    int nominalBufferSize) :
     ioctx(io_context),
-    bufferSize(nominalBufferSize)
+    socket_factory(sf), bufferSize(nominalBufferSize)
 {
     endpoints.emplace_back(asio::ip::tcp::v4(), portNum);
     initialConnect();
@@ -184,12 +228,28 @@ bool TcpServer::reConnect(std::chrono::milliseconds timeOut)
 TcpServer::pointer TcpServer::create(
     asio::io_context& io_context,
     const std::string& address,
-    uint16_t PortNum,
+    uint16_t portNum,
+    bool reuse_port,
+    int nominalBufferSize)
+{
+    return TcpServer::create(
+        SocketFactory(),
+        io_context,
+        address,
+        portNum,
+        reuse_port,
+        nominalBufferSize);
+}
+TcpServer::pointer TcpServer::create(
+    SocketFactory sf,
+    asio::io_context& io_context,
+    const std::string& address,
+    uint16_t portNum,
     bool reuse_port,
     int nominalBufferSize)
 {
     return pointer(new TcpServer(
-        io_context, address, PortNum, reuse_port, nominalBufferSize));
+        sf, io_context, address, portNum, reuse_port, nominalBufferSize));
 }
 
 TcpServer::pointer TcpServer::create(
@@ -199,16 +259,41 @@ TcpServer::pointer TcpServer::create(
     bool reuse_port,
     int nominalBufferSize)
 {
+    return TcpServer::create(
+        SocketFactory(),
+        io_context,
+        address,
+        port,
+        reuse_port,
+        nominalBufferSize);
+}
+TcpServer::pointer TcpServer::create(
+    SocketFactory sf,
+    asio::io_context& io_context,
+    const std::string& address,
+    const std::string& port,
+    bool reuse_port,
+    int nominalBufferSize)
+{
     return pointer(new TcpServer(
-        io_context, address, port, reuse_port, nominalBufferSize));
+        sf, io_context, address, port, reuse_port, nominalBufferSize));
 }
 
 TcpServer::pointer TcpServer::create(
     asio::io_context& io_context,
-    uint16_t PortNum,
+    uint16_t portNum,
     int nominalBufferSize)
 {
-    return pointer(new TcpServer(io_context, PortNum, nominalBufferSize));
+    return TcpServer::create(
+        SocketFactory(), io_context, portNum, nominalBufferSize);
+}
+TcpServer::pointer TcpServer::create(
+    SocketFactory sf,
+    asio::io_context& io_context,
+    uint16_t portNum,
+    int nominalBufferSize)
+{
+    return pointer(new TcpServer(sf, io_context, portNum, nominalBufferSize));
 }
 
 bool TcpServer::start()
@@ -241,7 +326,8 @@ bool TcpServer::start()
     }
     bool success = true;
     for (auto& acc : acceptors) {
-        if (!acc->start(TcpConnection::create(ioctx, bufferSize))) {
+        if (!acc->start(
+                TcpConnection::create(socket_factory, ioctx, bufferSize))) {
             logger(0, "acceptor has failed to start");
             success = false;
         }
@@ -254,14 +340,16 @@ void TcpServer::handle_accept(
     TcpConnection::pointer new_connection)
 {
     /*setting linger to 1 second*/
-    asio::socket_base::linger optionLinger(true, 0);
-    new_connection->socket().set_option(optionLinger);
-    new_connection->socket().set_option(asio::ip::tcp::no_delay(true));
+    new_connection->socket()->set_option_linger(true, 0);
+    new_connection->socket()->set_option_no_delay(true);
     // Set options here
     if (halted.load()) {
         new_connection->close();
         return;
     }
+
+    new_connection->setHandshakeModeServer();
+    new_connection->handshake();
 
     new_connection->setDataCall(dataCall);
     new_connection->setErrorCall(errorCall);
@@ -280,7 +368,7 @@ void TcpServer::handle_accept(
             return;
         }
     }
-    acc->start(TcpConnection::create(ioctx, bufferSize));
+    acc->start(TcpConnection::create(socket_factory, ioctx, bufferSize));
 }
 
 TcpConnection::pointer TcpServer::findSocket(int connectorID) const
