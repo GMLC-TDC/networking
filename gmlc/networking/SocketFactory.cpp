@@ -29,6 +29,7 @@ void SocketFactory::parse_json_config(std::string conf_str)
     // parse SocketFactory settings; defaults to existing setting if option is
     // not present in the JSON file
     encrypted = j.value("encrypted", encrypted);
+#ifdef GMLC_NETWORKING_ENABLE_ENCRYPTION
     password = j.value("password", password);
     use_default_verify_paths =
         j.value("use_default_verify_paths", use_default_verify_paths);
@@ -41,5 +42,6 @@ void SocketFactory::parse_json_config(std::string conf_str)
     rsa_private_key_file =
         j.value("rsa_private_key_file", rsa_private_key_file);
     tmp_dh_file = j.value("tmp_dh_file", tmp_dh_file);
+#endif
 }
 }  // namespace gmlc::networking

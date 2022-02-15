@@ -114,6 +114,14 @@ class SocketFactory : std::enable_shared_from_this<SocketFactory> {
      */
     void set_handshake_server(bool b) { handshake_server = b; }
 
+    /** get if the socket created should act as a server for handshakes when
+     * establishing a connection
+     *
+     * @return true if the created socket should fill the role of the server in
+     * handshakes, otherwise false
+     */
+    bool get_handshake_server() { return handshake_server; }
+
     /** set whether the sockets created by this factory should be encrypted or
      * not
      *
@@ -143,6 +151,7 @@ class SocketFactory : std::enable_shared_from_this<SocketFactory> {
     bool encrypted{false};
     bool handshake_server{false};  // whether or not the socket should act like
                                    // a server for SSL handshake purposes
+#ifdef GMLC_NETWORKING_ENABLE_ENCRYPTION
     bool use_default_verify_paths{
         false};  // use default directories for finding CA files
     std::string verify_file;  // CA file used in verification for SSL
@@ -158,5 +167,6 @@ class SocketFactory : std::enable_shared_from_this<SocketFactory> {
                               // SSL
     std::string password;  // used in the password response callback when
                            // loading SSL certificate/key files
+#endif
 };
 }  // namespace gmlc::networking
