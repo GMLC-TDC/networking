@@ -8,7 +8,6 @@ All rights reserved. SPDX-License-Identifier: BSD-3-Clause
 #define CATCH_CONFIG_MAIN
 #include "catch2/catch.hpp"
 #include <stdlib.h>
-#include <thread>
 
 #include "gmlc/networking/AsioContextManager.h"
 #include "gmlc/networking/TcpOperations.h"

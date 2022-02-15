@@ -71,7 +71,7 @@ TEST_CASE("serverTest", "[standaloneServer]")
     auto io_context_server =
         gmlc::networking::AsioContextManager::getContextPointer(
             "io_context_server");
-    std::thread s(server, io_context_server);
+    std::thread s(server, std::ref(io_context_server));
     s.detach();
     std::this_thread::sleep_for(std::chrono::milliseconds(10000));
     // give enough time to set up client if needed
