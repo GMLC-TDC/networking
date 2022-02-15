@@ -134,6 +134,11 @@ cmake_dependent_option(
     GMLC_NETWORKING_DISABLE_ASIO
     "Disable parts of the library that use ASIO (most of it)" OFF "NOT CYGWIN" ON
 )
+cmake_dependent_option(
+    GMLC_NETWORKING_ENABLE_ENCRYPTION
+    "Enable OpenSSL support in ASIO for encrypted communication" OFF
+    "NOT GMLC_NETWORKING_DISABLE_ASIO" OFF
+)
 if(NOT GMLC_NETWORKING_DISABLE_ASIO)
     target_compile_definitions(networking_base INTERFACE "-DASIO_STANDALONE")
     if(NOT GMLC_NETWORKING_ASIO_INCLUDE)
@@ -149,6 +154,15 @@ if(NOT GMLC_NETWORKING_DISABLE_ASIO)
         networking_base SYSTEM
         INTERFACE $<BUILD_INTERFACE:${GMLC_NETWORKING_ASIO_INCLUDE}>
     )
+
+    # Find OpenSSL
+    if(GMLC_NETWORKING_ENABLE_ENCRYPTION)
+        find_package(OpenSSL REQUIRED)
+        target_link_libraries(networking_base INTERFACE OpenSSL::SSL OpenSSL::Crypto)
+        if(TARGET OpenSSL::applink)
+            target_link_libraries(networking_base INTERFACE OpenSSL::applink)
+        endif()
+    endif()
 endif()
 
 if(NOT GMLC_NETWORKING_CONCURRENCY_INCLUDE)
@@ -170,6 +184,20 @@ target_include_directories(
     networking_base INTERFACE $<BUILD_INTERFACE:${GMLC_NETWORKING_CONCURRENCY_INCLUDE}>
                               $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/ThirdParty/NetIF>
 )
+
+option(GMLC_NETWORKING_USE_EXTERNAL_JSON "Use an external nlohmann_json library" OFF)
+if(GMLC_NETWORKING_USE_EXTERNAL_JSON)
+    find_package(nlohmann_json 3.10 REQUIRED)
+else()
+    set(JSON_BuildTests
+        OFF
+        CACHE INTERNAL ""
+    )
+    if(NOT EXISTS "${PROJECT_SOURCE_DIR}/ThirdParty/nlohmann_json/CMakeLists.txt")
+        submod_update(ThirdParty/nlohmann_json)
+    endif()
+    add_subdirectory(ThirdParty/nlohmann_json)
+endif()
 
 option(GMLC_NETWORKING_INSTALL "Enable GMLC utilities to be installed" ON)
 option(GMLC_NETWORKING_INCLUDE_BOOST "Enable some boost library headers to be used" OFF)

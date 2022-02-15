@@ -36,12 +36,39 @@ TcpConnection::pointer establishConnection(
     std::chrono::milliseconds timeOut = std::chrono::milliseconds(0));
 
 /** establish a connection to a server by as associated optional timeout
+@param[in] sf the SocketFactory to use for creating the socket
+@param[in] io_context the context to establish the connection
+@param[in] host the address of the connection to establish
+@param[in] port the port number to connect to
+@param[in] timeOut the time to wait for the connection to be established if set
+of <=0 the connection will not wait for verification*/
+TcpConnection::pointer establishConnection(
+    const SocketFactory& sf,
+    asio::io_context& io_context,
+    const std::string& host,
+    const std::string& port,
+    std::chrono::milliseconds timeOut = std::chrono::milliseconds(0));
+
+/** establish a connection to a server by as associated optional timeout
 @param[in] io_context the context to establish the connection
 @param[in] address the address of the connection to establish usually network
 address:port
 @param[in] timeOut the time to wait for the connection to be established if set
 of <=0 the connection will not wait for verification*/
 TcpConnection::pointer establishConnection(
+    asio::io_context& io_context,
+    const std::string& address,
+    std::chrono::milliseconds timeOut = std::chrono::milliseconds(0));
+
+/** establish a connection to a server by as associated optional timeout
+@param[in] sf the SocketFactory to use for creating the socket
+@param[in] io_context the context to establish the connection
+@param[in] address the address of the connection to establish usually network
+address:port
+@param[in] timeOut the time to wait for the connection to be established if set
+of <=0 the connection will not wait for verification*/
+TcpConnection::pointer establishConnection(
+    const SocketFactory& sf,
     asio::io_context& io_context,
     const std::string& address,
     std::chrono::milliseconds timeOut = std::chrono::milliseconds(0));

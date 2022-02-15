@@ -94,11 +94,11 @@ bool TcpAcceptor::start(TcpConnection::pointer conn)
         return false;
     }
     if (accepting.activate()) {
-        auto& socket = conn->socket();
+        auto socket = conn->socket();
         acceptor_.listen();
         auto ptr = shared_from_this();
-        acceptor_.async_accept(
-            socket,
+        socket->use_with_acceptor(
+            acceptor_,
             [this, apointer = std::move(ptr), connection = std::move(conn)](
                 const std::error_code& error) {
                 handle_accept(apointer, connection, error);
@@ -132,9 +132,8 @@ void TcpAcceptor::handle_accept(
     const std::error_code& error)
 {
     if (state.load() != AcceptingStates::CONNECTED) {
-        asio::socket_base::linger optionLinger(true, 0);
         std::error_code ec;
-        new_connection->socket().set_option(optionLinger, ec);
+        new_connection->socket()->set_option_linger(true, 0, ec);
         new_connection->close();
         accepting.reset();
         return;
@@ -147,9 +146,8 @@ void TcpAcceptor::handle_accept(
                 accepting.trigger();
             }
         } else {
-            asio::socket_base::linger optionLinger(true, 0);
             try {
-                new_connection->socket().set_option(optionLinger);
+                new_connection->socket()->set_option_linger(true, 0);
             }
             catch (...) {
             }
@@ -162,9 +160,8 @@ void TcpAcceptor::handle_accept(
         } else {
             logger(0, std::string(" error in accept::") + error.message());
         }
-        asio::socket_base::linger optionLinger(true, 0);
         try {
-            new_connection->socket().set_option(optionLinger);
+            new_connection->socket()->set_option_linger(true, 0);
         }
         catch (...) {
         }

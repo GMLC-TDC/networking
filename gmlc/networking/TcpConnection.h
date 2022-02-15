@@ -7,6 +7,8 @@ All rights reserved. SPDX-License-Identifier: BSD-3-Clause
 #pragma once
 
 #include "GuardedTypes.hpp"
+#include "Socket.h"
+#include "SocketFactory.h"
 #include "gmlc/concurrency/TriggerVariable.hpp"
 
 #include <asio/io_context.hpp>
@@ -35,7 +37,18 @@ namespace networking {
         };
 
         using pointer = std::shared_ptr<TcpConnection>;
+        /** create a connection to the specified host+port*/
         static pointer create(
+            asio::io_context& io_context,
+            const std::string& connection,
+            const std::string& port,
+            size_t bufferSize = 10192)
+        {
+            return create(
+                SocketFactory(), io_context, connection, port, bufferSize);
+        }
+        static pointer create(
+            const SocketFactory& sf,
             asio::io_context& io_context,
             const std::string& connection,
             const std::string& port,
@@ -44,14 +57,21 @@ namespace networking {
          * bufferSize*/
         static pointer create(asio::io_context& io_context, size_t bufferSize)
         {
-            return pointer(new TcpConnection(io_context, bufferSize));
+            return create(SocketFactory(), io_context, bufferSize);
+        }
+        static pointer create(
+            const SocketFactory& sf,
+            asio::io_context& io_context,
+            size_t bufferSize)
+        {
+            return pointer(new TcpConnection(sf, io_context, bufferSize));
         }
         /** get the underlying socket object*/
-        auto& socket() { return socket_.lowest_layer(); }
+        auto socket() { return socket_; }
         /** start the receiving loop*/
         void startReceive();
         /** cancel ongoing socket operations*/
-        void cancel() { socket_.lowest_layer().cancel(); }
+        void cancel() { socket_->cancel(); }
         /** close the socket*/
         void close();
         /** perform the close actions but don't wait for them to be processed*/
@@ -95,8 +115,7 @@ namespace networking {
         template<typename Process>
         void send_async(const void* buffer, size_t dataLength, Process callback)
         {
-            socket_.async_write_some(
-                asio::buffer(buffer, dataLength), callback);
+            socket_->async_write_some(buffer, dataLength, callback);
         }
         /**perform an asynchronous receive operation
     @param buffer the data to send
@@ -109,7 +128,7 @@ namespace networking {
         template<typename Process>
         void async_receive(void* buffer, size_t dataLength, Process callback)
         {
-            socket_.async_read_some(asio::buffer(buffer, dataLength), callback);
+            socket_->async_read_some(buffer, dataLength, callback);
         }
 
         /**perform an asynchronous receive operation
@@ -123,8 +142,9 @@ namespace networking {
                                size_t dataLength,
                                const std::error_code& error)> callback)
         {
-            socket_.async_read_some(
-                asio::buffer(data, data.size()),
+            socket_->async_read_some(
+                data,
+                data.size(),
                 [connection = shared_from_this(),
                  callback = std::move(callback)](
                     const std::error_code& error, size_t bytes_transferred) {
@@ -146,17 +166,51 @@ namespace networking {
         /** get the id code for the socket*/
         int getIdentifier() const { return idcode; }
 
+        /** set the handshake mode used by the underlying socket to server*/
+        void setHandshakeModeServer()
+        {
+            socket_->set_handshake_mode_server(true);
+        }
+        /** calls the handshake function of the underlying socket*/
+        void handshake() { socket_->handshake(); }
+
       private:
+        /** constructors creating a socket*/
         TcpConnection(asio::io_context& io_context, size_t bufferSize) :
-            socket_(io_context), context_(io_context), data(bufferSize),
-            idcode(idcounter++)
+            TcpConnection(SocketFactory(), io_context, bufferSize)
         {
         }
+        TcpConnection(
+            const SocketFactory& sf,
+            asio::io_context& io_context,
+            size_t bufferSize) :
+            socket_(sf.create_socket(io_context)),
+            context_(io_context), data(bufferSize), idcode(idcounter++)
+        {
+        }
+
+        /** constructors creating a socket and establishing a connection to a
+         * host+port*/
         TcpConnection(
             asio::io_context& io_context,
             const std::string& connection,
             const std::string& port,
+            size_t bufferSize) :
+            TcpConnection(
+                SocketFactory(),
+                io_context,
+                connection,
+                port,
+                bufferSize)
+        {
+        }
+        TcpConnection(
+            const SocketFactory& sf,
+            asio::io_context& io_context,
+            const std::string& connection,
+            const std::string& port,
             size_t bufferSize);
+
         /** function for handling the asynchronous return from a read request*/
         void
             handle_read(const std::error_code& error, size_t bytes_transferred);
@@ -176,7 +230,7 @@ namespace networking {
         static std::atomic<int> idcounter;
 
         std::atomic<size_t> residBufferSize{0};
-        asio::ip::tcp::socket socket_;
+        std::shared_ptr<Socket> socket_;
         asio::io_context& context_;
         std::vector<char> data;
         std::atomic<bool> triggerhalt{false};
