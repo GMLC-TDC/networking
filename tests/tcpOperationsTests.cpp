@@ -99,10 +99,10 @@ TEST_CASE("tcpOperationsTest", "[TcpOps]")
     auto io_context_server =
         gmlc::networking::AsioContextManager::getContextPointer(
             "io_context_server");
-    std::thread s(server, io_context_server);
+    std::thread s(server, std::ref(io_context_server));
     s.detach();
     std::this_thread::sleep_for(std::chrono::milliseconds(300));
-    std::thread c(client, io_context_client);
+    std::thread c(client, std::ref(io_context_client));
     c.join();
     io_context_server->getBaseContext().stop();
     io_context_server->closeContext();
