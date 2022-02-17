@@ -37,7 +37,10 @@ namespace networking {
         };
 
         using pointer = std::shared_ptr<TcpConnection>;
-        /** create a connection to the specified host+port*/
+        /** create a connection to the specified host+port
+	 *
+	 * @throws std::system_error thrown on failure
+	 */
         static pointer create(
             asio::io_context& io_context,
             const std::string& connection,
@@ -47,6 +50,10 @@ namespace networking {
             return create(
                 SocketFactory(), io_context, connection, port, bufferSize);
         }
+	/** create a connection to the specified host+port using the given SocketFactory
+         *
+	 * @throws std::system_error thrown on failure
+         */
         static pointer create(
             const SocketFactory& sf,
             asio::io_context& io_context,
@@ -54,11 +61,18 @@ namespace networking {
             const std::string& port,
             size_t bufferSize = 10192);
         /** create an RxConnection object using the specified context and
-         * bufferSize*/
+         * bufferSize
+	 *
+	 * @throws std::system_error thrown on failure
+	 */
         static pointer create(asio::io_context& io_context, size_t bufferSize)
         {
             return create(SocketFactory(), io_context, bufferSize);
         }
+	/** create an RxConnection object using the specified context, bufferSize, and SocketFactory
+         *
+         * @throws std::system_error thrown on failure
+         */
         static pointer create(
             const SocketFactory& sf,
             asio::io_context& io_context,
@@ -80,15 +94,24 @@ namespace networking {
         void waitOnClose();
         /**check if the connection is receiving data*/
         bool isReceiving() const { return receivingHalt.isActive(); }
-        /** set the callback for the data object*/
+        /** set the callback for the data object
+	 *
+	 * @throws std::runtime_error thrown on failure
+	 */
         void setDataCall(
             std::function<size_t(TcpConnection::pointer, const char*, size_t)>
                 dataFunc);
-        /** set the callback for an error*/
+        /** set the callback for an error
+	 *
+	 * @throws std::runtime_error thrown on failure
+	 */
         void setErrorCall(
             std::function<bool(TcpConnection::pointer, const std::error_code&)>
                 errorFunc);
-        /** set a logging function */
+        /** set a logging function
+	 *
+	 * @throws std::runtime_error thrown on failure
+	 */
         void setLoggingFunction(
             std::function<void(int loglevel, const std::string& logMessage)>
                 logFunc);
@@ -100,7 +123,7 @@ namespace networking {
         size_t send(const std::string& dataString);
 
         /** do a blocking receive on the socket
-    @throw std::system_error on failure
+    @throws std::system_error on failure
     @return the number of bytes received
     */
         size_t receive(void* buffer, size_t maxDataSize);

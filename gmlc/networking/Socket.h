@@ -120,7 +120,7 @@ class Socket : std::enable_shared_from_this<Socket> {
     /** set the TCP_NODELAY option on the socket
      *
      * @param b true if TCP_NODELAY should be enabled, otherwise false
-     * @throw std::system_error thrown on error
+     * @throws std::system_error thrown on error
      */
     virtual void set_option_no_delay(bool b) = 0;
 
@@ -138,7 +138,7 @@ class Socket : std::enable_shared_from_this<Socket> {
      *
      * @param b true if linger should be enabled, otherwise false
      * @param t time to linger on close for pending data to be sent
-     * @throw std::system_error thrown on failure
+     * @throws std::system_error thrown on failure
      */
     virtual void set_option_linger(bool b, uint16_t t) = 0;
 

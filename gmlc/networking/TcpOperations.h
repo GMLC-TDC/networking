@@ -28,7 +28,9 @@ namespace gmlc::networking {
 @param[in] host the address of the connection to establish
 @param[in] port the port number to connect to
 @param[in] timeOut the time to wait for the connection to be established if set
-of <=0 the connection will not wait for verification*/
+of <=0 the connection will not wait for verification
+@throws std::system_error thrown on failure
+*/
 TcpConnection::pointer establishConnection(
     asio::io_context& io_context,
     const std::string& host,
@@ -41,7 +43,9 @@ TcpConnection::pointer establishConnection(
 @param[in] host the address of the connection to establish
 @param[in] port the port number to connect to
 @param[in] timeOut the time to wait for the connection to be established if set
-of <=0 the connection will not wait for verification*/
+of <=0 the connection will not wait for verification
+@throws std::system_error thrown on failure
+*/
 TcpConnection::pointer establishConnection(
     const SocketFactory& sf,
     asio::io_context& io_context,
@@ -54,7 +58,9 @@ TcpConnection::pointer establishConnection(
 @param[in] address the address of the connection to establish usually network
 address:port
 @param[in] timeOut the time to wait for the connection to be established if set
-of <=0 the connection will not wait for verification*/
+of <=0 the connection will not wait for verification
+@throws std::system_error thrown on failure
+*/
 TcpConnection::pointer establishConnection(
     asio::io_context& io_context,
     const std::string& address,
@@ -66,7 +72,9 @@ TcpConnection::pointer establishConnection(
 @param[in] address the address of the connection to establish usually network
 address:port
 @param[in] timeOut the time to wait for the connection to be established if set
-of <=0 the connection will not wait for verification*/
+of <=0 the connection will not wait for verification
+@throws std::system_error thrown on failure
+*/
 TcpConnection::pointer establishConnection(
     const SocketFactory& sf,
     asio::io_context& io_context,

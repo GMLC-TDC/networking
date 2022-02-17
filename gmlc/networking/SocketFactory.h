@@ -48,6 +48,7 @@ class SocketFactory : std::enable_shared_from_this<SocketFactory> {
      * @param io_context an asio::io_context reference to use for the created
      * socket
      * @return std::shared_ptr<Socket> for the created socket
+     * @throws std::system_error thrown on failure
      */
     std::shared_ptr<Socket> create_socket(asio::io_context& io_context) const
     {
