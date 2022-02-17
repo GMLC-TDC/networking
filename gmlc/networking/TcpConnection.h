@@ -38,9 +38,9 @@ namespace networking {
 
         using pointer = std::shared_ptr<TcpConnection>;
         /** create a connection to the specified host+port
-	 *
-	 * @throws std::system_error thrown on failure
-	 */
+         *
+         * @throws std::system_error thrown on failure
+         */
         static pointer create(
             asio::io_context& io_context,
             const std::string& connection,
@@ -50,9 +50,10 @@ namespace networking {
             return create(
                 SocketFactory(), io_context, connection, port, bufferSize);
         }
-	/** create a connection to the specified host+port using the given SocketFactory
+        /** create a connection to the specified host+port using the given
+         * SocketFactory
          *
-	 * @throws std::system_error thrown on failure
+         * @throws std::system_error thrown on failure
          */
         static pointer create(
             const SocketFactory& sf,
@@ -62,14 +63,15 @@ namespace networking {
             size_t bufferSize = 10192);
         /** create an RxConnection object using the specified context and
          * bufferSize
-	 *
-	 * @throws std::system_error thrown on failure
-	 */
+         *
+         * @throws std::system_error thrown on failure
+         */
         static pointer create(asio::io_context& io_context, size_t bufferSize)
         {
             return create(SocketFactory(), io_context, bufferSize);
         }
-	/** create an RxConnection object using the specified context, bufferSize, and SocketFactory
+        /** create an RxConnection object using the specified context,
+         * bufferSize, and SocketFactory
          *
          * @throws std::system_error thrown on failure
          */
@@ -95,23 +97,23 @@ namespace networking {
         /**check if the connection is receiving data*/
         bool isReceiving() const { return receivingHalt.isActive(); }
         /** set the callback for the data object
-	 *
-	 * @throws std::runtime_error thrown on failure
-	 */
+         *
+         * @throws std::runtime_error thrown on failure
+         */
         void setDataCall(
             std::function<size_t(TcpConnection::pointer, const char*, size_t)>
                 dataFunc);
         /** set the callback for an error
-	 *
-	 * @throws std::runtime_error thrown on failure
-	 */
+         *
+         * @throws std::runtime_error thrown on failure
+         */
         void setErrorCall(
             std::function<bool(TcpConnection::pointer, const std::error_code&)>
                 errorFunc);
         /** set a logging function
-	 *
-	 * @throws std::runtime_error thrown on failure
-	 */
+         *
+         * @throws std::runtime_error thrown on failure
+         */
         void setLoggingFunction(
             std::function<void(int loglevel, const std::string& logMessage)>
                 logFunc);
