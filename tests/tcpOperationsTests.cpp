@@ -18,35 +18,6 @@ using namespace gmlc::networking;
 
 
 
-/*
-TEST_CASE("estabilshConnectionTest0", "[TcpOps]")
-{
-    auto io_context =
-        gmlc::networking::AsioContextManager::getContextPointer("io_context");
-    std::chrono::milliseconds timeOut = std::chrono::milliseconds(0);
-    auto cpt = establishConnection(
-        io_context->getBaseContext(),
-        std::string("localhost"),
-        "49888",
-        timeOut);
-    CHECK(cpt != nullptr);
-    //cpt->close();
-}
-TEST_CASE("estabilshConnectionTestTimeOut", "[TcpOps]")
-{
-    auto io_context =
-        gmlc::networking::AsioContextManager::getContextPointer("io_context");
-    std::chrono::milliseconds timeOut = std::chrono::milliseconds(300);
-    auto cpt = establishConnection(
-        io_context->getBaseContext(),
-        std::string("localhost"),
-        "49888",
-        timeOut);
-    CHECK(cpt == nullptr);
-    //cpt->close();
-}
-*/
-
 void handler(const std::error_code& e, std::size_t bytes_transferred)
 {
     CHECK(bytes_transferred == 5);
@@ -71,11 +42,11 @@ TEST_CASE("asynchrnousTcpOperationsTest", "[TcpOps]")
     auto spt = TcpServer::create(
         io_context_server->getBaseContext(), "*", 49888, true);
     while (!spt->isReady()) {}
-    auto server_context_loop = io_context_server->startContextLoop();           //THIS VERY IMPORTANT HOLDS CONTEXT STATE IN VAR 
+    auto server_context_loop = io_context_server->startContextLoop(); 
 
     size_t data_recv_size;
     spt->setDataCall(
-        [&](const gmlc::networking::TcpConnection::pointer& /*connection*/,
+        [&](const gmlc::networking::TcpConnection::pointer&,
             const char* data,
             size_t datasize) {
                 CHECK(datasize == 5);
@@ -84,7 +55,7 @@ TEST_CASE("asynchrnousTcpOperationsTest", "[TcpOps]")
                 return datasize;
         });
     spt->setErrorCall(
-        [](const gmlc::networking::TcpConnection::pointer& /*connection*/,
+        [](const gmlc::networking::TcpConnection::pointer&,
             const std::error_code& error) {
                 INFO("Error (" << error.value() << "): " << error.message());
                 CHECK(false);
@@ -101,7 +72,7 @@ TEST_CASE("asynchrnousTcpOperationsTest", "[TcpOps]")
 
     auto io_context_client =
         gmlc::networking::AsioContextManager::getContextPointer("io_context_client");
-    std::chrono::milliseconds timeOut = std::chrono::milliseconds(0);                           //WEIRD STUFF HAPPENS HERE 
+    std::chrono::milliseconds timeOut = std::chrono::milliseconds(0); 
     auto cpt = establishConnection(io_context_client->getBaseContext(), std::string("localhost"), "49888", timeOut);
     auto client_ctxt_loop = io_context_client->startContextLoop();
     while (!cpt->isConnected()) {}
@@ -125,11 +96,11 @@ TEST_CASE("TcpOperationsTest", "[TcpOps]")
     auto spt = TcpServer::create(
         io_context_server->getBaseContext(), "*", 49888, true);
     while (!spt->isReady()) {}
-    auto server_context_loop = io_context_server->startContextLoop();           //THIS VERY IMPORTANT HOLDS CONTEXT STATE IN VAR 
+    auto server_context_loop = io_context_server->startContextLoop();
 
     size_t data_recv_size;
     spt->setDataCall(
-        [&](const gmlc::networking::TcpConnection::pointer& /*connection*/,
+        [&](const gmlc::networking::TcpConnection::pointer&,
             const char* data,
             size_t datasize) {
                 CHECK(datasize == 5);
@@ -138,7 +109,7 @@ TEST_CASE("TcpOperationsTest", "[TcpOps]")
                 return datasize;
         });
     spt->setErrorCall(
-        [](const gmlc::networking::TcpConnection::pointer& /*connection*/,
+        [](const gmlc::networking::TcpConnection::pointer&,
             const std::error_code& error) {
                 INFO("Error (" << error.value() << "): " << error.message());
                 CHECK(false);
@@ -155,7 +126,7 @@ TEST_CASE("TcpOperationsTest", "[TcpOps]")
 
     auto io_context_client =
         gmlc::networking::AsioContextManager::getContextPointer("io_context_client");
-    std::chrono::milliseconds timeOut = std::chrono::milliseconds(0);                           //WEIRD STUFF HAPPENS HERE 
+    std::chrono::milliseconds timeOut = std::chrono::milliseconds(0); 
     auto cpt = establishConnection(io_context_client->getBaseContext(), std::string("localhost"), "49888", timeOut);
     auto client_ctxt_loop = io_context_client->startContextLoop();
     while (!cpt->isConnected()) {}
