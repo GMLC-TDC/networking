@@ -71,6 +71,7 @@ TEST_CASE("SendTest", "[standaloneClient]")
         }
         io_context_connection->startContextLoop();
     }
+    cpt->closeNoWait();
 }
 
 TEST_CASE("AsyncSendTest", "[standaloneClient]")
@@ -99,4 +100,5 @@ TEST_CASE("AsyncSendTest", "[standaloneClient]")
         cpt->async_receive(receiveData, 1024, handler);
         io_context_connection->startContextLoop();
     }
+    cpt->closeNoWait();
 }

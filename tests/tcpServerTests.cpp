@@ -23,8 +23,7 @@ TEST_CASE("localHost", "[TcpServer]")
 TEST_CASE("externalAddressV4", "[TcpServer]")
 {
     asio::io_context io_context;
-    auto ex = getLocalExternalAddressV4();
-    CHECK_NOTHROW(TcpServer::create(io_context, ex, "0", false));
+    CHECK_NOTHROW(TcpServer::create(io_context, getLocalExternalAddressV4(), "0", false));
 }
 
 TEST_CASE("localHostString", "[TcpServer]")
@@ -37,3 +36,4 @@ TEST_CASE("invalidString", "[TcpServer]")
     asio::io_context io_context;
     CHECK_THROWS(TcpServer::create(io_context, "testString", "0", false));
 }
+

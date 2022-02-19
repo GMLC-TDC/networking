@@ -47,9 +47,12 @@ void logFunc(int loglevel, const std::string& logmessage)
     std::cout << "SERVER LOG: " << logmessage << '\n';
 }
 
-void server(
-    std::shared_ptr<gmlc::networking::AsioContextManager>& io_context_server)
+TEST_CASE("serverTest", "[standaloneServer]")
 {
+    std::cout << "server will wait 10 seconds before closing\n";
+    auto io_context_server =
+        gmlc::networking::AsioContextManager::getContextPointer(
+            "io_context_server");
     TcpServer::pointer spt = TcpServer::create(
         io_context_server->getBaseContext(),
         std::string("localhost"),
@@ -63,19 +66,11 @@ void server(
         spt->start();
     }
     io_context_server->getBaseContext().run();
-}
-
-TEST_CASE("serverTest", "[standaloneServer]")
-{
-    std::cout << "server will wait 10 seconds before closing\n";
-    auto io_context_server =
-        gmlc::networking::AsioContextManager::getContextPointer(
-            "io_context_server");
-    std::thread s(server, io_context_server);
-    s.detach();
     std::this_thread::sleep_for(std::chrono::milliseconds(10000));
     // give enough time to set up client if needed
     std::cout << "server finishing\n";
     io_context_server->getBaseContext().stop();
+    io_context_server->getBaseContext().reset();
     io_context_server->closeContext();
+    spt->close();
 }
