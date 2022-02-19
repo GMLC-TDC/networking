@@ -2,7 +2,6 @@
 #include "catch2/catch.hpp"
 #include "gmlc/networking/AsioContextManager.h"
 #include <stdlib.h>
-#include <thread>
 
 using namespace gmlc::networking;
 
