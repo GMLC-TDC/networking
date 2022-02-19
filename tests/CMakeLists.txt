@@ -14,8 +14,6 @@ set(NETWORKING_TESTS
     tcpServerTests
     tcpClientTests
     contextManagerTests
-    server
-    client
 )
 
 foreach(T ${NETWORKING_TESTS})
