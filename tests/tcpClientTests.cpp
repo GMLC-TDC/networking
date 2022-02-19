@@ -31,7 +31,8 @@ TEST_CASE("localHostString", "[TcpClient]")
 TEST_CASE("externalAddressV4", "[TcpClient]")
 {
     asio::io_context io_context;
-    CHECK_NOTHROW(TcpConnection::create(io_context, getLocalExternalAddressV4(), "0"));
+    CHECK_NOTHROW(
+        TcpConnection::create(io_context, getLocalExternalAddressV4(), "0"));
 }
 
 TEST_CASE("invalidString", "[TcpClient]")
@@ -48,4 +49,3 @@ TEST_CASE("startReceive", "[TcpClient]")
     CHECK_NOTHROW(connection->startReceive());
     connection->closeNoWait();
 }
-
