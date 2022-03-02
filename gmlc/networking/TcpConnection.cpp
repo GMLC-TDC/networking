@@ -250,25 +250,13 @@ TcpConnection::pointer TcpConnection::create(
     const std::string& port,
     size_t bufferSize)
 {
-    return pointer(
-        new TcpConnection(sf, io_context, connection, port, bufferSize));
-}
+    auto ptr = pointer(new TcpConnection(sf, io_context, bufferSize));
 
-TcpConnection::TcpConnection(
-    const SocketFactory& sf,
-    asio::io_context& io_context,
-    const std::string& connection,  // host
-    const std::string& port,  // asio resolver can use unix services such as
-                              // "daytime" instead of port number
-    size_t bufferSize) :
-    socket_(sf.create_socket(io_context)),
-    context_(io_context), data(bufferSize), connecting(true),
-    idcode(idcounter++)
-{
-    socket_->async_connect(
-        connection, port, [this](const std::error_code& error) {
-            connect_handler(error);
+    ptr->socket_->async_connect(
+        connection, port, [ptr](const std::error_code& error) {
+            ptr->connect_handler(error);
         });
+    return ptr;
 }
 
 // connect callback used by the client establishing a TCP connection

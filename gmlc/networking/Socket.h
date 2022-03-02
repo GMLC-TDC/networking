@@ -223,8 +223,10 @@ class AsioSocket final : public Socket {
         std::string service,
         std::function<void(const std::error_code&)> cb)
     {
-        asio::ip::tcp::resolver::iterator endpoint_iterator =
-            resolver_.resolve(host, service);
+        asio::ip::tcp::resolver::query query(
+            asio::ip::tcp::v4(), host, service);
+        auto endpoint_iterator = resolver_.resolve(query);
+
         socket_.lowest_layer().async_connect(*endpoint_iterator, cb);
     }
 
