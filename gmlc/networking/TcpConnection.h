@@ -189,28 +189,6 @@ namespace networking {
         {
         }
 
-        /** constructors creating a socket and establishing a connection to a
-         * host+port*/
-        TcpConnection(
-            asio::io_context& io_context,
-            const std::string& connection,
-            const std::string& port,
-            size_t bufferSize) :
-            TcpConnection(
-                SocketFactory(),
-                io_context,
-                connection,
-                port,
-                bufferSize)
-        {
-        }
-        TcpConnection(
-            const SocketFactory& sf,
-            asio::io_context& io_context,
-            const std::string& connection,
-            const std::string& port,
-            size_t bufferSize);
-
         /** function for handling the asynchronous return from a read request*/
         void
             handle_read(const std::error_code& error, size_t bytes_transferred);
