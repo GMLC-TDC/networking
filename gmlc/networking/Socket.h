@@ -225,8 +225,7 @@ class AsioSocket final : public Socket {
     {
         asio::ip::tcp::resolver::query query(
             asio::ip::tcp::v4(), host, service);
-        auto endpoint_iterator =
-            resolver_.resolve(query);
+        auto endpoint_iterator = resolver_.resolve(query);
 
         socket_.lowest_layer().async_connect(*endpoint_iterator, cb);
     }

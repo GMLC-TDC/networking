@@ -42,7 +42,7 @@ TEST_CASE("asynchronousTcpOperationsTest", "[TcpOps]")
     int itCount{0};
     while (!spt->isReady()) {
         ++itCount;
-        if (itCount>10) {
+        if (itCount > 10) {
             break;
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(300));
@@ -71,7 +71,6 @@ TEST_CASE("asynchronousTcpOperationsTest", "[TcpOps]")
 
     spt->start();
 
-    
     std::chrono::milliseconds timeOut = std::chrono::milliseconds(0);
     auto cpt = establishConnection(
         io_context_server->getBaseContext(),
