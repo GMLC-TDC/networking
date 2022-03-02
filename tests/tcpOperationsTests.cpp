@@ -16,7 +16,7 @@ All rights reserved. SPDX-License-Identifier: BSD-3-Clause
 #include "gmlc/networking/interfaceOperations.hpp"
 using namespace gmlc::networking;
 
-void handler(const std::error_code& e, std::size_t bytes_transferred)
+void handler(const std::error_code& /*e*/, std::size_t bytes_transferred)
 {
     CHECK(bytes_transferred == 5);
 }
@@ -30,17 +30,24 @@ void client(TcpConnection::pointer cpt)
     cpt->send_async(data, dataSize, handler);
 }
 
-TEST_CASE("asynchrnousTcpOperationsTest", "[TcpOps]")
+TEST_CASE("asynchronousTcpOperationsTest", "[TcpOps]")
 {
     auto io_context_server =
         gmlc::networking::AsioContextManager::getContextPointer(
             "io_context_server");
 
-    auto spt = TcpServer::create(
-        io_context_server->getBaseContext(), "*", 49888, true);
-    while (!spt->isReady()) {
-    }
     auto server_context_loop = io_context_server->startContextLoop();
+    auto spt = TcpServer::create(
+        io_context_server->getBaseContext(), "localhost", 19888, true);
+    int itCount{0};
+    while (!spt->isReady()) {
+        ++itCount;
+        if (itCount>10) {
+            break;
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(300));
+    }
+    REQUIRE(spt->isReady());
 
     size_t data_recv_size;
     spt->setDataCall([&](const gmlc::networking::TcpConnection::pointer&,
@@ -64,19 +71,22 @@ TEST_CASE("asynchrnousTcpOperationsTest", "[TcpOps]")
 
     spt->start();
 
-    auto io_context_client =
-        gmlc::networking::AsioContextManager::getContextPointer(
-            "io_context_client");
+    
     std::chrono::milliseconds timeOut = std::chrono::milliseconds(0);
     auto cpt = establishConnection(
-        io_context_client->getBaseContext(),
+        io_context_server->getBaseContext(),
         std::string("localhost"),
-        "49888",
+        "19888",
         timeOut);
-    auto client_ctxt_loop = io_context_client->startContextLoop();
+    itCount = 0;
     while (!cpt->isConnected()) {
+        ++itCount;
+        if (itCount > 10) {
+            break;
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(200));
     }
-
+    REQUIRE(cpt->isConnected());
     std::thread c(client, std::ref(cpt));
     std::this_thread::sleep_for(std::chrono::milliseconds(200));
 
@@ -94,11 +104,18 @@ TEST_CASE("TcpOperationsTest", "[TcpOps]")
         gmlc::networking::AsioContextManager::getContextPointer(
             "io_context_server");
 
-    auto spt = TcpServer::create(
-        io_context_server->getBaseContext(), "*", 49888, true);
-    while (!spt->isReady()) {
-    }
     auto server_context_loop = io_context_server->startContextLoop();
+    auto spt = TcpServer::create(
+        io_context_server->getBaseContext(), "*", 19888, true);
+    int itCount{0};
+    while (!spt->isReady()) {
+        ++itCount;
+        if (itCount > 10) {
+            break;
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(300));
+    }
+    REQUIRE(spt->isReady());
 
     size_t data_recv_size;
     spt->setDataCall([&](const gmlc::networking::TcpConnection::pointer&,
@@ -129,11 +146,18 @@ TEST_CASE("TcpOperationsTest", "[TcpOps]")
     auto cpt = establishConnection(
         io_context_client->getBaseContext(),
         std::string("localhost"),
-        "49888",
+        "19888",
         timeOut);
     auto client_ctxt_loop = io_context_client->startContextLoop();
+    itCount = 0;
     while (!cpt->isConnected()) {
+        ++itCount;
+        if (itCount > 10) {
+            break;
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(200));
     }
+    REQUIRE(cpt->isConnected());
     cpt->send("test0");
     std::this_thread::sleep_for(std::chrono::milliseconds(200));
 
