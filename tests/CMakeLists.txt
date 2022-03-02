@@ -7,12 +7,18 @@
 # SPDX-License-Identifier: BSD-3-Clause
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-set(NETWORKING_TESTS addressOperationsTests interfaceOperationsTests 
-)
+set(NETWORKING_TESTS addressOperationsTests interfaceOperationsTests)
 
 if(NOT GMLC_NETWORKING_DISABLE_ASIO)
-    list(APPEND NETWORKING_TESTS simpleConnectionTests tcpOperationsTests
-                     tcpServerTests tcpClientTests contextManagerTests)
+    list(
+        APPEND
+        NETWORKING_TESTS
+        simpleConnectionTests
+        tcpOperationsTests
+        tcpServerTests
+        tcpClientTests
+        contextManagerTests
+    )
 endif()
 
 if(GMLC_NETWORKING_ENABLE_ENCRYPTION)
