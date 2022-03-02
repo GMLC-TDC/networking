@@ -39,12 +39,7 @@ TcpConnection::pointer establishConnection(
     using namespace std::chrono_literals;  // NOLINT
 
     TcpConnection::pointer connectionPtr;
-    try {
-        connectionPtr = TcpConnection::create(sf, io_context, host, port);
-    }
-    catch (std::exception&) {
-        return nullptr;
-    }
+    connectionPtr = TcpConnection::create(sf, io_context, host, port);
     if (timeOut <= std::chrono::milliseconds(0)) {
         return connectionPtr;
     }
