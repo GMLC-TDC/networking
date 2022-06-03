@@ -16,6 +16,9 @@ All rights reserved. SPDX-License-Identifier: BSD-3-Clause
 #include <string>
 #include <thread>
 
+#ifndef INFO
+#define INFO(arg)
+#endif
 /** test case for establishing and sending data over an unencrypted connection,
  * using settings parsed from a JSON config string*/
 TEST_CASE("simple_comm_test", "[simpleConnections]")
