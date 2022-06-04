@@ -24,7 +24,7 @@ void handler(const std::error_code& /*e*/, std::size_t bytes_transferred)
 void client(TcpConnection::pointer cpt)
 {
     std::string s = "test0";
-    const int dataSize = s.size();
+    const std::size_t dataSize = s.size();
     char* data = new char[dataSize];
     strcpy(data, s.c_str());
     cpt->send_async(data, dataSize, handler);

@@ -241,6 +241,9 @@ void AsioContextManager::haltContextLoop()
 
 void contextProcessingLoop(std::shared_ptr<AsioContextManager> ptr)
 {
+    if (!ptr) {
+        return;
+    }
     while ((ptr->runCounter > 0) && (!(ptr->terminateLoop))) {
         auto clk = std::chrono::steady_clock::now();
         try {
