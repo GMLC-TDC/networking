@@ -38,6 +38,17 @@ absolutely need them to be thread safe so we are going to use a lock that is
 entirely controlled by this file*/
 static std::mutex contextLock;
 
+/** a storage system for the available core objects allowing references by name
+ * to the core
+ */
+std::vector<std::shared_future<void>>
+    AsioContextManager::futures;
+
+/** we expect operations on core object that modify the futures to be rare but we
+absolutely need them to be thread safe so we are going to use a lock that is
+entirely controlled by this file*/
+static std::mutex futureLock;
+
 std::shared_ptr<AsioContextManager>
     AsioContextManager::getContextPointer(const std::string& contextName)
 {
@@ -104,6 +115,10 @@ void AsioContextManager::closeContext(const std::string& contextName)
             ptr->ictx->stop();
             ptr->loopRet.get();
         }
+        else if (ptr->loopRet.valid())
+        {
+            ptr->loopRet.get();
+        }
     }
 }
 
@@ -129,6 +144,8 @@ AsioContextManager::~AsioContextManager()
         }
         catch (...) {
         }
+    } else if (loopRet.valid()) {
+        loopRet.get();
     }
     if (leakOnDelete) {
         // yes I am purposefully leaking this PHILIP TOP
@@ -160,6 +177,12 @@ AsioContextManager::LoopHandle
         std::invalid_argument("the context name specified was not available"));
 }
 
+void AsioContextManager::storeFuture(std::shared_future<void> processReturn)
+{
+    std::unique_lock<std::mutex> futlock(futureLock);
+    futures.push_back(std::move(processReturn));
+}
+
 AsioContextManager::LoopHandle AsioContextManager::startContextLoop()
 {
     ++runCounter;  // atomic
@@ -172,7 +195,8 @@ AsioContextManager::LoopHandle AsioContextManager::startContextLoop()
         std::unique_lock<std::mutex> nullLock(runningLoopLock);
 
         nullwork = std::make_unique<asio::io_context::work>(getBaseContext());
-        loopRet = contextTask.get_future();
+        loopRet = contextTask.get_future().share();
+        AsioContextManager::storeFuture(loopRet);
         nullLock.unlock();
         std::thread contextThread(std::move(contextTask));
         contextThread.detach();
@@ -194,6 +218,7 @@ AsioContextManager::LoopHandle AsioContextManager::startContextLoop()
                 nullwork =
                     std::make_unique<asio::io_context::work>(getBaseContext());
                 loopRet = contextTask.get_future();
+                AsioContextManager::storeFuture(loopRet);
                 nullLock.unlock();
                 std::thread contextThread(std::move(contextTask));
                 contextThread.detach();
