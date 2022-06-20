@@ -59,6 +59,9 @@ jobs:
         shell: C:\tools\cygwin\bin\bash.exe --login --norc -eo pipefail -o igncr '{0}'
     steps:
     - uses: actions/checkout@v3
+      with:
+        submodules: true
+
     - uses: egor-tensin/setup-cygwin@v3
       with:
         platform: x86
