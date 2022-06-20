@@ -27,6 +27,7 @@ All rights reserved. SPDX-License-Identifier: BSD-3-Clause
 #include <mutex>
 #include <string>
 #include <utility>
+#include <vector>
 
 namespace gmlc::networking {
 /** class defining a (potential) singleton Asio io_context manager for all asio
