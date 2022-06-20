@@ -63,9 +63,10 @@ jobs:
       with:
         platform: x86
         packages: git make cmake gcc-g++ ninja
-   
     - name: CMake Configure
-      run: cmake -G Ninja -B build -S '${{ github.workspace }}'
+      run: |
+              git config --global --add safe.directory '${{ github.workspace }}'
+              cmake -G Ninja -B build -S '${{ github.workspace }}'
 
     - name: Build
       run: cmake --build build --parallel
