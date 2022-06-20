@@ -23,6 +23,7 @@ All rights reserved. SPDX-License-Identifier: BSD-3-Clause
 #include <atomic>
 #include <future>
 #include <map>
+#include <vector>
 #include <memory>
 #include <mutex>
 #include <string>
