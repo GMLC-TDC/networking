@@ -37,7 +37,7 @@ class AsioContextManager
     enum class loop_mode : int { stopped = 0, starting = 1, running = 2 };
 
     /// container for pointers to all the available contexts
-    static std::map<std::string, std::shared_ptr<AsioContextManager>> contexts;  
+    static std::map<std::string, std::shared_ptr<AsioContextManager>> contexts;
     /// container for recording futures
     static std::vector<std::shared_future<void>> futures;
     std::atomic<int> runCounter{0};  //!< counter for the number of times the
@@ -53,10 +53,9 @@ class AsioContextManager
         loop_mode::stopped};  //!< flag indicating the loop is running
     std::mutex runningLoopLock;  //!< lock protecting the nullwork object and
                                  //!< the return future
-                                 //! 
+                                 //!
     /// flag indicating that the loop should terminate
-    std::atomic<bool> terminateLoop{
-        false};
+    std::atomic<bool> terminateLoop{false};
     /// storage location for the processing loop completion
     std::shared_future<void> loopRet;
     /** constructor*/
@@ -86,7 +85,7 @@ class AsioContextManager
 
       private:
         /// a pointer to the context manager
-        std::shared_ptr<AsioContextManager> contextManager;  
+        std::shared_ptr<AsioContextManager> contextManager;
     };
 
   public:

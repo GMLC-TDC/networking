@@ -41,11 +41,10 @@ static std::mutex contextLock;
 /** a storage system for the available core objects allowing references by name
  * to the core
  */
-std::vector<std::shared_future<void>>
-    AsioContextManager::futures;
+std::vector<std::shared_future<void>> AsioContextManager::futures;
 
-/** we expect operations on core object that modify the futures to be rare but we
-absolutely need them to be thread safe so we are going to use a lock that is
+/** we expect operations on core object that modify the futures to be rare but
+we absolutely need them to be thread safe so we are going to use a lock that is
 entirely controlled by this file*/
 static std::mutex futureLock;
 
@@ -114,9 +113,7 @@ void AsioContextManager::closeContext(const std::string& contextName)
             ptr->nullwork.reset();
             ptr->ictx->stop();
             ptr->loopRet.get();
-        }
-        else if (ptr->loopRet.valid())
-        {
+        } else if (ptr->loopRet.valid()) {
             ptr->loopRet.get();
         }
     }
