@@ -1,5 +1,5 @@
 exclude: ^(ThirdParty/|.github/workflows/|.github/actions/)
-default_language_version:
+#default_language_version:
 repos:
   - repo: https://github.com/jumanjihouse/pre-commit-hooks
     rev: 3.0.0
