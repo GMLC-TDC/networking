@@ -275,10 +275,7 @@ T>::value) { socket_.set_verify_callback(cb);
     }
 
     // check if the underlying asio socket connection is open
-    bool is_open() const
-    {
-        return socket_.lowest_layer().is_open();
-    }
+    bool is_open() const { return socket_.lowest_layer().is_open(); }
 
     // call the underlying asio functions to shutdown a connected socket
     std::error_code shutdown(std::error_code& ec)
@@ -296,10 +293,7 @@ T>::value) { socket_.set_verify_callback(cb);
 
     // cancel outstanding asynchronous operations (connect, send, receive)
     // immediately
-    void cancel()
-    {
-        socket_.lowest_layer().cancel();
-    }
+    void cancel() { socket_.lowest_layer().cancel(); }
 
     // set_option templated functions are the same as the definitions in asio
     template<typename SettableSocketOption>
@@ -315,10 +309,7 @@ T>::value) { socket_.set_verify_callback(cb);
     }
 
     // exposing some specific socket options used in an asio agnostic way
-    void set_option_no_delay(bool b)
-    {
-        set_option(asio::ip::tcp::no_delay(b));
-    }
+    void set_option_no_delay(bool b) { set_option(asio::ip::tcp::no_delay(b)); }
     std::error_code set_option_no_delay(bool b, std::error_code& ec)
     {
         return set_option(asio::ip::tcp::no_delay(b), ec);
