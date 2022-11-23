@@ -113,10 +113,7 @@ class SocketFactory : std::enable_shared_from_this<SocketFactory> {
      * @param b true if the created socket should act as the server in
      * handshake, otherwise false
      */
-    void set_handshake_server(bool b)
-    {
-        handshake_server = b;
-    }
+    void set_handshake_server(bool b) { handshake_server = b; }
 
     /** get if the socket created should act as a server for handshakes when
      * establishing a connection
@@ -124,20 +121,14 @@ class SocketFactory : std::enable_shared_from_this<SocketFactory> {
      * @return true if the created socket should fill the role of the server in
      * handshakes, otherwise false
      */
-    bool get_handshake_server()
-    {
-        return handshake_server;
-    }
+    bool get_handshake_server() { return handshake_server; }
 
     /** set whether the sockets created by this factory should be encrypted or
      * not
      *
      * @param b true if the sockets should be encrypted, otherwise false
      */
-    void set_encrypted(bool b)
-    {
-        encrypted = b;
-    }
+    void set_encrypted(bool b) { encrypted = b; }
 
     /** load settings into the SocketFactory from a JSON config file
      *
