@@ -62,7 +62,7 @@ jobs:
       with:
         submodules: true
 
-    - uses: egor-tensin/setup-cygwin@v3
+    - uses: egor-tensin/setup-cygwin@v4
       with:
         platform: x86
         packages: git make cmake gcc-g++ ninja
