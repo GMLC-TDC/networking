@@ -58,7 +58,7 @@ jobs:
       - image: helics/buildenv:sanitizers
     environment:
       CMAKE_FLAGS: '-DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_FLAGS="-fsanitize=thread -stdlib=libc++ -L/root/develop/libcxx_tsan/lib -lc++abi -I/root/develop/libcxx_tsan/include -I/root/develop/libcxx_tsan/include/c++/v1 -Wno-unused-command-line-argument -g -O1 -Wl,-rpath=/root/develop/libcxx_tsan/lib"  '
-      TSAN_OPTIONS: 'second_deadlock_stack=1'
+      TSAN_OPTIONS: "second_deadlock_stack=1"
 
     steps:
       - checkout
@@ -69,8 +69,8 @@ jobs:
       - image: helics/buildenv:sanitizers
     environment:
       CMAKE_FLAGS: '-DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_FLAGS="-fsanitize=undefined,address -fsanitize-address-use-after-scope -stdlib=libc++ -L/root/develop/libcxx_asan/lib -lc++abi -I/root/develop/libcxx_asan/include -I/root/develop/libcxx_asan/include/c++/v1 -Wno-unused-command-line-argument -fno-omit-frame-pointer -g -O1 -Wl,-rpath=/root/develop/libcxx_asan/lib -fsanitize-blacklist=/root/project/.circleci/asan_blacklist.txt"  '
-      LSAN_OPTIONS: 'suppressions=/root/project/.circleci/leak_suppression.txt'
-      UBSAN_OPTIONS: 'print_stacktrace=1'
+      LSAN_OPTIONS: "suppressions=/root/project/.circleci/leak_suppression.txt"
+      UBSAN_OPTIONS: "print_stacktrace=1"
 
     steps:
       - checkout
@@ -92,7 +92,7 @@ jobs:
 
     environment:
       CMAKE_FLAGS: '-DCMAKE_CXX_COMPILER=clang++ -DCMAKE_CXX_COMPILER_FORCED=ON -DCMAKE_CXX_FLAGS="-g -O1 -fsanitize=fuzzer,undefined,address" '
-      UBSAN_OPTIONS: 'print_stacktrace=1'
+      UBSAN_OPTIONS: "print_stacktrace=1"
     steps:
       - checkout
       - run: *run_fuzz
@@ -105,7 +105,7 @@ jobs:
     docker:
       - image: helics/buildenv:builder
     environment:
-      CMAKE_FLAGS: '-DUNITS_ENABLE_TESTS=ON -DUNITS_INSTALL_PACKAGE_TESTS=ON -DUNITS_BUILD_SHARED_LIBRARY=ON'
+      CMAKE_FLAGS: "-DUNITS_ENABLE_TESTS=ON -DUNITS_INSTALL_PACKAGE_TESTS=ON -DUNITS_BUILD_SHARED_LIBRARY=ON"
     steps:
       - checkout
       - run: *setup_units
@@ -114,7 +114,7 @@ jobs:
     docker:
       - image: helics/buildenv:gcc7-coverage
     environment:
-      CMAKE_FLAGS: '-DUNITS_ENABLE_TESTS=ON -DCMAKE_CXX_STANDARD=14'
+      CMAKE_FLAGS: "-DUNITS_ENABLE_TESTS=ON -DCMAKE_CXX_STANDARD=14"
     steps:
       - checkout
       - run: *run_coverage

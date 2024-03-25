@@ -38,8 +38,8 @@ TcpServer::TcpServer(
     uint16_t portNum,
     bool port_reuse,
     int nominalBufferSize) :
-    ioctx(io_context),
-    socket_factory(sf), bufferSize(nominalBufferSize), reuse_address(port_reuse)
+    ioctx(io_context), socket_factory(sf), bufferSize(nominalBufferSize),
+    reuse_address(port_reuse)
 {
     if ((address == "*") || (address == "tcp://*")) {
         endpoints.emplace_back(asio::ip::address_v4::any(), portNum);
@@ -90,8 +90,8 @@ TcpServer::TcpServer(
     const std::string& port,
     bool port_reuse,
     int nominalBufferSize) :
-    ioctx(io_context),
-    socket_factory(sf), bufferSize(nominalBufferSize), reuse_address(port_reuse)
+    ioctx(io_context), socket_factory(sf), bufferSize(nominalBufferSize),
+    reuse_address(port_reuse)
 {
     tcp::resolver resolver(io_context);
     tcp::resolver::query query(
@@ -126,8 +126,7 @@ TcpServer::TcpServer(
     asio::io_context& io_context,
     uint16_t portNum,
     int nominalBufferSize) :
-    ioctx(io_context),
-    socket_factory(sf), bufferSize(nominalBufferSize)
+    ioctx(io_context), socket_factory(sf), bufferSize(nominalBufferSize)
 {
     endpoints.emplace_back(asio::ip::tcp::v4(), portNum);
     initialConnect();
