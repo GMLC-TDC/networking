@@ -209,8 +209,8 @@ namespace networking {
             const SocketFactory& sf,
             asio::io_context& io_context,
             size_t bufferSize) :
-            socket_(sf.create_socket(io_context)),
-            context_(io_context), data(bufferSize), idcode(idcounter++)
+            socket_(sf.create_socket(io_context)), context_(io_context),
+            data(bufferSize), idcode(idcounter++)
         {
         }
 
