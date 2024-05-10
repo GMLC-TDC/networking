@@ -66,7 +66,13 @@ jobs:
       with:
         platform: x86
         packages: git make cmake gcc-g++ ninja
-   
+  
+    - name: CMake Info
+      run: cmake --system-information
+
+    - name: Workspace source path
+      run: echo "github.workspace: ${{ github.workspace }}"
+ 
     - name: CMake Configure
       run: cmake -G Ninja -B build -S '${{ github.workspace }}'
 
