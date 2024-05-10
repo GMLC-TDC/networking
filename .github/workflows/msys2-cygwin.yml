@@ -71,10 +71,10 @@ jobs:
       run: cmake --system-information
 
     - name: Workspace source path
-      run: echo "github.workspace=${{ github.workspace }}"
+      run: echo "github.workspace=$(cygpath -u '${{ github.workspace }}')"
  
     - name: CMake Configure
-      run: cmake -G Ninja -B build -S '${{ github.workspace }}'
+      run: cmake -G Ninja -B build -S "$(cygpath -u '${{ github.workspace }}')"
 
     - name: Build
       run: cmake --build build --parallel
