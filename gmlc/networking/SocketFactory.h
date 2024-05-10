@@ -164,7 +164,7 @@ class SocketFactory : std::enable_shared_from_this<SocketFactory> {
     std::string certificate_file;  // certificate file for SSL
     std::string private_key_file;  // private key file for SSL
     std::string rsa_private_key_file;  // RSA private key file for SSL
-    std::string tmp_dh_file;  // temporary Diffie-Hellman paramenter file for
+    std::string tmp_dh_file;  // temporary Diffie-Hellman parameter file for
                               // SSL
     std::string password;  // used in the password response callback when
                            // loading SSL certificate/key files
