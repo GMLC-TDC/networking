@@ -17,7 +17,7 @@ arm64_task:
     image: alpine:latest
   only_if: $CIRRUS_BASE_BRANCH == 'main' || $CIRRUS_BRANCH == 'main' || $CIRRUS_BRANCH =~ 'arm64[-\/].*'
   install_script: |
-    apkg add --no-cache build-base cmake ninja git bash linux-headers
+    apk add --no-cache build-base cmake ninja git bash linux-headers
   build_script: |
     cmake -GNinja -B build -S .
     cmake --build build --parallel
