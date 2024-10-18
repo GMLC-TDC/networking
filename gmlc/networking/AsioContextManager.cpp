@@ -21,13 +21,13 @@ All rights reserved. SPDX-License-Identifier: BSD-3-Clause
 #include <chrono>
 #include <iostream>
 #include <map>
+#include <memory>
 #include <mutex>
 #include <stdexcept>
+#include <string>
 #include <thread>
 #include <utility>
 #include <vector>
-#include <string>
-#include <memory>
 
 namespace gmlc::networking {
 /** a storage system for the available core objects allowing references by name
