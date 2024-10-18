@@ -8,6 +8,8 @@ All rights reserved. SPDX-License-Identifier: BSD-3-Clause
 
 #include <algorithm>
 #include <stdexcept>
+#include <string>
+#include <utility>
 
 namespace gmlc::networking {
 

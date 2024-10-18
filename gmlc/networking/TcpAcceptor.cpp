@@ -9,6 +9,7 @@ All rights reserved. SPDX-License-Identifier: BSD-3-Clause
 
 #include <algorithm>
 #include <iostream>
+#include <string>
 #include <thread>
 #include <utility>
 

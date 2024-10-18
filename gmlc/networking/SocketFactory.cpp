@@ -10,6 +10,7 @@ All rights reserved. SPDX-License-Identifier: BSD-3-Clause
 #include <fstream>
 #include <nlohmann/json.hpp>
 #include <sstream>
+#include <string>
 
 using json = nlohmann::json;
 

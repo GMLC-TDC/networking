@@ -94,8 +94,9 @@ if(GMLC_NETWORKING_STATIC_LIB)
             target_link_libraries(gmlc_networking PRIVATE OpenSSL::applink)
         endif()
     endif()
-
-    target_link_libraries(gmlc_networking PRIVATE nlohmann_json::nlohmann_json)
+    if(TARGET nlohmann_json::nlohmann_json)
+        target_link_libraries(gmlc_networking PRIVATE nlohmann_json::nlohmann_json)
+    endif()
     target_link_libraries(gmlc_networking PUBLIC networking_base)
     if(GMLC_NETWORKING_INSTALL)
         install(
