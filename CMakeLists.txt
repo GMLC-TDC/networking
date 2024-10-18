@@ -7,7 +7,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 # ~~~
 
-# Make sure users don't get warnings on a tested (3.0 to 3.30) version of CMake. 
+# Make sure users don't get warnings on a tested (3.0 to 3.30) version of CMake.
 cmake_minimum_required(VERSION 3.10...3.30)
 
 project(
@@ -183,8 +183,6 @@ target_include_directories(
 )
 
 option(GMLC_NETWORKING_USE_EXTERNAL_JSON "Use an external nlohmann_json library" OFF)
-
-
 
 if(GMLC_NETWORKING_USE_EXTERNAL_JSON)
     find_package(nlohmann_json 3.10 REQUIRED)
