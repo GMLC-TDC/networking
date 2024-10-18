@@ -1,5 +1,5 @@
 # ~~~
-# Copyright (c) 2017-2021, Battelle Memorial Institute; Lawrence Livermore
+# Copyright (c) 2017-2024, Battelle Memorial Institute; Lawrence Livermore
 # National Security, LLC; Alliance for Sustainable Energy, LLC.
 # See the top-level NOTICE for additional details.
 # All rights reserved.
@@ -7,23 +7,23 @@
 # SPDX-License-Identifier: BSD-3-Clause
 # ~~~
 
-# Make sure users don't get warnings on a tested (3.0 to 3.17) version of CMake. For
+# Make sure users don't get warnings on a tested (3.0 to 3.30) version of CMake. For
 # most of the policies, the new version is better (hence the change). We don't use the
 # 3.0...3.16 syntax because of a bug in an older MSVC's built-in and modified CMake 3.11
 
-cmake_minimum_required(VERSION 3.10...3.22)
+cmake_minimum_required(VERSION 3.10...3.30)
 
 project(
     GMLC_NETWORKING
     LANGUAGES CXX
-    VERSION 0.1.0
+    VERSION 0.3.0
 )
 
 # -----------------------------------------------------------------------------
 # GMLC NETWORKING library Version number
 # -----------------------------------------------------------------------------
 set(GMLC_NETWORKING_VERSION_BUILD)
-set(GMLC_NETWORKING_DATE "12-02-2021")
+set(GMLC_NETWORKING_DATE "10-18-2024")
 
 set(GMLC_NETWORKING_VERSION_STRING
     "${GMLC_NETWORKING_VERSION} (${GMLC_NETWORKING_DATE})"
@@ -36,7 +36,7 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 endif()
 
 if(NOT CMAKE_CXX_STANDARD)
-    set(CMAKE_CXX_STANDARD 17)
+    set(CMAKE_CXX_STANDARD 20)
 endif()
 # -----------------------------------------------------------------------------
 # set the module path and include some common macros
@@ -188,6 +188,10 @@ target_include_directories(
 option(GMLC_NETWORKING_USE_EXTERNAL_JSON "Use an external nlohmann_json library" OFF)
 if(GMLC_NETWORKING_USE_EXTERNAL_JSON)
     find_package(nlohmann_json 3.10 REQUIRED)
+elif(GMLC_NETWORKING_JSON_INCLUDE)
+    target_include_directories(
+        networking_base INTERFACE $<BUILD_INTERFACE:${GMLC_NETWORKING_JSON_INCLUDE}>
+    )
 else()
     set(JSON_BuildTests
         OFF
