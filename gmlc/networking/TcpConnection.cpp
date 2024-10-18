@@ -12,6 +12,7 @@ All rights reserved. SPDX-License-Identifier: BSD-3-Clause
 #include <sstream>
 #include <thread>
 #include <utility>
+#include <string>
 
 namespace gmlc::networking {
 using asio::ip::tcp;
