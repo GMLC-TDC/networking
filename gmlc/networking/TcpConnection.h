@@ -161,11 +161,12 @@ namespace networking {
    with signature void(TcpConnection::pointer, const char *buffer, size_t
    dataLength, const std::error_code &error)
     */
-        void async_receive(std::function<void(
-                               TcpConnection::pointer,
-                               const char* buffer,
-                               size_t dataLength,
-                               const std::error_code& error)> callback)
+        void async_receive(
+            std::function<void(
+                TcpConnection::pointer,
+                const char* buffer,
+                size_t dataLength,
+                const std::error_code& error)> callback)
         {
             socket_->async_read_some(
                 data,

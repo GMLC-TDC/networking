@@ -51,8 +51,9 @@ TEST_CASE("runContextTest", "[contextManager]")
     auto context_pointer =
         gmlc::networking::AsioContextManager::getContextPointer(
             std::string("io_context"));
-    CHECK_NOTHROW(gmlc::networking::AsioContextManager::runContextLoop(
-        std::string("io_context")));
+    CHECK_NOTHROW(
+        gmlc::networking::AsioContextManager::runContextLoop(
+            std::string("io_context")));
 }
 TEST_CASE("runContextTestFail", "[contextManager]")
 {
