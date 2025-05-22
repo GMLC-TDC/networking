@@ -235,7 +235,7 @@ std::string getLocalExternalAddressV6(const std::string& server)
     asio::ip::tcp::resolver resolver(srv->getBaseContext());
 
     asio::ip::tcp::resolver::results_type it_server =
-        resolver.resolve(asio::ip::tcp::v6(), server, "");
+        resolver.resolve(asio::ip::tcp::v6(), server,"");
     asio::ip::tcp::endpoint servep = *it_server.begin();
 
     auto sstring = (it_server.empty()) ? server : servep.address().to_string();
@@ -247,10 +247,10 @@ std::string getLocalExternalAddressV6(const std::string& server)
 #ifndef GMLC_NETWORKING_DISABLE_ASIO
 
     asio::ip::tcp::resolver::results_type results =
-        resolver.resolve(asio::ip::tcp::v6(), asio::ip::host_name(), "");
+        resolver.resolve(asio::ip::tcp::v6(), asio::ip::host_name(),"");
     // asio::ip::tcp::endpoint endpoint = *it;
 
-    for (asio::ip::tcp::endpoint ept : results) {
+    for (const asio::ip::tcp::endpoint &ept : results) {
         resolved_addresses.push_back(ept.address().to_string());
     }
 

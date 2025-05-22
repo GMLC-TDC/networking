@@ -26,6 +26,7 @@ TEST_CASE("local_address_ipv6", "[interfaceOps]")
     try {
         auto netw = gmlc::networking::getLocalExternalAddressV6();
         CHECK_FALSE(netw.empty());
+        INFO(netw)
         CHECK(gmlc::networking::isIpv6(netw));
         auto netw2 = gmlc::networking::getLocalExternalAddressV6("2001:db8::1");
         CHECK(gmlc::networking::isIpv6(netw2));
