@@ -223,11 +223,11 @@ class AsioSocket final : public Socket {
         std::string service,
         std::function<void(const std::error_code&)> cb)
     {
-        asio::ip::tcp::resolver::query query(
-            asio::ip::tcp::v4(), host, service);
-        auto endpoint_iterator = resolver_.resolve(query);
+        //asio::ip::tcp::resolver::query query(
+         //   asio::ip::tcp::v4(), host, service);
+        auto results = resolver_.resolve(asio::ip::tcp::v4(), host, service);
 
-        socket_.lowest_layer().async_connect(*endpoint_iterator, cb);
+        socket_.lowest_layer().async_connect(*results.begin(), cb);
     }
 
     /* // potential future API addition - change SSL certificate verification
