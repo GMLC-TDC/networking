@@ -49,14 +49,15 @@ TcpServer::TcpServer(
         endpoints.emplace_back(asio::ip::tcp::v4(), portNum);
     } else {
         tcp::resolver resolver(io_context);
-       
-        auto results = resolver.resolve(tcp::v4(),
+
+        auto results = resolver.resolve(
+            tcp::v4(),
             address,
             std::to_string(portNum),
             tcp::resolver::canonical_name);
-       
+
         if (!results.empty()) {
-           for (auto &res:results) {
+            for (auto& res : results) {
                 endpoints.push_back(res);
             }
         } else {
@@ -93,9 +94,10 @@ TcpServer::TcpServer(
     reuse_address(port_reuse)
 {
     tcp::resolver resolver(io_context);
-    tcp::resolver::results_type results = resolver.resolve(tcp::v4(), address, port, tcp::resolver::canonical_name);
+    tcp::resolver::results_type results = resolver.resolve(
+        tcp::v4(), address, port, tcp::resolver::canonical_name);
     if (!results.empty()) {
-        for (auto &res:results) {
+        for (auto& res : results) {
             endpoints.push_back(res);
         }
     } else {

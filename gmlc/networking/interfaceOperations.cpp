@@ -72,7 +72,8 @@ std::string getLocalExternalAddressV4()
     asio::ip::tcp::resolver resolver(srv->getBaseContext());
 
     std::error_code ec;
-    asio::ip::tcp::resolver::results_type results = resolver.resolve(asio::ip::tcp::v4(), asio::ip::host_name(), "", ec);
+    asio::ip::tcp::resolver::results_type results =
+        resolver.resolve(asio::ip::tcp::v4(), asio::ip::host_name(), "", ec);
 
     if (!ec) {
         asio::ip::tcp::endpoint endpoint = *results.begin();
@@ -135,8 +136,8 @@ std::string getLocalExternalAddressV4(const std::string& server)
     }
     asio::ip::tcp::endpoint servep = *results_server.begin();
 
-
-    auto sstring = (results_server.empty()) ? server : servep.address().to_string();
+    auto sstring =
+        (results_server.empty()) ? server : servep.address().to_string();
 #else
     std::string sstring = server;
 #endif
@@ -145,16 +146,16 @@ std::string getLocalExternalAddressV4(const std::string& server)
 
     std::vector<std::string> resolved_addresses;
 #ifndef GMLC_NETWORKING_DISABLE_ASIO
-    asio::ip::tcp::resolver::results_type results = resolver.resolve(asio::ip::tcp::v4(), asio::ip::host_name(), "", ec);
+    asio::ip::tcp::resolver::results_type results =
+        resolver.resolve(asio::ip::tcp::v4(), asio::ip::host_name(), "", ec);
     if (ec) {
         return getLocalExternalAddressV4();
     }
     // asio::ip::tcp::endpoint endpoint = *it;
-    for (asio::ip::tcp::endpoint ept : results)
-    {
+    for (asio::ip::tcp::endpoint ept : results) {
         resolved_addresses.push_back(ept.address().to_string());
     }
-    
+
 #endif
     auto candidate_addresses =
         prioritizeExternalAddresses(interface_addresses, resolved_addresses);
@@ -179,7 +180,8 @@ std::string getLocalExternalAddressV6()
     auto srv = gmlc::networking::AsioContextManager::getContextPointer();
 
     asio::ip::tcp::resolver resolver(srv->getBaseContext());
-    asio::ip::tcp::resolver::results_type results = resolver.resolve(asio::ip::tcp::v6(), asio::ip::host_name(), "");
+    asio::ip::tcp::resolver::results_type results =
+        resolver.resolve(asio::ip::tcp::v6(), asio::ip::host_name(), "");
     asio::ip::tcp::endpoint endpoint = *results.begin();
 
     auto resolved_address = endpoint.address().to_string();
@@ -233,7 +235,7 @@ std::string getLocalExternalAddressV6(const std::string& server)
     asio::ip::tcp::resolver resolver(srv->getBaseContext());
 
     asio::ip::tcp::resolver::results_type it_server =
-        resolver.resolve( asio::ip::tcp::v6(), server, "");
+        resolver.resolve(asio::ip::tcp::v6(), server, "");
     asio::ip::tcp::endpoint servep = *it_server.begin();
 
     auto sstring = (it_server.empty()) ? server : servep.address().to_string();
@@ -244,14 +246,14 @@ std::string getLocalExternalAddressV6(const std::string& server)
     std::vector<std::string> resolved_addresses;
 #ifndef GMLC_NETWORKING_DISABLE_ASIO
 
-    asio::ip::tcp::resolver::results_type results = resolver.resolve(asio::ip::tcp::v6(), asio::ip::host_name(), "");
+    asio::ip::tcp::resolver::results_type results =
+        resolver.resolve(asio::ip::tcp::v6(), asio::ip::host_name(), "");
     // asio::ip::tcp::endpoint endpoint = *it;
 
-    for (asio::ip::tcp::endpoint ept : results)
-    {
+    for (asio::ip::tcp::endpoint ept : results) {
         resolved_addresses.push_back(ept.address().to_string());
     }
-    
+
 #endif
     auto candidate_addresses =
         prioritizeExternalAddresses(interface_addresses, resolved_addresses);
