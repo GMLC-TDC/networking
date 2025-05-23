@@ -75,40 +75,35 @@ void removeProtocol(std::string& networkAddress)
 bool isIpv6(std::string_view address)
 {
     auto cntcolon = std::count(address.begin(), address.end(), ':');
-    if ((cntcolon < 2)||(cntcolon>9)) {
-        //not enough colons need at least 2 and at most 9
+    if ((cntcolon < 2) || (cntcolon > 9)) {
+        // not enough colons need at least 2 and at most 9
         return false;
     }
     auto brkcnt = address.find_first_of('[');
     if (brkcnt != std::string::npos) {
-        auto brkend=address.find_first_of(']',brkcnt+2);
-        if (brkend == std::string::npos)
-        {
-            //invalid format
+        auto brkend = address.find_first_of(']', brkcnt + 2);
+        if (brkend == std::string::npos) {
+            // invalid format
             return false;
         }
-        address=address.substr(brkcnt,brkend-brkcnt+1);
+        address = address.substr(brkcnt, brkend - brkcnt + 1);
     }
-    auto prevColon=address.find_first_of(':');
-    auto nextColon=address.find_first_of(':',prevColon+1);
-    
-    int dcolon=0;
-    while (nextColon != std::string::npos)
-    {
-        if (nextColon - prevColon == 1)
-        {
+    auto prevColon = address.find_first_of(':');
+    auto nextColon = address.find_first_of(':', prevColon + 1);
+
+    int dcolon = 0;
+    while (nextColon != std::string::npos) {
+        if (nextColon - prevColon == 1) {
             ++dcolon;
-            if (dcolon > 1)
-            {
+            if (dcolon > 1) {
                 return false;
             }
         }
-        if (nextColon - prevColon >5)
-        {
+        if (nextColon - prevColon > 5) {
             return false;
         }
-        prevColon=nextColon;
-        nextColon=address.find_first_of(':',nextColon+1);
+        prevColon = nextColon;
+        nextColon = address.find_first_of(':', nextColon + 1);
     }
     return true;
 }
