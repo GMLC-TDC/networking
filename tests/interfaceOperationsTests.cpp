@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2017-2021,
+Copyright (c) 2017-2025,
 Battelle Memorial Institute; Lawrence Livermore National Security, LLC; Alliance
 for Sustainable Energy, LLC.  See the top-level NOTICE for additional details.
 All rights reserved. SPDX-License-Identifier: BSD-3-Clause
@@ -26,6 +26,7 @@ TEST_CASE("local_address_ipv6", "[interfaceOps]")
     try {
         auto netw = gmlc::networking::getLocalExternalAddressV6();
         CHECK_FALSE(netw.empty());
+        INFO(netw)
         CHECK(gmlc::networking::isIpv6(netw));
         auto netw2 = gmlc::networking::getLocalExternalAddressV6("2001:db8::1");
         CHECK(gmlc::networking::isIpv6(netw2));

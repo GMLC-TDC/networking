@@ -49,17 +49,16 @@ TcpServer::TcpServer(
         endpoints.emplace_back(asio::ip::tcp::v4(), portNum);
     } else {
         tcp::resolver resolver(io_context);
-        tcp::resolver::query query(
+
+        auto results = resolver.resolve(
             tcp::v4(),
             address,
             std::to_string(portNum),
-            tcp::resolver::query::canonical_name);
-        tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
-        tcp::resolver::iterator end;
-        if (endpoint_iterator != end) {
-            while (endpoint_iterator != end) {
-                endpoints.push_back(*endpoint_iterator);
-                ++endpoint_iterator;
+            tcp::resolver::canonical_name);
+
+        if (!results.empty()) {
+            for (auto& res : results) {
+                endpoints.push_back(res);
             }
         } else {
             halted = true;
@@ -95,14 +94,11 @@ TcpServer::TcpServer(
     reuse_address(port_reuse)
 {
     tcp::resolver resolver(io_context);
-    tcp::resolver::query query(
-        tcp::v4(), address, port, tcp::resolver::query::canonical_name);
-    tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
-    tcp::resolver::iterator end;
-    if (endpoint_iterator != end) {
-        while (endpoint_iterator != end) {
-            endpoints.push_back(*endpoint_iterator);
-            ++endpoint_iterator;
+    tcp::resolver::results_type results = resolver.resolve(
+        tcp::v4(), address, port, tcp::resolver::canonical_name);
+    if (!results.empty()) {
+        for (auto& res : results) {
+            endpoints.push_back(res);
         }
     } else {
         halted = true;

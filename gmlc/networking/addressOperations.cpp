@@ -72,21 +72,40 @@ void removeProtocol(std::string& networkAddress)
     }
 }
 
-bool isIpv6(const std::string& address)
+bool isIpv6(std::string_view address)
 {
     auto cntcolon = std::count(address.begin(), address.end(), ':');
-    if (cntcolon > 2) {
-        return true;
+    if ((cntcolon < 2) || (cntcolon > 9)) {
+        // not enough colons need at least 2 and at most 9
+        return false;
     }
-
     auto brkcnt = address.find_first_of('[');
     if (brkcnt != std::string::npos) {
-        return true;
+        auto brkend = address.find_first_of(']', brkcnt + 2);
+        if (brkend == std::string::npos) {
+            // invalid format
+            return false;
+        }
+        address = address.substr(brkcnt, brkend - brkcnt + 1);
     }
-    if (address.compare(0, 2, "::") == 0) {
-        return true;
+    auto prevColon = address.find_first_of(':');
+    auto nextColon = address.find_first_of(':', prevColon + 1);
+
+    int dcolon = 0;
+    while (nextColon != std::string::npos) {
+        if (nextColon - prevColon == 1) {
+            ++dcolon;
+            if (dcolon > 1) {
+                return false;
+            }
+        }
+        if (nextColon - prevColon > 5) {
+            return false;
+        }
+        prevColon = nextColon;
+        nextColon = address.find_first_of(':', nextColon + 1);
     }
-    return false;
+    return true;
 }
 
 std::string

@@ -8,6 +8,7 @@ All rights reserved. SPDX-License-Identifier: BSD-3-Clause
 #pragma once
 
 #include <string>
+#include <string_view>
 #include <utility>
 
 namespace gmlc::networking {
@@ -68,6 +69,6 @@ void insertProtocol(std::string& networkAddress, InterfaceTypes interfaceT);
 /** check if a specified address is v6 or v4
 @return true if the address is a v6 address
  */
-bool isIpv6(const std::string& address);
+bool isIpv6(std::string_view address);
 
 }  // namespace gmlc::networking

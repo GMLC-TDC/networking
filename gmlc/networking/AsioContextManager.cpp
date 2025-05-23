@@ -194,7 +194,9 @@ AsioContextManager::LoopHandle AsioContextManager::startContextLoop()
         //   std::cout << "run Context loop " << runCounter << "\n";
         std::unique_lock<std::mutex> nullLock(runningLoopLock);
 
-        nullwork = std::make_unique<asio::io_context::work>(getBaseContext());
+        nullwork = std::make_unique<
+            asio::executor_work_guard<asio::io_context::executor_type>>(
+            asio::make_work_guard(getBaseContext()));
         loopRet = contextTask.get_future().share();
         AsioContextManager::storeFuture(loopRet);
         nullLock.unlock();
@@ -215,8 +217,9 @@ AsioContextManager::LoopHandle AsioContextManager::startContextLoop()
                 std::packaged_task<void()> contextTask(
                     [ptr]() { contextProcessingLoop(ptr); });
                 nullLock.lock();
-                nullwork =
-                    std::make_unique<asio::io_context::work>(getBaseContext());
+                nullwork = std::make_unique<
+                    asio::executor_work_guard<asio::io_context::executor_type>>(
+                    asio::make_work_guard(getBaseContext()));
                 loopRet = contextTask.get_future();
                 AsioContextManager::storeFuture(loopRet);
                 nullLock.unlock();
@@ -254,7 +257,7 @@ void AsioContextManager::haltContextLoop()
                         }
                     }
                     loopRet.get();
-                    ictx->reset();  // prepare for future runs
+                    ictx->restart();  // prepare for future runs
                     terminateLoop = false;
                 }
             }

@@ -45,9 +45,10 @@ class AsioContextManager
                                      //!< runContextLoop has been called
     std::string name;  //!< context name
     std::unique_ptr<asio::io_context> ictx;  //!< pointer to the actual context
-    std::unique_ptr<asio::io_context::work> nullwork;  //!< pointer to an object
-                                                       //!< used to keep a
-                                                       //!< context running
+    std::unique_ptr<asio::executor_work_guard<asio::io_context::executor_type>>
+        nullwork;  //!< pointer to an object
+                   //!< used to keep a
+                   //!< context running
     bool leakOnDelete = false;  //!< this is done to prevent some warning
                                 //!< messages for use in DLL's
     std::atomic<loop_mode> running{
