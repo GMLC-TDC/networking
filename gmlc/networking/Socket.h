@@ -251,9 +251,9 @@ T>::value) { socket_.set_verify_callback(cb);
 #ifdef GMLC_NETWORKING_ENABLE_ENCRYPTION
         // make sure the socket is an SSL stream, otherwise these methods won't
         // exist
-        if constexpr (std::is_base_of<
-                          asio::ssl::stream<asio::ip::tcp::socket>,
-                          T>::value) {
+        if constexpr (
+            std::is_base_of<asio::ssl::stream<asio::ip::tcp::socket>, T>::
+                value) {
             socket_.set_verify_mode(asio::ssl::verify_peer);
             socket_.set_verify_callback(
                 [](bool preverified, asio::ssl::verify_context& /*ctx*/) {
