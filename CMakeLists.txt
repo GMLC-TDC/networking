@@ -1,5 +1,5 @@
 # ~~~
-# Copyright (c) 2017-2024, Battelle Memorial Institute; Lawrence Livermore
+# Copyright (c) 2017-2026, Battelle Memorial Institute; Lawrence Livermore
 # National Security, LLC; Alliance for Sustainable Energy, LLC.
 # See the top-level NOTICE for additional details.
 # All rights reserved.
@@ -7,8 +7,8 @@
 # SPDX-License-Identifier: BSD-3-Clause
 # ~~~
 
-# Make sure users don't get warnings on a tested (3.0 to 3.30) version of CMake.
-cmake_minimum_required(VERSION 3.10...3.30)
+# Make sure users don't get warnings on a tested version of CMake.
+cmake_minimum_required(VERSION 3.22...4.2)
 
 project(
     GMLC_NETWORKING
@@ -20,21 +20,17 @@ project(
 # GMLC NETWORKING library Version number
 # -----------------------------------------------------------------------------
 set(GMLC_NETWORKING_VERSION_BUILD)
-set(GMLC_NETWORKING_DATE "10-18-2024")
+set(GMLC_NETWORKING_DATE "2026-04-28")
 
 set(GMLC_NETWORKING_VERSION_STRING
     "${GMLC_NETWORKING_VERSION} (${GMLC_NETWORKING_DATE})"
 )
 
-if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
-
-    set(CMAKE_CXX_EXTENSIONS OFF)
-    set(CMAKE_CXX_STANDARD_REQUIRED ON)
-endif()
-
 if(NOT CMAKE_CXX_STANDARD)
-    set(CMAKE_CXX_STANDARD 17)
+    set(CMAKE_CXX_STANDARD 20)
 endif()
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 # -----------------------------------------------------------------------------
 # set the module path and include some common macros
 # -----------------------------------------------------------------------------
@@ -79,6 +75,7 @@ mark_as_advanced(GMLC_NETWORKING_CLANG_TIDY_OPTIONS)
 mark_as_advanced(GMLC_NETWORKING_CLANG_TIDY)
 
 add_library(networking_base INTERFACE)
+target_compile_features(networking_base INTERFACE cxx_std_20)
 
 if(NOT TARGET compile_flags_target)
     add_library(compile_flags_target INTERFACE)
@@ -86,17 +83,6 @@ endif()
 
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     include(compiler_flags)
-    message(STATUS "setting version build options to \"${CXX_STANDARD_FLAG}\"")
-    if(CXX_STANDARD_FLAG)
-        if(MSVC)
-            target_compile_options(networking_base INTERFACE ${CXX_STANDARD_FLAG})
-        else()
-            target_compile_options(
-                networking_base
-                INTERFACE $<$<COMPILE_LANGUAGE:CXX>:${CXX_STANDARD_FLAG}>
-            )
-        endif(MSVC)
-    endif(CXX_STANDARD_FLAG)
 endif()
 
 target_link_libraries(networking_base INTERFACE compile_flags_target)

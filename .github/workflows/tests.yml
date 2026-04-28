@@ -13,29 +13,46 @@ on:
 jobs:
   build:
     name: Build and test
-    runs-on: ${{ matrix.os  }}
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [windows-latest, macos-latest, ubuntu-latest, ubuntu-24.04-arm]
+        include:
+          - os: ubuntu-latest
+            std: 20
+          - os: windows-latest
+            std: 20
+          - os: macos-latest
+            std: 23
+          - os: ubuntu-24.04-arm
+            std: 20
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
+        with:
+          submodules: true
 
-    - name: Install OpenSSL (Windows)
-      if: runner.os == 'Windows'
-      run: choco install openssl
+      - name: Install OpenSSL (Windows)
+        if: runner.os == 'Windows'
+        run: choco install openssl
 
-    - name: CMake Configure
-      shell: bash
-      run: |
-        if [[ "${{ runner.os }}" == "macOS" ]]; then export OPENSSL_ROOT_DIR=/usr/local/opt/openssl; fi
-        cmake -B build -S . -DGMLC_NETWORKING_ENABLE_ENCRYPTION=ON
+      - name: CMake Configure
+        shell: bash
+        run: |
+          if [[ "${{ runner.os }}" == "macOS" ]]; then
+            if [[ -d /opt/homebrew/opt/openssl@3 ]]; then
+              export OPENSSL_ROOT_DIR=/opt/homebrew/opt/openssl@3
+            elif [[ -d /usr/local/opt/openssl@3 ]]; then
+              export OPENSSL_ROOT_DIR=/usr/local/opt/openssl@3
+            fi
+          fi
+          cmake -B build -S . \
+            -DCMAKE_CXX_STANDARD=${{ matrix.std }} \
+            -DGMLC_NETWORKING_ENABLE_ENCRYPTION=ON
 
-    - name: Build 
-      run: cmake --build build --parallel
+      - name: Build
+        run: cmake --build build --parallel 4
 
-    - name: Run unit tests
-      run: ctest --test-dir build --output-on-failure
-      
+      - name: Run unit tests
+        run: ctest --test-dir build --output-on-failure
 
 
   # Test running CMake configure step with a variety of CMake versions
@@ -43,82 +60,84 @@ jobs:
     name: CMake config check
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
+        with:
+          submodules: true
 
-    - name: Check CMake 3.10
-      uses: ./.github/actions/quick_cmake
-      with:
-        cmake-version: "3.10"
-      if: success() || failure()
-
-    - name: Check CMake 3.11
-      uses: ./.github/actions/quick_cmake
-      with:
-        cmake-version: "3.11"
-      if: success() || failure()
-
-    - name: Check CMake 3.12
-      uses: ./.github/actions/quick_cmake
-      with:
-        cmake-version: "3.12"
-      if: success() || failure()
-
-    - name: Check CMake 3.13
-      uses: ./.github/actions/quick_cmake
-      with:
-        cmake-version: "3.13"
-      if: success() || failure()
-
-    - name: Check CMake 3.14
-      uses: ./.github/actions/quick_cmake
-      with:
-        cmake-version: "3.14"
-      if: success() || failure()
-
-    - name: Check CMake 3.15
-      uses: ./.github/actions/quick_cmake
-      with:
-        cmake-version: "3.15"
-      if: success() || failure()
-
-    - name: Check CMake 3.16
-      uses: ./.github/actions/quick_cmake
-      with:
-        cmake-version: "3.16"
-      if: success() || failure()
-
-    - name: Check CMake 3.17
-      uses: ./.github/actions/quick_cmake
-      with:
-        cmake-version: "3.17"
-      if: success() || failure()
-
-    - name: Check CMake 3.18
-      uses: ./.github/actions/quick_cmake
-      with:
-        cmake-version: "3.18"
-      if: success() || failure()
-
-    - name: Check CMake 3.19
-      uses: ./.github/actions/quick_cmake
-      with:
-        cmake-version: "3.19"
-      if: success() || failure()
-
-    - name: Check CMake 3.20
-      uses: ./.github/actions/quick_cmake
-      with:
-        cmake-version: "3.20"
-      if: success() || failure()
-
-    - name: Check CMake 3.21
-      uses: ./.github/actions/quick_cmake
-      with:
-        cmake-version: "3.21"
-      if: success() || failure()
-
-    - name: Check CMake 3.22
-      uses: ./.github/actions/quick_cmake
-      with:
-        cmake-version: "3.22"
-      if: success() || failure()
+      - name: CMake 3.22
+        uses: ./.github/actions/quick_cmake
+        with:
+          cmake-version: 3.22.0
+          args: -DGMLC_NETWORKING_ENABLE_ENCRYPTION=OFF
+      - name: CMake 3.23
+        uses: ./.github/actions/quick_cmake
+        with:
+          cmake-version: 3.23.0
+          args: -DGMLC_NETWORKING_ENABLE_ENCRYPTION=OFF
+        if: success() || failure()
+      - name: CMake 3.24
+        uses: ./.github/actions/quick_cmake
+        with:
+          cmake-version: 3.24.0
+          args: -DGMLC_NETWORKING_ENABLE_ENCRYPTION=OFF
+        if: success() || failure()
+      - name: CMake 3.25
+        uses: ./.github/actions/quick_cmake
+        with:
+          cmake-version: 3.25.0
+          args: -DGMLC_NETWORKING_ENABLE_ENCRYPTION=OFF
+        if: success() || failure()
+      - name: CMake 3.26
+        uses: ./.github/actions/quick_cmake
+        with:
+          cmake-version: 3.26.0
+          args: -DGMLC_NETWORKING_ENABLE_ENCRYPTION=OFF
+        if: success() || failure()
+      - name: CMake 3.27
+        uses: ./.github/actions/quick_cmake
+        with:
+          cmake-version: 3.27.0
+          args: -DGMLC_NETWORKING_ENABLE_ENCRYPTION=OFF
+        if: success() || failure()
+      - name: CMake 3.28
+        uses: ./.github/actions/quick_cmake
+        with:
+          cmake-version: 3.28.0
+          args: -DGMLC_NETWORKING_ENABLE_ENCRYPTION=OFF
+        if: success() || failure()
+      - name: CMake 3.29
+        uses: ./.github/actions/quick_cmake
+        with:
+          cmake-version: 3.29.0
+          args: -DGMLC_NETWORKING_ENABLE_ENCRYPTION=OFF
+        if: success() || failure()
+      - name: CMake 3.30
+        uses: ./.github/actions/quick_cmake
+        with:
+          cmake-version: 3.30.0
+          args: -DGMLC_NETWORKING_ENABLE_ENCRYPTION=OFF
+        if: success() || failure()
+      - name: CMake 3.31
+        uses: ./.github/actions/quick_cmake
+        with:
+          cmake-version: 3.31.0
+          args: -DGMLC_NETWORKING_ENABLE_ENCRYPTION=OFF
+        if: success() || failure()
+      - name: CMake 4.0
+        uses: ./.github/actions/quick_cmake
+        with:
+          cmake-version: 4.0.0
+          args: -DGMLC_NETWORKING_ENABLE_ENCRYPTION=OFF
+        if: success() || failure()
+      - name: CMake 4.1
+        uses: ./.github/actions/quick_cmake
+        with:
+          cmake-version: 4.1.0
+          args: -DGMLC_NETWORKING_ENABLE_ENCRYPTION=OFF
+        if: success() || failure()
+      - name: CMake 4.2
+        uses: ./.github/actions/quick_cmake
+        with:
+          cmake-version: 4.2.0
+          args: -DGMLC_NETWORKING_ENABLE_ENCRYPTION=OFF
+        if: success() || failure()
