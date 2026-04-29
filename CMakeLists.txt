@@ -31,6 +31,7 @@ if(NOT CMAKE_CXX_STANDARD)
 endif()
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
 # -----------------------------------------------------------------------------
 # set the module path and include some common macros
 # -----------------------------------------------------------------------------
@@ -210,10 +211,10 @@ elseif(GMLC_NETWORKING_JSON_INCLUDE)
         INTERFACE $<BUILD_INTERFACE:${GMLC_NETWORKING_JSON_INCLUDE}>
     )
 else()
-    if(NOT EXISTS "${PROJECT_SOURCE_DIR}/ThirdParty/json.hpp")
+    if(NOT EXISTS "${PROJECT_SOURCE_DIR}/ThirdParty/nlohmann/json.hpp")
         message(
             FATAL_ERROR
-                "ThirdParty/json.hpp is required when GMLC_NETWORKING_USE_EXTERNAL_JSON is OFF"
+                "ThirdParty/nlohmann/json.hpp is required when GMLC_NETWORKING_USE_EXTERNAL_JSON is OFF"
         )
     endif()
     add_library(gmlc_networking_json INTERFACE)
