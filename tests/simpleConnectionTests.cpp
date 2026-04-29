@@ -74,7 +74,7 @@ TEST_CASE("simple_comm_test", "[simpleConnections]")
     INFO("Connection created");
     while (!connection->isConnected()) {
     }
-    INFO("Connection established")
+    INFO("Connection established");
 
     INFO("Sending test string");
     connection->send("test");
@@ -82,7 +82,7 @@ TEST_CASE("simple_comm_test", "[simpleConnections]")
     // Sleep to give time for the client/server threads to run
     std::this_thread::sleep_for(std::chrono::milliseconds(20));
 
-    INFO("Shutdown server")
+    INFO("Shutdown server");
     server->close();
 
     // One last check to make sure the data receive callback actually ran
@@ -142,7 +142,7 @@ TEST_CASE("simple_encrypted_comm_test", "[simpleConnections]")
     INFO("Connection created");
     while (!connection->isConnected()) {
     }
-    INFO("Connection established")
+    INFO("Connection established");
 
     // Sleep to make sure the OpenSSL handshake is finished
     std::this_thread::sleep_for(std::chrono::milliseconds(20));
@@ -153,7 +153,7 @@ TEST_CASE("simple_encrypted_comm_test", "[simpleConnections]")
     // Sleep to give time for the client/server threads to run
     std::this_thread::sleep_for(std::chrono::milliseconds(20));
 
-    INFO("Shutdown server")
+    INFO("Shutdown server");
     server->close();
 
     // One last check to make sure the data receive callback actually ran

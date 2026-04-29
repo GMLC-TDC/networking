@@ -225,7 +225,7 @@ option(GMLC_NETWORKING_INCLUDE_BOOST "Enable some boost library headers to be us
 
 # Add boost to test boost::optional if available
 if(GMLC_NETWORKING_INCLUDE_BOOST)
-    find_package(Boost 1.67)
+    find_package(Boost 1.83)
     if(Boost_FOUND)
         message(STATUS "Boost dir= ${Boost_INCLUDE_DIRS}")
         target_include_directories(
