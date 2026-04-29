@@ -1,9 +1,16 @@
-#define CATCH_CONFIG_MAIN
-#include "catch2/catch.hpp"
-#include "gmlc/networking/AsioContextManager.h"
-#include <stdlib.h>
+/*
+Copyright (c) 2017-2026,
+Battelle Memorial Institute; Lawrence Livermore National Security, LLC; Alliance
+for Sustainable Energy, LLC.  See the top-level NOTICE for additional details.
+All rights reserved. SPDX-License-Identifier: BSD-3-Clause
+*/
 
-using namespace gmlc::networking;
+#include "catch.hpp"
+
+#include <stdlib.h>
+#include <string>
+
+#include "gmlc/networking/AsioContextManager.h"
 
 TEST_CASE("getContextPointerTest", "[contextManager]")
 {

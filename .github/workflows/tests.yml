@@ -54,6 +54,89 @@ jobs:
       - name: Run unit tests
         run: ctest --test-dir build --output-on-failure
 
+  catch2-3:
+    name: External Catch2 3.x
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: true
+
+      - name: Install Catch2
+        run: brew install catch2
+
+      - name: CMake Configure
+        shell: bash
+        run: |
+          CATCH2_PREFIX="$(brew --prefix catch2)"
+          cmake -B build -S . \
+            -DCMAKE_CXX_STANDARD=20 \
+            -DCMAKE_PREFIX_PATH="${CATCH2_PREFIX}" \
+            -DGMLC_NETWORKING_ENABLE_ENCRYPTION=OFF
+
+      - name: Build
+        run: cmake --build build --parallel 4
+
+      - name: Run unit tests
+        run: ctest --test-dir build --output-on-failure
+
+  gcc-15:
+    name: GCC 15
+    runs-on: ubuntu-latest
+    container:
+      image: gcc:15
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: true
+
+      - name: Install build tools
+        run: apt-get update && apt-get install -y cmake ninja-build
+
+      - name: CMake Configure
+        run: >
+          cmake -G Ninja -B build -S .
+          -DCMAKE_CXX_STANDARD=20
+          -DGMLC_NETWORKING_ENABLE_ENCRYPTION=OFF
+
+      - name: Build
+        run: cmake --build build --parallel 4
+
+      - name: Run unit tests
+        run: ctest --test-dir build --output-on-failure
+
+  clang-22:
+    name: Clang 22
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: true
+
+      - name: Install Clang 22
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget gnupg lsb-release software-properties-common
+          wget https://apt.llvm.org/llvm.sh
+          chmod +x llvm.sh
+          sudo ./llvm.sh 22
+          sudo apt-get install -y clang-22 lld-22 ninja-build
+
+      - name: CMake Configure
+        run: >
+          cmake -G Ninja -B build -S .
+          -DCMAKE_C_COMPILER=clang-22
+          -DCMAKE_CXX_COMPILER=clang++-22
+          -DCMAKE_CXX_FLAGS=-Wdocumentation
+          -DCMAKE_CXX_STANDARD=20
+          -DGMLC_NETWORKING_ENABLE_ENCRYPTION=OFF
+
+      - name: Build
+        run: cmake --build build --parallel 4
+
+      - name: Run unit tests
+        run: ctest --test-dir build --output-on-failure
+
 
   # Test running CMake configure step with a variety of CMake versions
   cmake-config:

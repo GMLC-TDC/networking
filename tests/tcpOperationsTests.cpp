@@ -5,23 +5,23 @@ for Sustainable Energy, LLC.  See the top-level NOTICE for additional details.
 All rights reserved. SPDX-License-Identifier: BSD-3-Clause
 */
 
-#define CATCH_CONFIG_MAIN
-#include "catch2/catch.hpp"
+#include "catch.hpp"
+
 #include <stdlib.h>
+#include <string>
 #include <thread>
 
 #include "gmlc/networking/AsioContextManager.h"
 #include "gmlc/networking/TcpOperations.h"
 #include "gmlc/networking/addressOperations.hpp"
 #include "gmlc/networking/interfaceOperations.hpp"
-using namespace gmlc::networking;
 
 void handler(const std::error_code& /*e*/, std::size_t bytes_transferred)
 {
     CHECK(bytes_transferred == 5);
 }
 
-void client(TcpConnection::pointer cpt)
+void client(gmlc::networking::TcpConnection::pointer cpt)
 {
     static constexpr char data[] = "test0";
     constexpr std::size_t dataSize = sizeof(data) - 1;
@@ -35,7 +35,7 @@ TEST_CASE("asynchronousTcpOperationsTest", "[TcpOps]")
             "io_context_server");
 
     auto server_context_loop = io_context_server->startContextLoop();
-    auto spt = TcpServer::create(
+    auto spt = gmlc::networking::TcpServer::create(
         io_context_server->getBaseContext(), "localhost", 19888, true);
     int itCount{0};
     while (!spt->isReady()) {
@@ -70,7 +70,7 @@ TEST_CASE("asynchronousTcpOperationsTest", "[TcpOps]")
     spt->start();
 
     std::chrono::milliseconds timeOut = std::chrono::milliseconds(0);
-    auto cpt = establishConnection(
+    auto cpt = gmlc::networking::establishConnection(
         io_context_server->getBaseContext(),
         std::string("localhost"),
         "19888",
@@ -102,7 +102,7 @@ TEST_CASE("TcpOperationsTest", "[TcpOps]")
             "io_context_server");
 
     auto server_context_loop = io_context_server->startContextLoop();
-    auto spt = TcpServer::create(
+    auto spt = gmlc::networking::TcpServer::create(
         io_context_server->getBaseContext(), "*", 19888, true);
     int itCount{0};
     while (!spt->isReady()) {
@@ -140,7 +140,7 @@ TEST_CASE("TcpOperationsTest", "[TcpOps]")
         gmlc::networking::AsioContextManager::getContextPointer(
             "io_context_client");
     std::chrono::milliseconds timeOut = std::chrono::milliseconds(0);
-    auto cpt = establishConnection(
+    auto cpt = gmlc::networking::establishConnection(
         io_context_client->getBaseContext(),
         std::string("localhost"),
         "19888",

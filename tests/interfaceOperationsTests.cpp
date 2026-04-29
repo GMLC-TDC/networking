@@ -5,8 +5,7 @@ for Sustainable Energy, LLC.  See the top-level NOTICE for additional details.
 All rights reserved. SPDX-License-Identifier: BSD-3-Clause
 */
 
-#define CATCH_CONFIG_MAIN
-#include "catch2/catch.hpp"
+#include "catch.hpp"
 
 #include "gmlc/networking/addressOperations.hpp"
 #include "gmlc/networking/interfaceOperations.hpp"
