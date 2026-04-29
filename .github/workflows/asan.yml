@@ -16,7 +16,6 @@ jobs:
     container:
       image: helics/buildenv:sanitizers-19
     env:
-      LSAN_OPTIONS: "suppressions=${{ github.workspace }}/config/leak_suppression.txt"
       UBSAN_OPTIONS: "print_stacktrace=1"
       ASAN_OPTIONS: "alloc_dealloc_mismatch=0"
 
@@ -41,4 +40,4 @@ jobs:
 
       - name: Test
         working-directory: build
-        run: ctest --verbose
+        run: LSAN_OPTIONS="suppressions=$PWD/../config/leak_suppression.txt" ctest --verbose
