@@ -57,7 +57,12 @@ TEST_CASE("runContextTest", "[contextManager]")
 }
 TEST_CASE("runContextTestFail", "[contextManager]")
 {
-    CHECK_THROWS_WITH(
-        gmlc::networking::AsioContextManager::runContextLoop("nonexistent"),
-        "the context name specified was not available");
+    try {
+        static_cast<void>(
+            gmlc::networking::AsioContextManager::runContextLoop("nonexistent"));
+        FAIL("expected runContextLoop to throw for a missing context");
+    }
+    catch (const std::invalid_argument& e) {
+        CHECK(std::string(e.what()) == "the context name specified was not available");
+    }
 }

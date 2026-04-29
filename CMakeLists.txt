@@ -13,7 +13,7 @@ cmake_minimum_required(VERSION 3.22...4.2)
 project(
     GMLC_NETWORKING
     LANGUAGES CXX
-    VERSION 0.3.0
+    VERSION 0.4.0
 )
 
 # -----------------------------------------------------------------------------
@@ -87,9 +87,14 @@ endif()
 
 target_link_libraries(networking_base INTERFACE compile_flags_target)
 
-set(THREADS_PREFER_PTHREAD_FLAG ON)
-find_package(Threads REQUIRED)
-target_link_libraries(networking_base INTERFACE Threads::Threads)
+if(MSYS OR CYGWIN)
+    set(THREADS_PREFER_PTHREAD_FLAG ON)
+endif()
+find_package(Threads QUIET)
+
+if(TARGET Threads::Threads)
+    target_link_libraries(networking_base INTERFACE Threads::Threads)
+endif()
 
 # MinGW/MSYS/Cygwin support
 if(MINGW
@@ -125,11 +130,31 @@ cmake_dependent_option(
 if(NOT GMLC_NETWORKING_DISABLE_ASIO)
     target_compile_definitions(networking_base INTERFACE "-DASIO_STANDALONE")
     if(NOT GMLC_NETWORKING_ASIO_INCLUDE)
-        set(GMLC_NETWORKING_ASIO_INCLUDE
-            ${PROJECT_SOURCE_DIR}/ThirdParty/asio/asio/include
-        )
-        if(NOT EXISTS "${PROJECT_SOURCE_DIR}/ThirdParty/asio/asio/include/asio.hpp")
+        if(EXISTS "${PROJECT_SOURCE_DIR}/ThirdParty/asio/include/asio.hpp")
+            set(GMLC_NETWORKING_ASIO_INCLUDE
+                ${PROJECT_SOURCE_DIR}/ThirdParty/asio/include
+            )
+        elseif(EXISTS "${PROJECT_SOURCE_DIR}/ThirdParty/asio/asio/include/asio.hpp")
+            set(GMLC_NETWORKING_ASIO_INCLUDE
+                ${PROJECT_SOURCE_DIR}/ThirdParty/asio/asio/include
+            )
+        endif()
+        if(NOT GMLC_NETWORKING_ASIO_INCLUDE)
             submod_update(ThirdParty/asio)
+            if(EXISTS "${PROJECT_SOURCE_DIR}/ThirdParty/asio/include/asio.hpp")
+                set(GMLC_NETWORKING_ASIO_INCLUDE
+                    ${PROJECT_SOURCE_DIR}/ThirdParty/asio/include
+                )
+            elseif(EXISTS
+                   "${PROJECT_SOURCE_DIR}/ThirdParty/asio/asio/include/asio.hpp"
+            )
+                set(GMLC_NETWORKING_ASIO_INCLUDE
+                    ${PROJECT_SOURCE_DIR}/ThirdParty/asio/asio/include
+                )
+            endif()
+        endif()
+        if(NOT GMLC_NETWORKING_ASIO_INCLUDE)
+            message(FATAL_ERROR "Unable to locate the ASIO headers")
         endif()
     endif()
 
@@ -172,21 +197,29 @@ option(GMLC_NETWORKING_USE_EXTERNAL_JSON "Use an external nlohmann_json library"
 
 if(GMLC_NETWORKING_USE_EXTERNAL_JSON)
     find_package(nlohmann_json 3.10 REQUIRED)
+    add_library(gmlc_networking_json INTERFACE)
+    target_link_libraries(
+        gmlc_networking_json INTERFACE nlohmann_json::nlohmann_json
+    )
 elseif(GMLC_NETWORKING_JSON_INCLUDE)
 
     message(STATUS "using json include from = ${GMLC_NETWORKING_JSON_INCLUDE}")
+    add_library(gmlc_networking_json INTERFACE)
     target_include_directories(
-        networking_base INTERFACE $<BUILD_INTERFACE:${GMLC_NETWORKING_JSON_INCLUDE}>
+        gmlc_networking_json
+        INTERFACE $<BUILD_INTERFACE:${GMLC_NETWORKING_JSON_INCLUDE}>
     )
 else()
-    set(JSON_BuildTests
-        OFF
-        CACHE INTERNAL ""
-    )
-    if(NOT EXISTS "${PROJECT_SOURCE_DIR}/ThirdParty/nlohmann_json/CMakeLists.txt")
-        submod_update(ThirdParty/nlohmann_json)
+    if(NOT EXISTS "${PROJECT_SOURCE_DIR}/ThirdParty/json.hpp")
+        message(
+            FATAL_ERROR
+                "ThirdParty/json.hpp is required when GMLC_NETWORKING_USE_EXTERNAL_JSON is OFF"
+        )
     endif()
-    add_subdirectory(ThirdParty/nlohmann_json)
+    add_library(gmlc_networking_json INTERFACE)
+    target_include_directories(
+        gmlc_networking_json INTERFACE $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/ThirdParty>
+    )
 endif()
 
 option(GMLC_NETWORKING_INSTALL "Enable GMLC utilities to be installed" ON)

@@ -15,8 +15,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v6
-        with:
-          submodules: true
       - name: Run cpplint
         run: cpplint --counting=detailed --recursive gmlc tests
   cppcheck:
@@ -25,7 +23,5 @@ jobs:
 
     steps:
       - uses: actions/checkout@v6
-        with:
-          submodules: true
       - name: Run cppcheck
         run: cppcheck --enable=performance,portability --check-level=exhaustive --language=c++ --suppressions-list=config/cppcheck_suppressions.txt --error-exitcode=-4 -i ThirdParty -i docs -i config .

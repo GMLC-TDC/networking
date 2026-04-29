@@ -81,7 +81,7 @@ bool TcpAcceptor::start(TcpConnection::pointer conn)
 {
     if (!conn) {
         if (accepting.isActive()) {
-            accepting.trigger();
+            static_cast<void>(accepting.trigger());
         }
         logger(0, "tcpconnection is not valid");
         return false;
@@ -89,7 +89,7 @@ bool TcpAcceptor::start(TcpConnection::pointer conn)
     if (state != AcceptingStates::CONNECTED) {
         conn->close();
         if (accepting.isActive()) {
-            accepting.trigger();
+            static_cast<void>(accepting.trigger());
         }
         logger(1, "acceptor is not in a connected state");
         return false;
@@ -116,8 +116,8 @@ bool TcpAcceptor::start(TcpConnection::pointer conn)
 void TcpAcceptor::close()
 {
     state = AcceptingStates::HALTED;
-    acceptor_.close();
-    accepting.wait();
+    static_cast<void>(acceptor_.close());
+    static_cast<void>(accepting.wait());
 }
 
 std::string TcpAcceptor::to_string() const
@@ -134,7 +134,7 @@ void TcpAcceptor::handle_accept(
 {
     if (state.load() != AcceptingStates::CONNECTED) {
         std::error_code ec;
-        new_connection->socket()->set_option_linger(true, 0, ec);
+        static_cast<void>(new_connection->socket()->set_option_linger(true, 0, ec));
         new_connection->close();
         accepting.reset();
         return;
@@ -144,11 +144,11 @@ void TcpAcceptor::handle_accept(
             accepting.reset();
             acceptCall(std::move(ptr), std::move(new_connection));
             if (!accepting.isActive()) {
-                accepting.trigger();
+                static_cast<void>(accepting.trigger());
             }
         } else {
             try {
-                new_connection->socket()->set_option_linger(true, 0);
+                static_cast<void>(new_connection->socket()->set_option_linger(true, 0));
             }
             catch (...) {
             }
@@ -162,7 +162,7 @@ void TcpAcceptor::handle_accept(
             logger(0, std::string(" error in accept::") + error.message());
         }
         try {
-            new_connection->socket()->set_option_linger(true, 0);
+            static_cast<void>(new_connection->socket()->set_option_linger(true, 0));
         }
         catch (...) {
         }
