@@ -6,6 +6,7 @@ All rights reserved. SPDX-License-Identifier: BSD-3-Clause
 */
 
 #include "catch.hpp"
+#include "testCleanup.hpp"
 
 #include "gmlc/networking/AsioContextManager.h"
 #include "gmlc/networking/SocketFactory.h"
@@ -22,6 +23,10 @@ All rights reserved. SPDX-License-Identifier: BSD-3-Clause
  * using settings parsed from a JSON config string*/
 TEST_CASE("simple_comm_test", "[simpleConnections]")
 {
+    ContextCleanupGuard contextCleanup;
+    contextCleanup.add("server");
+    contextCleanup.add("client");
+
     // Create a socket factory using a JSON config string
     gmlc::networking::SocketFactory sf(R"({"encrypted": false})", false);
 
@@ -84,6 +89,12 @@ TEST_CASE("simple_comm_test", "[simpleConnections]")
 
     INFO("Shutdown server");
     server->close();
+    connection.reset();
+    server.reset();
+    ctxloop_client.reset();
+    ctxloop_server.reset();
+    ioctx_client.reset();
+    ioctx_server.reset();
 
     // One last check to make sure the data receive callback actually ran
     INFO("Data size: " << data_recv_size);
@@ -95,6 +106,10 @@ TEST_CASE("simple_comm_test", "[simpleConnections]")
  * using settings loaded from a JSON config file*/
 TEST_CASE("simple_encrypted_comm_test", "[simpleConnections]")
 {
+    ContextCleanupGuard contextCleanup;
+    contextCleanup.add("server");
+    contextCleanup.add("client");
+
     // Create a SocketFactory using values from a JSON config file
     gmlc::networking::SocketFactory sf(
         std::string(TEST_BINDIR) + "/test_files/ssl_encryption_config.json");
@@ -155,6 +170,12 @@ TEST_CASE("simple_encrypted_comm_test", "[simpleConnections]")
 
     INFO("Shutdown server");
     server->close();
+    connection.reset();
+    server.reset();
+    ctxloop_client.reset();
+    ctxloop_server.reset();
+    ioctx_client.reset();
+    ioctx_server.reset();
 
     // One last check to make sure the data receive callback actually ran
     INFO("Data size: " << data_recv_size);

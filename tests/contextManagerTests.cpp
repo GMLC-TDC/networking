@@ -6,6 +6,7 @@ All rights reserved. SPDX-License-Identifier: BSD-3-Clause
 */
 
 #include "catch.hpp"
+#include "testCleanup.hpp"
 
 #include <stdlib.h>
 #include <string>
@@ -14,6 +15,8 @@ All rights reserved. SPDX-License-Identifier: BSD-3-Clause
 
 TEST_CASE("getContextPointerTest", "[contextManager]")
 {
+    ContextCleanupGuard contextCleanup("io_context");
+
     auto io_context =
         gmlc::networking::AsioContextManager::getContextPointer("io_context");
     auto new_context =
@@ -25,6 +28,8 @@ TEST_CASE("getContextPointerTest", "[contextManager]")
 
 TEST_CASE("closeContext", "[contextManager]")
 {
+    ContextCleanupGuard contextCleanup("io_context");
+
     auto io_context =
         gmlc::networking::AsioContextManager::getContextPointer("io_context");
     io_context->startContextLoop();
@@ -34,12 +39,16 @@ TEST_CASE("closeContext", "[contextManager]")
 
 TEST_CASE("getNameTest", "[contextManager]")
 {
+    ContextCleanupGuard contextCleanup("io_context");
+
     auto context_pointer =
         gmlc::networking::AsioContextManager::getContextPointer("io_context");
     CHECK(context_pointer->getName() == "io_context");
 }
 TEST_CASE("getContext", "[contextManager]")
 {
+    ContextCleanupGuard contextCleanup("io_context");
+
     auto context_pointer =
         gmlc::networking::AsioContextManager::getContextPointer("io_context");
     auto* p1 = &context_pointer->getBaseContext();
@@ -49,12 +58,16 @@ TEST_CASE("getContext", "[contextManager]")
 
 TEST_CASE("startContextTest", "[contextManager]")
 {
+    ContextCleanupGuard contextCleanup("io_context");
+
     auto context_pointer =
         gmlc::networking::AsioContextManager::getContextPointer("io_context");
     CHECK_NOTHROW(context_pointer->startContextLoop());
 }
 TEST_CASE("runContextTest", "[contextManager]")
 {
+    ContextCleanupGuard contextCleanup("io_context");
+
     auto context_pointer =
         gmlc::networking::AsioContextManager::getContextPointer(
             std::string("io_context"));

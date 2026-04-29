@@ -6,6 +6,7 @@ All rights reserved. SPDX-License-Identifier: BSD-3-Clause
 */
 
 #include "catch.hpp"
+#include "testCleanup.hpp"
 
 #include <stdlib.h>
 #include <string>
@@ -30,6 +31,8 @@ void client(gmlc::networking::TcpConnection::pointer cpt)
 
 TEST_CASE("asynchronousTcpOperationsTest", "[TcpOps]")
 {
+    ContextCleanupGuard contextCleanup("io_context_server");
+
     auto io_context_server =
         gmlc::networking::AsioContextManager::getContextPointer(
             "io_context_server");
@@ -91,12 +94,19 @@ TEST_CASE("asynchronousTcpOperationsTest", "[TcpOps]")
 
     spt->close();
     cpt->close();
+    cpt.reset();
+    spt.reset();
+    server_context_loop.reset();
+    io_context_server.reset();
 
     CHECK(data_recv_size == 5);
 }
 
 TEST_CASE("TcpOperationsTest", "[TcpOps]")
 {
+    ContextCleanupGuard contextCleanup("io_context_server");
+    contextCleanup.add("io_context_client");
+
     auto io_context_server =
         gmlc::networking::AsioContextManager::getContextPointer(
             "io_context_server");
@@ -160,6 +170,12 @@ TEST_CASE("TcpOperationsTest", "[TcpOps]")
 
     spt->close();
     cpt->close();
+    cpt.reset();
+    spt.reset();
+    client_ctxt_loop.reset();
+    server_context_loop.reset();
+    io_context_client.reset();
+    io_context_server.reset();
 
     CHECK(data_recv_size == 5);
 }
