@@ -134,7 +134,8 @@ void TcpAcceptor::handle_accept(
 {
     if (state.load() != AcceptingStates::CONNECTED) {
         std::error_code ec;
-        static_cast<void>(new_connection->socket()->set_option_linger(true, 0, ec));
+        static_cast<void>(
+            new_connection->socket()->set_option_linger(true, 0, ec));
         new_connection->close();
         accepting.reset();
         return;
@@ -148,7 +149,8 @@ void TcpAcceptor::handle_accept(
             }
         } else {
             try {
-                static_cast<void>(new_connection->socket()->set_option_linger(true, 0));
+                static_cast<void>(
+                    new_connection->socket()->set_option_linger(true, 0));
             }
             catch (...) {
             }
@@ -162,7 +164,8 @@ void TcpAcceptor::handle_accept(
             logger(0, std::string(" error in accept::") + error.message());
         }
         try {
-            static_cast<void>(new_connection->socket()->set_option_linger(true, 0));
+            static_cast<void>(
+                new_connection->socket()->set_option_linger(true, 0));
         }
         catch (...) {
         }
