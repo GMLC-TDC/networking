@@ -28,7 +28,8 @@ if(Catch2_FOUND)
 else()
     add_library(catch_main main.cpp catch.hpp)
     target_include_directories(
-        catch_main PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/ThirdParty/catch2
+        catch_main PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
+                          ${PROJECT_SOURCE_DIR}/ThirdParty/catch2
     )
 endif()
 

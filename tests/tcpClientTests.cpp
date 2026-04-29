@@ -16,7 +16,8 @@ TEST_CASE("localHost", "[TcpClient]")
 {
     asio::io_context io_context;
     auto localhost = "127.0.0.1";
-    CHECK_NOTHROW(gmlc::networking::TcpConnection::create(io_context, localhost, "0"));
+    CHECK_NOTHROW(
+        gmlc::networking::TcpConnection::create(io_context, localhost, "0"));
 }
 
 TEST_CASE("localHostString", "[TcpClient]")
