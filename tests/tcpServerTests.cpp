@@ -24,18 +24,23 @@ TEST_CASE("externalAddressV4", "[TcpServer]")
     asio::io_context io_context;
     CHECK_NOTHROW(
         gmlc::networking::TcpServer::create(
-            io_context, gmlc::networking::getLocalExternalAddressV4(), "0", false));
+            io_context,
+            gmlc::networking::getLocalExternalAddressV4(),
+            "0",
+            false));
 }
 
 TEST_CASE("localHostString", "[TcpServer]")
 {
     asio::io_context io_context;
     CHECK_NOTHROW(
-        gmlc::networking::TcpServer::create(io_context, "localhost", "0", false));
+        gmlc::networking::TcpServer::create(
+            io_context, "localhost", "0", false));
 }
 TEST_CASE("invalidString", "[TcpServer]")
 {
     asio::io_context io_context;
     CHECK_THROWS(
-        gmlc::networking::TcpServer::create(io_context, "testString", "0", false));
+        gmlc::networking::TcpServer::create(
+            io_context, "testString", "0", false));
 }
