@@ -24,14 +24,12 @@ class ContextCleanupGuard {
 
     ~ContextCleanupGuard()
     {
-        for (auto index = contextNames.rbegin(); index != contextNames.rend();
-             ++index) {
-            try {
-                gmlc::networking::AsioContextManager::closeContext(*index);
-            }
-            catch (...) {
-                // Test cleanup should not throw during stack unwinding.
-            }
+        static_cast<void>(contextNames);
+        try {
+            gmlc::networking::AsioContextManager::closeAllContexts();
+        }
+        catch (...) {
+            // Test cleanup should not throw during stack unwinding.
         }
     }
 

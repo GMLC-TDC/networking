@@ -122,6 +122,25 @@ void AsioContextManager::closeContext(const std::string& contextName)
     }
 }
 
+void AsioContextManager::closeAllContexts()
+{
+    std::vector<std::string> contextNames;
+    {
+        std::lock_guard<std::mutex> ctxlock(contextLock);
+        contextNames.reserve(contexts.size());
+        for (const auto& contextPair : contexts) {
+            contextNames.push_back(contextPair.first);
+        }
+    }
+
+    for (const auto& contextName : contextNames) {
+        closeContext(contextName);
+    }
+
+    std::lock_guard<std::mutex> futlock(futureLock);
+    futures.clear();
+}
+
 void AsioContextManager::setContextToLeakOnDelete(
     const std::string& contextName)
 {
