@@ -145,9 +145,7 @@ if(NOT GMLC_NETWORKING_DISABLE_ASIO)
                 set(GMLC_NETWORKING_ASIO_INCLUDE
                     ${PROJECT_SOURCE_DIR}/ThirdParty/asio/include
                 )
-            elseif(EXISTS
-                   "${PROJECT_SOURCE_DIR}/ThirdParty/asio/asio/include/asio.hpp"
-            )
+            elseif(EXISTS "${PROJECT_SOURCE_DIR}/ThirdParty/asio/asio/include/asio.hpp")
                 set(GMLC_NETWORKING_ASIO_INCLUDE
                     ${PROJECT_SOURCE_DIR}/ThirdParty/asio/asio/include
                 )
@@ -198,9 +196,7 @@ option(GMLC_NETWORKING_USE_EXTERNAL_JSON "Use an external nlohmann_json library"
 if(GMLC_NETWORKING_USE_EXTERNAL_JSON)
     find_package(nlohmann_json 3.10 REQUIRED)
     add_library(gmlc_networking_json INTERFACE)
-    target_link_libraries(
-        gmlc_networking_json INTERFACE nlohmann_json::nlohmann_json
-    )
+    target_link_libraries(gmlc_networking_json INTERFACE nlohmann_json::nlohmann_json)
 elseif(GMLC_NETWORKING_JSON_INCLUDE)
 
     message(STATUS "using json include from = ${GMLC_NETWORKING_JSON_INCLUDE}")
@@ -218,7 +214,8 @@ else()
     endif()
     add_library(gmlc_networking_json INTERFACE)
     target_include_directories(
-        gmlc_networking_json INTERFACE $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/ThirdParty>
+        gmlc_networking_json
+        INTERFACE $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/ThirdParty>
     )
 endif()
 
