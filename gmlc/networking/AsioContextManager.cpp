@@ -20,6 +20,7 @@ All rights reserved. SPDX-License-Identifier: BSD-3-Clause
 
 #include <chrono>
 #include <iostream>
+#include <functional>
 #include <map>
 #include <memory>
 #include <mutex>
