@@ -25,9 +25,16 @@ static bool isExpectedSocketShutdownError(const std::error_code& error)
     return (error == asio::error::eof) ||
         (error == asio::error::connection_reset) ||
         (error == asio::error::operation_aborted) ||
+#ifdef GMLC_NETWORKING_ENABLE_ENCRYPTION
+        (error == asio::ssl::error::stream_truncated) ||
+#endif
         (error.value() == asio::error::eof) ||
         (error.value() == asio::error::connection_reset) ||
-        (error.value() == asio::error::operation_aborted);
+        (error.value() == asio::error::operation_aborted)
+#ifdef GMLC_NETWORKING_ENABLE_ENCRYPTION
+        || (error.value() == asio::ssl::error::stream_truncated)
+#endif
+        ;
 }
 
 /** test case for establishing and sending data over an unencrypted connection,
