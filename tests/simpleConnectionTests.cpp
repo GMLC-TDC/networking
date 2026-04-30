@@ -5,8 +5,8 @@ for Sustainable Energy, LLC.  See the top-level NOTICE for additional details.
 All rights reserved. SPDX-License-Identifier: BSD-3-Clause
 */
 
-#define CATCH_CONFIG_MAIN
-#include "catch2/catch.hpp"
+#include "catch.hpp"
+#include "testCleanup.hpp"
 
 #include "gmlc/networking/AsioContextManager.h"
 #include "gmlc/networking/SocketFactory.h"
@@ -19,10 +19,30 @@ All rights reserved. SPDX-License-Identifier: BSD-3-Clause
 #ifndef INFO
 #define INFO(arg)
 #endif
+
+static bool isExpectedSocketShutdownError(const std::error_code& error)
+{
+    switch (error.value()) {
+        case asio::error::eof:
+        case asio::error::connection_reset:
+        case asio::error::operation_aborted:
+#ifdef GMLC_NETWORKING_ENABLE_ENCRYPTION
+        case asio::ssl::error::stream_truncated:
+#endif
+            return true;
+        default:
+            return false;
+    }
+}
+
 /** test case for establishing and sending data over an unencrypted connection,
  * using settings parsed from a JSON config string*/
 TEST_CASE("simple_comm_test", "[simpleConnections]")
 {
+    ContextCleanupGuard contextCleanup;
+    contextCleanup.add("server");
+    contextCleanup.add("client");
+
     // Create a socket factory using a JSON config string
     gmlc::networking::SocketFactory sf(R"({"encrypted": false})", false);
 
@@ -49,6 +69,9 @@ TEST_CASE("simple_comm_test", "[simpleConnections]")
     server->setErrorCall(
         [](const gmlc::networking::TcpConnection::pointer& /*connection*/,
            const std::error_code& error) {
+            if (isExpectedSocketShutdownError(error)) {
+                return false;
+            }
             INFO("Error (" << error.value() << "): " << error.message());
             CHECK(false);
             return false;
@@ -75,7 +98,7 @@ TEST_CASE("simple_comm_test", "[simpleConnections]")
     INFO("Connection created");
     while (!connection->isConnected()) {
     }
-    INFO("Connection established")
+    INFO("Connection established");
 
     INFO("Sending test string");
     connection->send("test");
@@ -83,8 +106,15 @@ TEST_CASE("simple_comm_test", "[simpleConnections]")
     // Sleep to give time for the client/server threads to run
     std::this_thread::sleep_for(std::chrono::milliseconds(20));
 
-    INFO("Shutdown server")
+    INFO("Shutdown server");
+    connection->close();
     server->close();
+    connection.reset();
+    server.reset();
+    ctxloop_client.reset();
+    ctxloop_server.reset();
+    ioctx_client.reset();
+    ioctx_server.reset();
 
     // One last check to make sure the data receive callback actually ran
     INFO("Data size: " << data_recv_size);
@@ -96,6 +126,10 @@ TEST_CASE("simple_comm_test", "[simpleConnections]")
  * using settings loaded from a JSON config file*/
 TEST_CASE("simple_encrypted_comm_test", "[simpleConnections]")
 {
+    ContextCleanupGuard contextCleanup;
+    contextCleanup.add("server");
+    contextCleanup.add("client");
+
     // Create a SocketFactory using values from a JSON config file
     gmlc::networking::SocketFactory sf(
         std::string(TEST_BINDIR) + "/test_files/ssl_encryption_config.json");
@@ -123,6 +157,9 @@ TEST_CASE("simple_encrypted_comm_test", "[simpleConnections]")
     server->setErrorCall(
         [](const gmlc::networking::TcpConnection::pointer& /*connection*/,
            const std::error_code& error) {
+            if (isExpectedSocketShutdownError(error)) {
+                return false;
+            }
             INFO("Error (" << error.value() << "): " << error.message());
             CHECK(false);
             return false;
@@ -143,7 +180,7 @@ TEST_CASE("simple_encrypted_comm_test", "[simpleConnections]")
     INFO("Connection created");
     while (!connection->isConnected()) {
     }
-    INFO("Connection established")
+    INFO("Connection established");
 
     // Sleep to make sure the OpenSSL handshake is finished
     std::this_thread::sleep_for(std::chrono::milliseconds(20));
@@ -154,8 +191,15 @@ TEST_CASE("simple_encrypted_comm_test", "[simpleConnections]")
     // Sleep to give time for the client/server threads to run
     std::this_thread::sleep_for(std::chrono::milliseconds(20));
 
-    INFO("Shutdown server")
+    INFO("Shutdown server");
+    connection->close();
     server->close();
+    connection.reset();
+    server.reset();
+    ctxloop_client.reset();
+    ctxloop_server.reset();
+    ioctx_client.reset();
+    ioctx_server.reset();
 
     // One last check to make sure the data receive callback actually ran
     INFO("Data size: " << data_recv_size);

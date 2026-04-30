@@ -250,8 +250,8 @@ std::string getLocalExternalAddressV6(const std::string& server)
         resolver.resolve(asio::ip::tcp::v6(), asio::ip::host_name(), "");
     // asio::ip::tcp::endpoint endpoint = *it;
 
-    for (const asio::ip::tcp::endpoint& ept : results) {
-        resolved_addresses.push_back(ept.address().to_string());
+    for (const auto& entry : results) {
+        resolved_addresses.push_back(entry.endpoint().address().to_string());
     }
 
 #endif

@@ -1,19 +1,19 @@
 name: Quick CMake config
-description: 'Runs CMake 3.4+ (if already setup)'
+description: "Runs CMake 3.22+ (if already setup)"
 inputs:
-  args:
-    description: 'Other arguments'
-    required: false
-    default: ''
   cmake-version:
-    description: 'The CMake version to run'
+    description: "The CMake version to run"
     required: true
+  args:
+    description: "Other arguments"
+    required: false
+    default: ""
 
 runs:
   using: composite
   steps:
     - name: CMake ${{ inputs.cmake-version }}
-      uses: jwlawson/actions-setup-cmake@v1.11
+      uses: jwlawson/actions-setup-cmake@v2.1.1
       with:
         cmake-version: "${{ inputs.cmake-version }}"
     - run: |

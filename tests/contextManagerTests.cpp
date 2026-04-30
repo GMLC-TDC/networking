@@ -1,12 +1,22 @@
-#define CATCH_CONFIG_MAIN
-#include "catch2/catch.hpp"
-#include "gmlc/networking/AsioContextManager.h"
-#include <stdlib.h>
+/*
+Copyright (c) 2017-2026,
+Battelle Memorial Institute; Lawrence Livermore National Security, LLC; Alliance
+for Sustainable Energy, LLC.  See the top-level NOTICE for additional details.
+All rights reserved. SPDX-License-Identifier: BSD-3-Clause
+*/
 
-using namespace gmlc::networking;
+#include "catch.hpp"
+#include "testCleanup.hpp"
+
+#include <stdlib.h>
+#include <string>
+
+#include "gmlc/networking/AsioContextManager.h"
 
 TEST_CASE("getContextPointerTest", "[contextManager]")
 {
+    ContextCleanupGuard contextCleanup("io_context");
+
     auto io_context =
         gmlc::networking::AsioContextManager::getContextPointer("io_context");
     auto new_context =
@@ -18,6 +28,8 @@ TEST_CASE("getContextPointerTest", "[contextManager]")
 
 TEST_CASE("closeContext", "[contextManager]")
 {
+    ContextCleanupGuard contextCleanup("io_context");
+
     auto io_context =
         gmlc::networking::AsioContextManager::getContextPointer("io_context");
     io_context->startContextLoop();
@@ -27,12 +39,16 @@ TEST_CASE("closeContext", "[contextManager]")
 
 TEST_CASE("getNameTest", "[contextManager]")
 {
+    ContextCleanupGuard contextCleanup("io_context");
+
     auto context_pointer =
         gmlc::networking::AsioContextManager::getContextPointer("io_context");
     CHECK(context_pointer->getName() == "io_context");
 }
 TEST_CASE("getContext", "[contextManager]")
 {
+    ContextCleanupGuard contextCleanup("io_context");
+
     auto context_pointer =
         gmlc::networking::AsioContextManager::getContextPointer("io_context");
     auto* p1 = &context_pointer->getBaseContext();
@@ -42,12 +58,16 @@ TEST_CASE("getContext", "[contextManager]")
 
 TEST_CASE("startContextTest", "[contextManager]")
 {
+    ContextCleanupGuard contextCleanup("io_context");
+
     auto context_pointer =
         gmlc::networking::AsioContextManager::getContextPointer("io_context");
     CHECK_NOTHROW(context_pointer->startContextLoop());
 }
 TEST_CASE("runContextTest", "[contextManager]")
 {
+    ContextCleanupGuard contextCleanup("io_context");
+
     auto context_pointer =
         gmlc::networking::AsioContextManager::getContextPointer(
             std::string("io_context"));
@@ -57,7 +77,14 @@ TEST_CASE("runContextTest", "[contextManager]")
 }
 TEST_CASE("runContextTestFail", "[contextManager]")
 {
-    CHECK_THROWS_WITH(
-        gmlc::networking::AsioContextManager::runContextLoop("nonexistent"),
-        "the context name specified was not available");
+    try {
+        static_cast<void>(gmlc::networking::AsioContextManager::runContextLoop(
+            "nonexistent"));
+        FAIL("expected runContextLoop to throw for a missing context");
+    }
+    catch (const std::invalid_argument& e) {
+        CHECK(
+            std::string(e.what()) ==
+            "the context name specified was not available");
+    }
 }

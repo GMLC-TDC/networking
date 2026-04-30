@@ -23,18 +23,18 @@ std::atomic<int> TcpConnection::idcounter{10};
 void TcpConnection::startReceive()
 {
     if (triggerhalt) {
-        receivingHalt.trigger();
+        static_cast<void>(receivingHalt.trigger());
         return;
     }
     if (state == ConnectionStates::PRESTART) {
-        receivingHalt.activate();
-        connected.activate();
+        static_cast<void>(receivingHalt.activate());
+        static_cast<void>(connected.activate());
         state = ConnectionStates::WAITING;
     }
     ConnectionStates exp = ConnectionStates::WAITING;
     if (state.compare_exchange_strong(exp, ConnectionStates::OPERATING)) {
         if (!receivingHalt.isActive()) {
-            receivingHalt.activate();
+            static_cast<void>(receivingHalt.activate());
         }
         if (!triggerhalt) {
             socket_->async_read_some(
@@ -46,16 +46,16 @@ void TcpConnection::startReceive()
                 });
             if (triggerhalt) {
                 // cancel previous operation if triggerhalt is now active
-                socket_->cancel();
+                static_cast<void>(socket_->cancel());
                 // receivingHalt.trigger();
             }
         } else {
             state = ConnectionStates::HALTED;
-            receivingHalt.trigger();
+            static_cast<void>(receivingHalt.trigger());
         }
     } else if (exp != ConnectionStates::OPERATING) {
         /*either halted or closed*/
-        receivingHalt.trigger();
+        static_cast<void>(receivingHalt.trigger());
     }
 }
 
@@ -98,7 +98,7 @@ void TcpConnection::handle_read(
 {
     if (triggerhalt.load(std::memory_order_acquire)) {
         state = ConnectionStates::HALTED;
-        receivingHalt.trigger();
+        static_cast<void>(receivingHalt.trigger());
         return;
     }
     if (!error) {
@@ -122,7 +122,7 @@ void TcpConnection::handle_read(
         startReceive();
     } else if (error == asio::error::operation_aborted) {
         state = ConnectionStates::HALTED;
-        receivingHalt.trigger();
+        static_cast<void>(receivingHalt.trigger());
         return;
     } else {
         // there was an error
@@ -149,17 +149,17 @@ void TcpConnection::handle_read(
                 startReceive();
             } else {
                 state = ConnectionStates::HALTED;
-                receivingHalt.trigger();
+                static_cast<void>(receivingHalt.trigger());
             }
         } else if (error != asio::error::eof) {
             if (error != asio::error::connection_reset) {
                 logger(0, std::string("receive error ") + error.message());
             }
             state = ConnectionStates::HALTED;
-            receivingHalt.trigger();
+            static_cast<void>(receivingHalt.trigger());
         } else {
             state = ConnectionStates::HALTED;
-            receivingHalt.trigger();
+            static_cast<void>(receivingHalt.trigger());
         }
     }
 }
@@ -190,12 +190,12 @@ void TcpConnection::closeNoWait()
     switch (state.load()) {
         case ConnectionStates::PRESTART:
             if (receivingHalt.isActive()) {
-                receivingHalt.trigger();
+                static_cast<void>(receivingHalt.trigger());
             }
             break;
         case ConnectionStates::HALTED:
         case ConnectionStates::CLOSED:
-            receivingHalt.trigger();
+            static_cast<void>(receivingHalt.trigger());
             break;
         default:
             break;
@@ -203,7 +203,7 @@ void TcpConnection::closeNoWait()
 
     std::error_code ec;
     if (socket_->is_open()) {
-        socket_->shutdown(ec);
+        static_cast<void>(socket_->shutdown(ec));
         if (ec) {
             if ((ec.value() != asio::error::not_connected) &&
                 (ec.value() != asio::error::connection_reset)) {
@@ -214,9 +214,9 @@ void TcpConnection::closeNoWait()
             }
             ec.clear();
         }
-        socket_->close(ec);
+        static_cast<void>(socket_->close(ec));
     } else {
-        socket_->close(ec);
+        static_cast<void>(socket_->close(ec));
     }
 }
 
@@ -265,8 +265,8 @@ void TcpConnection::connect_handler(const std::error_code& error)
 {
     if (!error) {
         socket_->handshake();
-        connected.activate();
-        socket_->set_option_no_delay(true);
+        static_cast<void>(socket_->set_option_no_delay(true));
+        static_cast<void>(connected.activate());
     } else {
         std::stringstream str;
 
@@ -274,7 +274,7 @@ void TcpConnection::connect_handler(const std::error_code& error)
             << ": code =" << error.value();
         logger(0, str.str());
         connectionError = true;
-        connected.activate();
+        static_cast<void>(connected.activate());
     }
 }
 size_t TcpConnection::send(const void* buffer, size_t dataLength)
@@ -332,7 +332,7 @@ bool TcpConnection::waitUntilConnected(std::chrono::milliseconds timeOut)
         connected.waitActivation();
         return isConnected();
     }
-    connected.wait_forActivation(timeOut);
+    static_cast<void>(connected.wait_forActivation(timeOut));
     return isConnected();
 }
 
