@@ -22,19 +22,17 @@ All rights reserved. SPDX-License-Identifier: BSD-3-Clause
 
 static bool isExpectedSocketShutdownError(const std::error_code& error)
 {
-    return (error == asio::error::eof) ||
-        (error == asio::error::connection_reset) ||
-        (error == asio::error::operation_aborted) ||
+    switch (error.value()) {
+        case asio::error::eof:
+        case asio::error::connection_reset:
+        case asio::error::operation_aborted:
 #ifdef GMLC_NETWORKING_ENABLE_ENCRYPTION
-        (error == asio::ssl::error::stream_truncated) ||
+        case asio::ssl::error::stream_truncated:
 #endif
-        (error.value() == asio::error::eof) ||
-        (error.value() == asio::error::connection_reset) ||
-        (error.value() == asio::error::operation_aborted)
-#ifdef GMLC_NETWORKING_ENABLE_ENCRYPTION
-        || (error.value() == asio::ssl::error::stream_truncated)
-#endif
-        ;
+            return true;
+        default:
+            return false;
+    }
 }
 
 /** test case for establishing and sending data over an unencrypted connection,
