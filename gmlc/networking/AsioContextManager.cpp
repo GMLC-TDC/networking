@@ -170,7 +170,6 @@ AsioContextManager::~AsioContextManager()
         loopRet.get();
     }
     loopRet = std::shared_future<void>{};
-    pruneCompletedFutures();
     if (leakOnDelete) {
         // yes I am purposefully leaking this PHILIP TOP
         // this capability is needed for some operations on particular OS's with
