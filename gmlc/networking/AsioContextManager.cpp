@@ -19,8 +19,8 @@ All rights reserved. SPDX-License-Identifier: BSD-3-Clause
 #include "AsioContextManager.h"
 
 #include <chrono>
-#include <iostream>
 #include <functional>
+#include <iostream>
 #include <map>
 #include <memory>
 #include <mutex>
