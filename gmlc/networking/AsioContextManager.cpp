@@ -72,8 +72,7 @@ std::shared_ptr<AsioContextManager>
 }
 
 std::shared_ptr<AsioContextManager>
-    AsioContextManager::getExistingContextPointer(
-        std::string_view contextName)
+    AsioContextManager::getExistingContextPointer(std::string_view contextName)
 {
     std::lock_guard<std::mutex> ctxlock(
         contextLock);  // just to ensure that nothing funny happens if you try
@@ -144,8 +143,7 @@ void AsioContextManager::closeAllContexts()
     futures.clear();
 }
 
-void AsioContextManager::setContextToLeakOnDelete(
-    std::string_view contextName)
+void AsioContextManager::setContextToLeakOnDelete(std::string_view contextName)
 {
     std::lock_guard<std::mutex> ctxlock(contextLock);
     auto fnd = contexts.find(contextName);

@@ -136,9 +136,8 @@ std::string getLocalExternalAddressV4(std::string_view server)
     }
     asio::ip::tcp::endpoint servep = *results_server.begin();
 
-    auto sstring =
-        (results_server.empty()) ? std::string(server) :
-                                   servep.address().to_string();
+    auto sstring = (results_server.empty()) ? std::string(server) :
+                                              servep.address().to_string();
 #else
     std::string sstring{server};
 #endif
@@ -152,7 +151,7 @@ std::string getLocalExternalAddressV4(std::string_view server)
     if (ec) {
         return getLocalExternalAddressV4();
     }
-    for (const asio::ip::tcp::endpoint &ept : results) {
+    for (const asio::ip::tcp::endpoint& ept : results) {
         resolved_addresses.push_back(ept.address().to_string());
     }
 
