@@ -5,39 +5,50 @@ for Sustainable Energy, LLC.  See the top-level NOTICE for additional details.
 All rights reserved. SPDX-License-Identifier: BSD-3-Clause
 */
 
-#define CATCH_CONFIG_MAIN
-#include "catch2/catch.hpp"
+#include "catch.hpp"
+#include "testCleanup.hpp"
+
 #include <stdlib.h>
+#include <string>
 #include <thread>
 
 #include "gmlc/networking/AsioContextManager.h"
 #include "gmlc/networking/TcpOperations.h"
 #include "gmlc/networking/addressOperations.hpp"
 #include "gmlc/networking/interfaceOperations.hpp"
-using namespace gmlc::networking;
 
 void handler(const std::error_code& /*e*/, std::size_t bytes_transferred)
 {
     CHECK(bytes_transferred == 5);
 }
 
-void client(TcpConnection::pointer cpt)
+void client(gmlc::networking::TcpConnection::pointer cpt)
 {
-    std::string s = "test0";
-    const std::size_t dataSize = s.size();
-    char* data = new char[dataSize];
-    strcpy(data, s.c_str());
+    static constexpr char data[] = "test0";
+    constexpr std::size_t dataSize = sizeof(data) - 1;
     cpt->send_async(data, dataSize, handler);
+}
+
+static bool isExpectedSocketShutdownError(const std::error_code& error)
+{
+    return (error == asio::error::eof) ||
+        (error == asio::error::connection_reset) ||
+        (error == asio::error::operation_aborted) ||
+        (error.value() == asio::error::eof) ||
+        (error.value() == asio::error::connection_reset) ||
+        (error.value() == asio::error::operation_aborted);
 }
 
 TEST_CASE("asynchronousTcpOperationsTest", "[TcpOps]")
 {
+    ContextCleanupGuard contextCleanup("io_context_server");
+
     auto io_context_server =
         gmlc::networking::AsioContextManager::getContextPointer(
             "io_context_server");
 
     auto server_context_loop = io_context_server->startContextLoop();
-    auto spt = TcpServer::create(
+    auto spt = gmlc::networking::TcpServer::create(
         io_context_server->getBaseContext(), "localhost", 19888, true);
     int itCount{0};
     while (!spt->isReady()) {
@@ -60,6 +71,9 @@ TEST_CASE("asynchronousTcpOperationsTest", "[TcpOps]")
     });
     spt->setErrorCall([](const gmlc::networking::TcpConnection::pointer&,
                          const std::error_code& error) {
+        if (isExpectedSocketShutdownError(error)) {
+            return false;
+        }
         INFO("Error (" << error.value() << "): " << error.message());
         CHECK(false);
         return false;
@@ -72,7 +86,7 @@ TEST_CASE("asynchronousTcpOperationsTest", "[TcpOps]")
     spt->start();
 
     std::chrono::milliseconds timeOut = std::chrono::milliseconds(0);
-    auto cpt = establishConnection(
+    auto cpt = gmlc::networking::establishConnection(
         io_context_server->getBaseContext(),
         std::string("localhost"),
         "19888",
@@ -93,18 +107,25 @@ TEST_CASE("asynchronousTcpOperationsTest", "[TcpOps]")
 
     spt->close();
     cpt->close();
+    cpt.reset();
+    spt.reset();
+    server_context_loop.reset();
+    io_context_server.reset();
 
     CHECK(data_recv_size == 5);
 }
 
 TEST_CASE("TcpOperationsTest", "[TcpOps]")
 {
+    ContextCleanupGuard contextCleanup("io_context_server");
+    contextCleanup.add("io_context_client");
+
     auto io_context_server =
         gmlc::networking::AsioContextManager::getContextPointer(
             "io_context_server");
 
     auto server_context_loop = io_context_server->startContextLoop();
-    auto spt = TcpServer::create(
+    auto spt = gmlc::networking::TcpServer::create(
         io_context_server->getBaseContext(), "*", 19888, true);
     int itCount{0};
     while (!spt->isReady()) {
@@ -127,6 +148,9 @@ TEST_CASE("TcpOperationsTest", "[TcpOps]")
     });
     spt->setErrorCall([](const gmlc::networking::TcpConnection::pointer&,
                          const std::error_code& error) {
+        if (isExpectedSocketShutdownError(error)) {
+            return false;
+        }
         INFO("Error (" << error.value() << "): " << error.message());
         CHECK(false);
         return false;
@@ -142,7 +166,7 @@ TEST_CASE("TcpOperationsTest", "[TcpOps]")
         gmlc::networking::AsioContextManager::getContextPointer(
             "io_context_client");
     std::chrono::milliseconds timeOut = std::chrono::milliseconds(0);
-    auto cpt = establishConnection(
+    auto cpt = gmlc::networking::establishConnection(
         io_context_client->getBaseContext(),
         std::string("localhost"),
         "19888",
@@ -162,6 +186,12 @@ TEST_CASE("TcpOperationsTest", "[TcpOps]")
 
     spt->close();
     cpt->close();
+    cpt.reset();
+    spt.reset();
+    client_ctxt_loop.reset();
+    server_context_loop.reset();
+    io_context_client.reset();
+    io_context_server.reset();
 
     CHECK(data_recv_size == 5);
 }

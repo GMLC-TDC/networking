@@ -118,6 +118,7 @@ class AsioContextManager
         getExistingContext(const std::string& contextName = std::string());
 
     static void closeContext(const std::string& contextName = std::string());
+    static void closeAllContexts();
     /** tell the context to free the pointer and leak the memory on delete
     @details You may ask why, well in windows systems when operating in a DLL if
     this context is closed after certain other operations that happen when the
@@ -166,6 +167,8 @@ class AsioContextManager
     friend void contextProcessingLoop(std::shared_ptr<AsioContextManager> ptr);
     /** just store the future state for reference*/
     static void storeFuture(std::shared_future<void> processReturn);
+    /** drop completed futures so they don't prolong object lifetimes */
+    static void pruneCompletedFutures();
 };
 
 void contextProcessingLoop(std::shared_ptr<AsioContextManager> ptr);
