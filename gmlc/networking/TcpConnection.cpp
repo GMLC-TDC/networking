@@ -265,8 +265,8 @@ void TcpConnection::connect_handler(const std::error_code& error)
 {
     if (!error) {
         socket_->handshake();
-        static_cast<void>(connected.activate());
         static_cast<void>(socket_->set_option_no_delay(true));
+        static_cast<void>(connected.activate());
     } else {
         std::stringstream str;
 
