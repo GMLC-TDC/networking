@@ -88,6 +88,7 @@ TEST_CASE("simple_comm_test", "[simpleConnections]")
     std::this_thread::sleep_for(std::chrono::milliseconds(20));
 
     INFO("Shutdown server");
+    connection->close();
     server->close();
     connection.reset();
     server.reset();
@@ -169,6 +170,7 @@ TEST_CASE("simple_encrypted_comm_test", "[simpleConnections]")
     std::this_thread::sleep_for(std::chrono::milliseconds(20));
 
     INFO("Shutdown server");
+    connection->close();
     server->close();
     connection.reset();
     server.reset();
