@@ -115,8 +115,13 @@ bool TcpAcceptor::start(TcpConnection::pointer conn)
 /** close the acceptor*/
 void TcpAcceptor::close()
 {
+    if (state.load() == AcceptingStates::HALTED) {
+        return;
+    }
     state = AcceptingStates::HALTED;
-    static_cast<void>(acceptor_.close());
+    std::error_code ec;
+    acceptor_.cancel(ec);
+    acceptor_.close(ec);
     static_cast<void>(accepting.wait());
 }
 

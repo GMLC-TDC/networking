@@ -29,6 +29,16 @@ void client(gmlc::networking::TcpConnection::pointer cpt)
     cpt->send_async(data, dataSize, handler);
 }
 
+static bool isExpectedSocketShutdownError(const std::error_code& error)
+{
+    return (error == asio::error::eof) ||
+        (error == asio::error::connection_reset) ||
+        (error == asio::error::operation_aborted) ||
+        (error.value() == asio::error::eof) ||
+        (error.value() == asio::error::connection_reset) ||
+        (error.value() == asio::error::operation_aborted);
+}
+
 TEST_CASE("asynchronousTcpOperationsTest", "[TcpOps]")
 {
     ContextCleanupGuard contextCleanup("io_context_server");
@@ -61,6 +71,9 @@ TEST_CASE("asynchronousTcpOperationsTest", "[TcpOps]")
     });
     spt->setErrorCall([](const gmlc::networking::TcpConnection::pointer&,
                          const std::error_code& error) {
+        if (isExpectedSocketShutdownError(error)) {
+            return false;
+        }
         INFO("Error (" << error.value() << "): " << error.message());
         CHECK(false);
         return false;
@@ -135,6 +148,9 @@ TEST_CASE("TcpOperationsTest", "[TcpOps]")
     });
     spt->setErrorCall([](const gmlc::networking::TcpConnection::pointer&,
                          const std::error_code& error) {
+        if (isExpectedSocketShutdownError(error)) {
+            return false;
+        }
         INFO("Error (" << error.value() << "): " << error.message());
         CHECK(false);
         return false;

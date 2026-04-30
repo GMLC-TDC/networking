@@ -119,6 +119,8 @@ void AsioContextManager::closeContext(const std::string& contextName)
         } else if (ptr->loopRet.valid()) {
             ptr->loopRet.get();
         }
+        ptr->loopRet = std::shared_future<void>{};
+        pruneCompletedFutures();
     }
 }
 
@@ -137,6 +139,7 @@ void AsioContextManager::closeAllContexts()
         closeContext(contextName);
     }
 
+    pruneCompletedFutures();
     std::lock_guard<std::mutex> futlock(futureLock);
     futures.clear();
 }
@@ -166,6 +169,8 @@ AsioContextManager::~AsioContextManager()
     } else if (loopRet.valid()) {
         loopRet.get();
     }
+    loopRet = std::shared_future<void>{};
+    pruneCompletedFutures();
     if (leakOnDelete) {
         // yes I am purposefully leaking this PHILIP TOP
         // this capability is needed for some operations on particular OS's with
@@ -202,6 +207,21 @@ void AsioContextManager::storeFuture(std::shared_future<void> processReturn)
     futures.push_back(std::move(processReturn));
 }
 
+void AsioContextManager::pruneCompletedFutures()
+{
+    std::lock_guard<std::mutex> futlock(futureLock);
+    futures.erase(
+        std::remove_if(
+            futures.begin(),
+            futures.end(),
+            [](const std::shared_future<void>& future) {
+                return (!future.valid()) ||
+                    (future.wait_for(std::chrono::milliseconds(0)) ==
+                     std::future_status::ready);
+            }),
+        futures.end());
+}
+
 AsioContextManager::LoopHandle AsioContextManager::startContextLoop()
 {
     ++runCounter;  // atomic
@@ -229,6 +249,8 @@ AsioContextManager::LoopHandle AsioContextManager::startContextLoop()
             // "\n";
             if (loopRet.valid()) {
                 loopRet.get();
+                loopRet = std::shared_future<void>{};
+                pruneCompletedFutures();
             }
             nullLock.unlock();
             exp = loop_mode::stopped;
@@ -276,8 +298,10 @@ void AsioContextManager::haltContextLoop()
                         }
                     }
                     loopRet.get();
+                    loopRet = std::shared_future<void>{};
                     ictx->restart();  // prepare for future runs
                     terminateLoop = false;
+                    pruneCompletedFutures();
                 }
             }
         }

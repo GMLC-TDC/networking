@@ -167,6 +167,8 @@ class AsioContextManager
     friend void contextProcessingLoop(std::shared_ptr<AsioContextManager> ptr);
     /** just store the future state for reference*/
     static void storeFuture(std::shared_future<void> processReturn);
+    /** drop completed futures so they don't prolong object lifetimes */
+    static void pruneCompletedFutures();
 };
 
 void contextProcessingLoop(std::shared_ptr<AsioContextManager> ptr);

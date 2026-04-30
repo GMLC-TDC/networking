@@ -19,6 +19,17 @@ All rights reserved. SPDX-License-Identifier: BSD-3-Clause
 #ifndef INFO
 #define INFO(arg)
 #endif
+
+static bool isExpectedSocketShutdownError(const std::error_code& error)
+{
+    return (error == asio::error::eof) ||
+        (error == asio::error::connection_reset) ||
+        (error == asio::error::operation_aborted) ||
+        (error.value() == asio::error::eof) ||
+        (error.value() == asio::error::connection_reset) ||
+        (error.value() == asio::error::operation_aborted);
+}
+
 /** test case for establishing and sending data over an unencrypted connection,
  * using settings parsed from a JSON config string*/
 TEST_CASE("simple_comm_test", "[simpleConnections]")
@@ -53,6 +64,9 @@ TEST_CASE("simple_comm_test", "[simpleConnections]")
     server->setErrorCall(
         [](const gmlc::networking::TcpConnection::pointer& /*connection*/,
            const std::error_code& error) {
+            if (isExpectedSocketShutdownError(error)) {
+                return false;
+            }
             INFO("Error (" << error.value() << "): " << error.message());
             CHECK(false);
             return false;
@@ -138,6 +152,9 @@ TEST_CASE("simple_encrypted_comm_test", "[simpleConnections]")
     server->setErrorCall(
         [](const gmlc::networking::TcpConnection::pointer& /*connection*/,
            const std::error_code& error) {
+            if (isExpectedSocketShutdownError(error)) {
+                return false;
+            }
             INFO("Error (" << error.value() << "): " << error.message());
             CHECK(false);
             return false;
