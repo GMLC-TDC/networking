@@ -21,6 +21,7 @@ All rights reserved. SPDX-License-Identifier: BSD-3-Clause
 
 #include <asio/io_context.hpp>
 #include <atomic>
+#include <functional>
 #include <future>
 #include <map>
 #include <memory>
