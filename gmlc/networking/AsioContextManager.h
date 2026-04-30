@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2017-2021,
+Copyright (c) 2017-2026,
 Battelle Memorial Institute; Lawrence Livermore National Security, LLC; Alliance
 for Sustainable Energy, LLC.  See the top-level NOTICE for additional details.
 All rights reserved. SPDX-License-Identifier: BSD-3-Clause
@@ -26,6 +26,7 @@ All rights reserved. SPDX-License-Identifier: BSD-3-Clause
 #include <memory>
 #include <mutex>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -38,7 +39,11 @@ class AsioContextManager
     enum class loop_mode : int { stopped = 0, starting = 1, running = 2 };
 
     /// container for pointers to all the available contexts
-    static std::map<std::string, std::shared_ptr<AsioContextManager>> contexts;
+    static std::map<
+        std::string,
+        std::shared_ptr<AsioContextManager>,
+        std::less<>>
+        contexts;
     /// container for recording futures
     static std::vector<std::shared_future<void>> futures;
     std::atomic<int> runCounter{0};  //!< counter for the number of times the
@@ -61,7 +66,7 @@ class AsioContextManager
     /// storage location for the processing loop completion
     std::shared_future<void> loopRet;
     /** constructor*/
-    explicit AsioContextManager(const std::string& contextName);
+    explicit AsioContextManager(std::string_view contextName);
 
     /** servicing helper class to manage lifetimes of a context loop*/
     class Servicer {
@@ -98,26 +103,26 @@ class AsioContextManager
     name if it doesn't find one it will create a new one
     @param contextName the name of the context to find or create*/
     static std::shared_ptr<AsioContextManager>
-        getContextPointer(const std::string& contextName = std::string());
+        getContextPointer(std::string_view contextName = {});
     /** return a pointer to a context manager
     @details the function will search for an existing context manager for the
     name if it doesn't find one it will return nullptr
     @param contextName the name of the context to find
     */
     static std::shared_ptr<AsioContextManager> getExistingContextPointer(
-        const std::string& contextName = std::string());
+        std::string_view contextName = {});
     /** get the asio io_context associated with the context manager
      */
     static asio::io_context&
-        getContext(const std::string& contextName = std::string());
+        getContext(std::string_view contextName = {});
     /** get the asio io_context associated with the context manager but only if
     the context exists if it doesn't this will throw and invalid_argument
     exception
     */
     static asio::io_context&
-        getExistingContext(const std::string& contextName = std::string());
+        getExistingContext(std::string_view contextName = {});
 
-    static void closeContext(const std::string& contextName = std::string());
+    static void closeContext(std::string_view contextName = {});
     static void closeAllContexts();
     /** tell the context to free the pointer and leak the memory on delete
     @details You may ask why, well in windows systems when operating in a DLL if
@@ -128,7 +133,7 @@ class AsioContextManager
     cause all sorts of odd errors and issues
     */
     static void setContextToLeakOnDelete(
-        const std::string& contextName = std::string());
+        std::string_view contextName = {});
     virtual ~AsioContextManager();
 
     /** get the name  of the current context manager*/
@@ -145,7 +150,7 @@ class AsioContextManager
     @param contextName the name of the context
     */
     static LoopHandle
-        runContextLoop(const std::string& contextName = std::string{});
+        runContextLoop(std::string_view contextName = {});
 
     /** run a single thread for the context manager to execute asynchronous
     contexts in

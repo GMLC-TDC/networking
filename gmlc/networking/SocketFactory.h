@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2017-2022,
+Copyright (c) 2017-2026,
 Battelle Memorial Institute; Lawrence Livermore National Security, LLC; Alliance
 for Sustainable Energy, LLC.  See the top-level NOTICE for additional details.
 All rights reserved. SPDX-License-Identifier: BSD-3-Clause
@@ -18,6 +18,7 @@ All rights reserved. SPDX-License-Identifier: BSD-3-Clause
 #include <memory>
 #include <stdexcept>
 #include <string>
+#include <string_view>
 #include <system_error>
 #include <vector>
 
@@ -34,7 +35,7 @@ class SocketFactory : std::enable_shared_from_this<SocketFactory> {
      * @param is_file whether to treat the conf parameter as a file path or JSON
      * string; default is true
      */
-    SocketFactory(const std::string& conf, bool is_file = true)
+    SocketFactory(std::string_view conf, bool is_file = true)
     {
         if (is_file) {
             load_json_config_file(conf);
@@ -134,13 +135,13 @@ class SocketFactory : std::enable_shared_from_this<SocketFactory> {
      *
      * @param file the JSON file to load settings from
      */
-    void load_json_config_file(std::string file);
+    void load_json_config_file(std::string_view file);
 
     /** load settings into the SocketFactory from a JSON string
      *
      * @param conf_str the JSON string to parse settings from
      */
-    void parse_json_config(std::string conf_str);
+    void parse_json_config(std::string_view conf_str);
 
   private:
     // other options that could be created:

@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2017-2022,
+Copyright (c) 2017-2026,
 Battelle Memorial Institute; Lawrence Livermore National Security, LLC; Alliance
 for Sustainable Energy, LLC.  See the top-level NOTICE for additional details.
 All rights reserved. SPDX-License-Identifier: BSD-3-Clause
@@ -15,17 +15,17 @@ All rights reserved. SPDX-License-Identifier: BSD-3-Clause
 using json = nlohmann::json;
 
 namespace gmlc::networking {
-void SocketFactory::load_json_config_file(std::string file)
+void SocketFactory::load_json_config_file(std::string_view file)
 {
-    std::ifstream ifs(file);
+    std::ifstream ifs{std::string(file)};
     std::stringstream strbuf;
     strbuf << ifs.rdbuf();
     parse_json_config(strbuf.str());
 }
 
-void SocketFactory::parse_json_config(std::string conf_str)
+void SocketFactory::parse_json_config(std::string_view conf_str)
 {
-    json j = json::parse(conf_str);
+    json j = json::parse(conf_str.begin(), conf_str.end());
 
     // parse SocketFactory settings; defaults to existing setting if option is
     // not present in the JSON file
