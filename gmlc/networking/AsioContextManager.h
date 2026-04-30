@@ -40,11 +40,9 @@ class AsioContextManager
     enum class loop_mode : int { stopped = 0, starting = 1, running = 2 };
 
     /// container for pointers to all the available contexts
-    static std::map<
-        std::string,
-        std::shared_ptr<AsioContextManager>,
-        std::less<>>
-        contexts;
+    static std::
+        map<std::string, std::shared_ptr<AsioContextManager>, std::less<>>
+            contexts;
     /// container for recording futures
     static std::vector<std::shared_future<void>> futures;
     std::atomic<int> runCounter{0};  //!< counter for the number of times the
@@ -110,12 +108,11 @@ class AsioContextManager
     name if it doesn't find one it will return nullptr
     @param contextName the name of the context to find
     */
-    static std::shared_ptr<AsioContextManager> getExistingContextPointer(
-        std::string_view contextName = {});
+    static std::shared_ptr<AsioContextManager>
+        getExistingContextPointer(std::string_view contextName = {});
     /** get the asio io_context associated with the context manager
      */
-    static asio::io_context&
-        getContext(std::string_view contextName = {});
+    static asio::io_context& getContext(std::string_view contextName = {});
     /** get the asio io_context associated with the context manager but only if
     the context exists if it doesn't this will throw and invalid_argument
     exception
@@ -133,8 +130,7 @@ class AsioContextManager
     the context could terminate before some other parts of the program which
     cause all sorts of odd errors and issues
     */
-    static void setContextToLeakOnDelete(
-        std::string_view contextName = {});
+    static void setContextToLeakOnDelete(std::string_view contextName = {});
     virtual ~AsioContextManager();
 
     /** get the name  of the current context manager*/
@@ -150,8 +146,7 @@ class AsioContextManager
     function is called and there is no more work
     @param contextName the name of the context
     */
-    static LoopHandle
-        runContextLoop(std::string_view contextName = {});
+    static LoopHandle runContextLoop(std::string_view contextName = {});
 
     /** run a single thread for the context manager to execute asynchronous
     contexts in

@@ -18,12 +18,13 @@ std::pair<std::string, std::optional<std::string>>
     extractInterfaceAndPortString(std::string_view address)
 {
     auto lastColon = address.find_last_of(':');
-    if (lastColon == std::string::npos ||
-        (address.size() <= lastColon + 1) || (address[lastColon + 1] == '/')) {
+    if (lastColon == std::string::npos || (address.size() <= lastColon + 1) ||
+        (address[lastColon + 1] == '/')) {
         return {std::string(address), std::nullopt};
     }
-    return {std::string(address.substr(0, lastColon)),
-            std::string(address.substr(lastColon + 1))};
+    return {
+        std::string(address.substr(0, lastColon)),
+        std::string(address.substr(lastColon + 1))};
 }
 
 std::string makePortAddress(std::string_view networkInterface, int portNumber)
@@ -47,7 +48,8 @@ std::pair<std::string, std::optional<int>>
         try {
             if ((address.size() > lastColon + 1) &&
                 (address[lastColon + 1] != '/')) {
-                auto val = std::stoi(std::string(address.substr(lastColon + 1)));
+                auto val =
+                    std::stoi(std::string(address.substr(lastColon + 1)));
                 ret.first = std::string(address.substr(0, lastColon));
                 ret.second = val;
             } else {

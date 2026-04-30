@@ -32,8 +32,7 @@ number some do not
 @param portNumber the number of the port to use
 @return a string with the merged address
 */
-std::string
-    makePortAddress(std::string_view networkInterface, int portNumber);
+std::string makePortAddress(std::string_view networkInterface, int portNumber);
 
 /** extract a port number and interface string from an address number
 @details,  if there is no port number it will return std::nullopt; this is true
