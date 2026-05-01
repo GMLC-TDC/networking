@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2017-2021,
+Copyright (c) 2017-2026,
 Battelle Memorial Institute; Lawrence Livermore National Security, LLC; Alliance
 for Sustainable Energy, LLC.  See the top-level NOTICE for additional details.
 All rights reserved. SPDX-License-Identifier: BSD-3-Clause
@@ -19,6 +19,7 @@ All rights reserved. SPDX-License-Identifier: BSD-3-Clause
 #include "AsioContextManager.h"
 
 #include <chrono>
+#include <functional>
 #include <iostream>
 #include <map>
 #include <memory>
@@ -33,7 +34,7 @@ namespace gmlc::networking {
 /** a storage system for the available core objects allowing references by name
  * to the core
  */
-std::map<std::string, std::shared_ptr<AsioContextManager>>
+std::map<std::string, std::shared_ptr<AsioContextManager>, std::less<>>
     AsioContextManager::contexts;
 
 /** we expect operations on core object that modify the map to be rare but we
@@ -52,7 +53,7 @@ entirely controlled by this file*/
 static std::mutex futureLock;
 
 std::shared_ptr<AsioContextManager>
-    AsioContextManager::getContextPointer(const std::string& contextName)
+    AsioContextManager::getContextPointer(std::string_view contextName)
 {
     std::shared_ptr<AsioContextManager> contextPtr;
     std::lock_guard<std::mutex> ctxlock(
@@ -66,14 +67,13 @@ std::shared_ptr<AsioContextManager>
 
     contextPtr = std::shared_ptr<AsioContextManager>(
         new AsioContextManager(contextName));
-    contexts.emplace(contextName, contextPtr);
+    contexts.emplace(std::string(contextName), contextPtr);
     return contextPtr;
     // if it doesn't find it make a new one with the appropriate name
 }
 
 std::shared_ptr<AsioContextManager>
-    AsioContextManager::getExistingContextPointer(
-        const std::string& contextName)
+    AsioContextManager::getExistingContextPointer(std::string_view contextName)
 {
     std::lock_guard<std::mutex> ctxlock(
         contextLock);  // just to ensure that nothing funny happens if you try
@@ -86,13 +86,13 @@ std::shared_ptr<AsioContextManager>
     return nullptr;
 }
 
-asio::io_context& AsioContextManager::getContext(const std::string& contextName)
+asio::io_context& AsioContextManager::getContext(std::string_view contextName)
 {
     return getContextPointer(contextName)->getBaseContext();
 }
 
 asio::io_context&
-    AsioContextManager::getExistingContext(const std::string& contextName)
+    AsioContextManager::getExistingContext(std::string_view contextName)
 {
     auto ptr = getExistingContextPointer(contextName);
     if (ptr) {
@@ -102,7 +102,7 @@ asio::io_context&
         std::invalid_argument("the context name specified was not available"));
 }
 
-void AsioContextManager::closeContext(const std::string& contextName)
+void AsioContextManager::closeContext(std::string_view contextName)
 {
     std::unique_lock<std::mutex> ctxlock(contextLock);
     auto fnd = contexts.find(contextName);
@@ -144,8 +144,7 @@ void AsioContextManager::closeAllContexts()
     futures.clear();
 }
 
-void AsioContextManager::setContextToLeakOnDelete(
-    const std::string& contextName)
+void AsioContextManager::setContextToLeakOnDelete(std::string_view contextName)
 {
     std::lock_guard<std::mutex> ctxlock(contextLock);
     auto fnd = contexts.find(contextName);
@@ -181,13 +180,13 @@ AsioContextManager::~AsioContextManager()
     }
 }
 
-AsioContextManager::AsioContextManager(const std::string& contextName) :
+AsioContextManager::AsioContextManager(std::string_view contextName) :
     name(contextName), ictx(std::make_unique<asio::io_context>())
 {
 }
 
 AsioContextManager::LoopHandle
-    AsioContextManager::runContextLoop(const std::string& contextName)
+    AsioContextManager::runContextLoop(std::string_view contextName)
 {
     std::unique_lock<std::mutex> ctxlock(contextLock);
     auto fnd = contexts.find(contextName);

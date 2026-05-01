@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2017-2021,
+Copyright (c) 2017-2026,
 Battelle Memorial Institute; Lawrence Livermore National Security, LLC; Alliance
 for Sustainable Energy, LLC.  See the top-level NOTICE for additional details.
 All rights reserved. SPDX-License-Identifier: BSD-3-Clause
@@ -121,7 +121,7 @@ std::string getLocalExternalAddressV4()
     return resolved_address;
 }
 
-std::string getLocalExternalAddressV4(const std::string& server)
+std::string getLocalExternalAddressV4(std::string_view server)
 {
 #ifndef GMLC_NETWORKING_DISABLE_ASIO
     auto srv = gmlc::networking::AsioContextManager::getContextPointer();
@@ -130,16 +130,16 @@ std::string getLocalExternalAddressV4(const std::string& server)
 
     std::error_code ec;
     asio::ip::tcp::resolver::results_type results_server =
-        resolver.resolve(asio::ip::tcp::v4(), server, "", ec);
+        resolver.resolve(asio::ip::tcp::v4(), std::string(server), "", ec);
     if (ec) {
         return getLocalExternalAddressV4();
     }
     asio::ip::tcp::endpoint servep = *results_server.begin();
 
-    auto sstring =
-        (results_server.empty()) ? server : servep.address().to_string();
+    auto sstring = (results_server.empty()) ? std::string(server) :
+                                              servep.address().to_string();
 #else
-    std::string sstring = server;
+    std::string sstring{server};
 #endif
 
     auto interface_addresses = gmlc::netif::getInterfaceAddressesV4();
@@ -151,8 +151,7 @@ std::string getLocalExternalAddressV4(const std::string& server)
     if (ec) {
         return getLocalExternalAddressV4();
     }
-    // asio::ip::tcp::endpoint endpoint = *it;
-    for (asio::ip::tcp::endpoint ept : results) {
+    for (const asio::ip::tcp::endpoint& ept : results) {
         resolved_addresses.push_back(ept.address().to_string());
     }
 
@@ -227,7 +226,7 @@ std::string getLocalExternalAddressV6()
     return resolved_address;
 }
 
-std::string getLocalExternalAddressV6(const std::string& server)
+std::string getLocalExternalAddressV6(std::string_view server)
 {
 #ifndef GMLC_NETWORKING_DISABLE_ASIO
     auto srv = gmlc::networking::AsioContextManager::getContextPointer();
@@ -235,12 +234,13 @@ std::string getLocalExternalAddressV6(const std::string& server)
     asio::ip::tcp::resolver resolver(srv->getBaseContext());
 
     asio::ip::tcp::resolver::results_type it_server =
-        resolver.resolve(asio::ip::tcp::v6(), server, "");
+        resolver.resolve(asio::ip::tcp::v6(), std::string(server), "");
     asio::ip::tcp::endpoint servep = *it_server.begin();
 
-    auto sstring = (it_server.empty()) ? server : servep.address().to_string();
+    auto sstring = (it_server.empty()) ? std::string(server) :
+                                         servep.address().to_string();
 #else
-    std::string sstring = server;
+    std::string sstring{server};
 #endif
     auto interface_addresses = gmlc::netif::getInterfaceAddressesV6();
     std::vector<std::string> resolved_addresses;
@@ -272,7 +272,7 @@ std::string getLocalExternalAddressV6(const std::string& server)
     return def;
 }
 
-std::string getLocalExternalAddress(const std::string& server)
+std::string getLocalExternalAddress(std::string_view server)
 {
     if (isIpv6(server)) {
         return getLocalExternalAddressV6(server);
@@ -281,7 +281,7 @@ std::string getLocalExternalAddress(const std::string& server)
 }
 
 std::string generateMatchingInterfaceAddress(
-    const std::string& server,
+    std::string_view server,
     InterfaceNetworks network)
 {
     std::string newInterface;

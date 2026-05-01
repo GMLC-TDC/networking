@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2017-2021,
+Copyright (c) 2017-2026,
 Battelle Memorial Institute; Lawrence Livermore National Security, LLC; Alliance
 for Sustainable Energy, LLC.  See the top-level NOTICE for additional details.
 All rights reserved. SPDX-License-Identifier: BSD-3-Clause
@@ -7,22 +7,29 @@ All rights reserved. SPDX-License-Identifier: BSD-3-Clause
 #include "addressOperations.hpp"
 
 #include <algorithm>
+#include <optional>
 #include <stdexcept>
 #include <string>
 #include <utility>
 
 namespace gmlc::networking {
 
-std::pair<std::string, std::string>
-    extractInterfaceAndPortString(const std::string& address)
+std::pair<std::string, std::optional<std::string>>
+    extractInterfaceAndPortString(std::string_view address)
 {
     auto lastColon = address.find_last_of(':');
-    return {address.substr(0, lastColon), address.substr(lastColon + 1)};
+    if (lastColon == std::string::npos || (address.size() <= lastColon + 1) ||
+        (address[lastColon + 1] == '/')) {
+        return {std::string(address), std::nullopt};
+    }
+    return {
+        std::string(address.substr(0, lastColon)),
+        std::string(address.substr(lastColon + 1))};
 }
 
-std::string makePortAddress(const std::string& networkInterface, int portNumber)
+std::string makePortAddress(std::string_view networkInterface, int portNumber)
 {
-    std::string newAddress = networkInterface;
+    std::string newAddress{networkInterface};
     if (portNumber != 0) {
         newAddress.push_back(':');
         newAddress.append(std::to_string(portNumber));
@@ -30,38 +37,40 @@ std::string makePortAddress(const std::string& networkInterface, int portNumber)
     return newAddress;
 }
 
-std::pair<std::string, int> extractInterfaceAndPort(const std::string& address)
+std::pair<std::string, std::optional<int>>
+    extractInterfaceAndPort(std::string_view address)
 {
-    std::pair<std::string, int> ret;
+    std::pair<std::string, std::optional<int>> ret;
     auto lastColon = address.find_last_of(':');
     if (lastColon == std::string::npos) {
-        ret = std::make_pair(address, -1);
+        ret = std::make_pair(std::string(address), std::nullopt);
     } else {
         try {
             if ((address.size() > lastColon + 1) &&
                 (address[lastColon + 1] != '/')) {
-                auto val = std::stoi(address.substr(lastColon + 1));
-                ret.first = address.substr(0, lastColon);
+                auto val =
+                    std::stoi(std::string(address.substr(lastColon + 1)));
+                ret.first = std::string(address.substr(0, lastColon));
                 ret.second = val;
             } else {
-                ret = std::make_pair(address, -1);
+                ret = std::make_pair(std::string(address), std::nullopt);
             }
         }
         catch (const std::invalid_argument&) {
-            ret = std::make_pair(address, -1);
+            ret = std::make_pair(std::string(address), std::nullopt);
         }
     }
 
     return ret;
 }
 
-std::string stripProtocol(const std::string& networkAddress)
+std::string stripProtocol(std::string_view networkAddress)
 {
     auto loc = networkAddress.find("://");
     if (loc != std::string::npos) {
-        return networkAddress.substr(loc + 3);
+        return std::string(networkAddress.substr(loc + 3));
     }
-    return networkAddress;
+    return std::string(networkAddress);
 }
 
 void removeProtocol(std::string& networkAddress)
@@ -109,22 +118,22 @@ bool isIpv6(std::string_view address)
 }
 
 std::string
-    addProtocol(const std::string& networkAddress, InterfaceTypes interfaceT)
+    addProtocol(std::string_view networkAddress, InterfaceTypes interfaceT)
 {
     if (networkAddress.find("://") == std::string::npos) {
         switch (interfaceT) {
             case InterfaceTypes::IP:
             case InterfaceTypes::TCP:
-                return std::string("tcp://") + networkAddress;
+                return std::string("tcp://") + std::string(networkAddress);
             case InterfaceTypes::IPC:
-                return std::string("ipc://") + networkAddress;
+                return std::string("ipc://") + std::string(networkAddress);
             case InterfaceTypes::UDP:
-                return std::string("udp://") + networkAddress;
+                return std::string("udp://") + std::string(networkAddress);
             case InterfaceTypes::INPROC:
-                return std::string("inproc://") + networkAddress;
+                return std::string("inproc://") + std::string(networkAddress);
         }
     }
-    return networkAddress;
+    return std::string(networkAddress);
 }
 
 void insertProtocol(std::string& networkAddress, InterfaceTypes interfaceT)

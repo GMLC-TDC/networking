@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2017-2021,
+Copyright (c) 2017-2026,
 Battelle Memorial Institute; Lawrence Livermore National Security, LLC; Alliance
 for Sustainable Energy, LLC.  See the top-level NOTICE for additional details.
 All rights reserved. SPDX-License-Identifier: BSD-3-Clause
@@ -8,6 +8,7 @@ All rights reserved. SPDX-License-Identifier: BSD-3-Clause
 #pragma once
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 namespace gmlc::networking {
@@ -38,11 +39,11 @@ std::string getLocalExternalAddressV4();
 
 /** get the external ipv4 Ethernet address of the current computer that best
  * matches the listed server*/
-std::string getLocalExternalAddress(const std::string& server);
+std::string getLocalExternalAddress(std::string_view server);
 
 /** get the external ipv4 Ethernet address of the current computer that best
  * matches the listed server*/
-std::string getLocalExternalAddressV4(const std::string& server);
+std::string getLocalExternalAddressV4(std::string_view server);
 
 /** get the external ipv4 address of the current computer
  */
@@ -50,12 +51,12 @@ std::string getLocalExternalAddressV6();
 
 /** get the external ipv4 Ethernet address of the current computer that best
  * matches the listed server*/
-std::string getLocalExternalAddressV6(const std::string& server);
+std::string getLocalExternalAddressV6(std::string_view server);
 
 /** generate an interface that matches a defined server or network specification
  */
 std::string generateMatchingInterfaceAddress(
-    const std::string& server,
+    std::string_view server,
     InterfaceNetworks network = InterfaceNetworks::LOCAL);
 
 }  // namespace gmlc::networking

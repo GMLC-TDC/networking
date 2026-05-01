@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2017-2021,
+Copyright (c) 2017-2026,
 Battelle Memorial Institute; Lawrence Livermore National Security, LLC; Alliance
 for Sustainable Energy, LLC.  See the top-level NOTICE for additional details.
 All rights reserved. SPDX-License-Identifier: BSD-3-Clause
@@ -16,6 +16,7 @@ All rights reserved. SPDX-License-Identifier: BSD-3-Clause
 #include <functional>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -122,7 +123,7 @@ namespace networking {
         size_t send(const void* buffer, size_t dataLength);
         /** send a string
     @throws std::system_error on failure*/
-        size_t send(const std::string& dataString);
+        size_t send(std::string_view dataString);
 
         /** do a blocking receive on the socket
     @throws std::system_error on failure

@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2017-2021,
+Copyright (c) 2017-2026,
 Battelle Memorial Institute; Lawrence Livermore National Security, LLC; Alliance
 for Sustainable Energy, LLC.  See the top-level NOTICE for additional details.
 All rights reserved. SPDX-License-Identifier: BSD-3-Clause
@@ -87,8 +87,9 @@ TcpConnection::pointer establishConnection(
     std::chrono::milliseconds timeOut)
 {
     std::string interface;
-    std::string port;
+    std::optional<std::string> port;
     std::tie(interface, port) = extractInterfaceAndPortString(address);
-    return establishConnection(sf, io_context, interface, port, timeOut);
+    return establishConnection(
+        sf, io_context, interface, port.value_or(std::string{}), timeOut);
 }
 }  // namespace gmlc::networking

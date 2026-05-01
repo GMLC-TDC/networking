@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2017-2021,
+Copyright (c) 2017-2026,
 Battelle Memorial Institute; Lawrence Livermore National Security, LLC; Alliance
 for Sustainable Energy, LLC.  See the top-level NOTICE for additional details.
 All rights reserved. SPDX-License-Identifier: BSD-3-Clause
@@ -311,11 +311,9 @@ size_t TcpConnection::send(const void* buffer, size_t dataLength)
     //  return sz;
 }
 
-size_t TcpConnection::send(const std::string& dataString)
+size_t TcpConnection::send(std::string_view dataString)
 {
-    size_t sz;
-    sz = send(&dataString[0], dataString.size());
-    return sz;
+    return send(dataString.data(), dataString.size());
 }
 
 size_t TcpConnection::receive(void* buffer, size_t maxDataSize)
