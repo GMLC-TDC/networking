@@ -65,8 +65,7 @@ std::shared_ptr<AsioContextManager>
         return contextPtr;
     }
 
-    contextPtr = std::shared_ptr<AsioContextManager>(
-        new AsioContextManager(contextName));
+    contextPtr = std::make_shared<AsioContextManager>(contextName);
     contexts.emplace(std::string(contextName), contextPtr);
     return contextPtr;
     // if it doesn't find it make a new one with the appropriate name
@@ -98,8 +97,8 @@ asio::io_context&
     if (ptr) {
         return ptr->getBaseContext();
     }
-    throw(
-        std::invalid_argument("the context name specified was not available"));
+    throw 
+        std::invalid_argument("the context name specified was not available");
 }
 
 void AsioContextManager::closeContext(std::string_view contextName)

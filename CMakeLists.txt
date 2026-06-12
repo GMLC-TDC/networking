@@ -13,14 +13,14 @@ cmake_minimum_required(VERSION 3.22...4.2)
 project(
     GMLC_NETWORKING
     LANGUAGES CXX
-    VERSION 0.4.0
+    VERSION 0.4.1
 )
 
 # -----------------------------------------------------------------------------
 # GMLC NETWORKING library Version number
 # -----------------------------------------------------------------------------
 set(GMLC_NETWORKING_VERSION_BUILD)
-set(GMLC_NETWORKING_DATE "2026-04-28")
+set(GMLC_NETWORKING_DATE "2026-06-12")
 
 set(GMLC_NETWORKING_VERSION_STRING
     "${GMLC_NETWORKING_VERSION} (${GMLC_NETWORKING_DATE})"
@@ -104,11 +104,11 @@ if(MINGW
 )
     target_link_libraries(networking_base INTERFACE wsock32 ws2_32 mswsock iphlpapi)
     if(NOT MSYS)
-        target_compile_definitions(networking_base INTERFACE -D_WIN32_WINNT=0x0601)
+        target_compile_definitions(networking_base INTERFACE _WIN32_WINNT=0x0601)
     endif()
     if(CYGWIN)
         target_compile_definitions(
-            networking_base INTERFACE -D_XOPEN_SOURCE=500 -D__USE_W32_SOCKETS
+            networking_base INTERFACE _XOPEN_SOURCE=500 __USE_W32_SOCKETS
         )
     endif()
 endif()

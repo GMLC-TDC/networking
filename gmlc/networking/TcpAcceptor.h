@@ -39,12 +39,12 @@ class TcpAcceptor : public std::enable_shared_from_this<TcpAcceptor> {
     static pointer
         create(asio::io_context& io_context, asio::ip::tcp::endpoint& ep)
     {
-        return pointer(new TcpAcceptor(io_context, ep));
+        return std::make_shared<TcpAcceptor>(io_context, ep);
     }
 
     static pointer create(asio::io_context& io_context, uint16_t port)
     {
-        return pointer(new TcpAcceptor(io_context, port));
+        return std::make_shared<TcpAcceptor>(io_context, port);
     }
     /** destructor to make sure everything is closed without threading issues*/
     ~TcpAcceptor()

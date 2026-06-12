@@ -81,7 +81,7 @@ namespace networking {
             asio::io_context& io_context,
             size_t bufferSize)
         {
-            return pointer(new TcpConnection(sf, io_context, bufferSize));
+            return std::make_shared<TcpConnection>(sf, io_context, bufferSize);
         }
         /** get the underlying socket object*/
         auto socket() { return socket_; }
