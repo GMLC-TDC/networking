@@ -21,15 +21,15 @@ All rights reserved. SPDX-License-Identifier: BSD-3-Clause
 
 namespace gmlc::networking {
 std::vector<std::string> prioritizeExternalAddresses(
-    std::vector<std::string> high,
-    std::vector<std::string> low)
+    const std::vector<std::string>& high,
+    const std::vector<std::string>& low)
 {
     std::vector<std::string> result;
 
     // Top choice: addresses that both lists contain (resolver + OS)
     for (const auto& r_addr : low) {
         if (std::find(high.begin(), high.end(), r_addr) != high.end()) {
-            result.push_back(r_addr);
+            result.emplace_back(r_addr);
         }
     }
     // Second choice: high-priority addresses found by the OS (likely link-local
@@ -37,15 +37,15 @@ std::vector<std::string> prioritizeExternalAddresses(
     for (const auto& i_addr : high) {
         // add the address if it isn't already in the list
         if (std::find(result.begin(), result.end(), i_addr) == result.end()) {
-            result.push_back(i_addr);
+            result.emplace_back(i_addr);
         }
     }
     // Last choice: low-priority addresses returned by the resolver (OS doesn't
     // know about them so may be invalid)
     for (const auto& r_addr : low) {
         // add the address if it isn't already in the list
-        if (std::find(low.begin(), low.end(), r_addr) == low.end()) {
-            result.push_back(r_addr);
+        if (std::find(result.begin(), result.end(), r_addr) == result.end()) {
+            result.emplace_back(r_addr);
         }
     }
 
@@ -76,8 +76,10 @@ std::string getLocalExternalAddressV4()
         resolver.resolve(asio::ip::tcp::v4(), asio::ip::host_name(), "", ec);
 
     if (!ec) {
-        asio::ip::tcp::endpoint endpoint = *results.begin();
-        resolved_address = endpoint.address().to_string();
+        if (!results.empty()) {
+            asio::ip::tcp::endpoint endpoint = *results.begin();
+            resolved_address = endpoint.address().to_string();
+        }
     }
 #endif
     auto interface_addresses = gmlc::netif::getInterfaceAddressesV4();
@@ -100,7 +102,7 @@ std::string getLocalExternalAddressV4()
     // Pick an interface that isn't an IPv4 loopback address, 127.0.0.1/8
     // or an IPv4 link-local address, 169.254.0.0/16
     std::string link_local_addr;
-    for (auto addr : interface_addresses) {
+    for (const auto& addr : interface_addresses) {
         if (addr.rfind("127.", 0) != 0) {
             if (addr.rfind("169.254.", 0) != 0) {
                 return addr;
@@ -134,10 +136,9 @@ std::string getLocalExternalAddressV4(std::string_view server)
     if (ec) {
         return getLocalExternalAddressV4();
     }
-    asio::ip::tcp::endpoint servep = *results_server.begin();
-
-    auto sstring = (results_server.empty()) ? std::string(server) :
-                                              servep.address().to_string();
+    auto sstring = results_server.empty() ?
+        std::string(server) :
+        results_server.begin()->endpoint().address().to_string();
 #else
     std::string sstring{server};
 #endif
@@ -151,18 +152,20 @@ std::string getLocalExternalAddressV4(std::string_view server)
     if (ec) {
         return getLocalExternalAddressV4();
     }
-    for (const asio::ip::tcp::endpoint& ept : results) {
-        resolved_addresses.push_back(ept.address().to_string());
+    for (const auto& ept : results) {
+        resolved_addresses.push_back(ept.endpoint().address().to_string());
     }
 
 #endif
     auto candidate_addresses =
         prioritizeExternalAddresses(interface_addresses, resolved_addresses);
-
+    if (candidate_addresses.empty()) {
+        return getLocalExternalAddressV4();
+    }
     int cnt = 0;
     std::string def = candidate_addresses[0];
     cnt = matchcount(sstring.begin(), sstring.end(), def.begin(), def.end());
-    for (auto ndef : candidate_addresses) {
+    for (const auto& ndef : candidate_addresses) {
         auto mcnt = matchcount(
             sstring.begin(), sstring.end(), ndef.begin(), ndef.end());
         if ((mcnt > cnt) && (mcnt >= 7)) {
@@ -181,9 +184,11 @@ std::string getLocalExternalAddressV6()
     asio::ip::tcp::resolver resolver(srv->getBaseContext());
     asio::ip::tcp::resolver::results_type results =
         resolver.resolve(asio::ip::tcp::v6(), asio::ip::host_name(), "");
-    asio::ip::tcp::endpoint endpoint = *results.begin();
+    if (results.empty()) {
+        return {};
+    }
 
-    auto resolved_address = endpoint.address().to_string();
+    auto resolved_address = results.begin()->endpoint().address().to_string();
 #else
     std::string resolved_address;
 #endif
@@ -205,7 +210,7 @@ std::string getLocalExternalAddressV6()
     // Pick an interface that isn't the IPv6 loopback address, ::1/128
     // or an IPv6 link-local address, fe80::/16
     std::string link_local_addr;
-    for (auto addr : interface_addresses) {
+    for (const auto& addr : interface_addresses) {
         if (addr != "::1") {
             if (addr.rfind("fe80:", 0) != 0) {
                 return addr;
@@ -235,10 +240,9 @@ std::string getLocalExternalAddressV6(std::string_view server)
 
     asio::ip::tcp::resolver::results_type it_server =
         resolver.resolve(asio::ip::tcp::v6(), std::string(server), "");
-    asio::ip::tcp::endpoint servep = *it_server.begin();
-
-    auto sstring = (it_server.empty()) ? std::string(server) :
-                                         servep.address().to_string();
+    auto sstring = it_server.empty() ?
+        std::string(server) :
+        it_server.begin()->endpoint().address().to_string();
 #else
     std::string sstring{server};
 #endif
@@ -257,11 +261,13 @@ std::string getLocalExternalAddressV6(std::string_view server)
 #endif
     auto candidate_addresses =
         prioritizeExternalAddresses(interface_addresses, resolved_addresses);
-
+    if (candidate_addresses.empty()) {
+        return getLocalExternalAddressV6();
+    }
     int cnt = 0;
     std::string def = candidate_addresses[0];
     cnt = matchcount(sstring.begin(), sstring.end(), def.begin(), def.end());
-    for (auto ndef : candidate_addresses) {
+    for (const auto& ndef : candidate_addresses) {
         auto mcnt = matchcount(
             sstring.begin(), sstring.end(), ndef.begin(), ndef.end());
         if ((mcnt > cnt) && (mcnt >= 7)) {

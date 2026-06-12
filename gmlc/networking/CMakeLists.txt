@@ -70,7 +70,7 @@ if(GMLC_NETWORKING_STATIC_LIB)
                                    ${networking_nonasio_header_files}
         )
         target_compile_definitions(
-            gmlc_networking PUBLIC "-DGMLC_NETWORKING_DISABLE_ASIO=1"
+            gmlc_networking PUBLIC GMLC_NETWORKING_DISABLE_ASIO=1
         )
     else()
         add_library(
