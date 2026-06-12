@@ -65,7 +65,8 @@ std::shared_ptr<AsioContextManager>
         return contextPtr;
     }
 
-    contextPtr = std::make_shared<AsioContextManager>(contextName);
+    contextPtr = std::shared_ptr<AsioContextManager>(
+        new AsioContextManager(contextName));
     contexts.emplace(std::string(contextName), contextPtr);
     return contextPtr;
     // if it doesn't find it make a new one with the appropriate name
@@ -107,7 +108,7 @@ void AsioContextManager::closeContext(std::string_view contextName)
     auto fnd = contexts.find(contextName);
     //    std::cout << "closing context manager\n";
     if (fnd != contexts.end()) {
-        auto ptr = fnd->second;
+        std::shared_ptr<AsioContextManager> ptr = fnd->second;
         contexts.erase(fnd);
         ctxlock.unlock();
         if (ptr->isRunning()) {
@@ -190,7 +191,7 @@ AsioContextManager::LoopHandle
     std::unique_lock<std::mutex> ctxlock(contextLock);
     auto fnd = contexts.find(contextName);
     if (fnd != contexts.end()) {
-        auto ptr = fnd->second;
+        std::shared_ptr<AsioContextManager> ptr = fnd->second;
         ctxlock.unlock();
         return ptr->startContextLoop();
     }

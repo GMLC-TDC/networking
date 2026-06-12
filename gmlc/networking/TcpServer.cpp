@@ -244,8 +244,8 @@ TcpServer::pointer TcpServer::create(
     bool reuse_port,
     int nominalBufferSize)
 {
-    return std::make_shared<TcpServer>(
-        sf, io_context, address, portNum, reuse_port, nominalBufferSize);
+    return pointer(new TcpServer(
+        sf, io_context, address, portNum, reuse_port, nominalBufferSize));
 }
 
 TcpServer::pointer TcpServer::create(
@@ -271,8 +271,8 @@ TcpServer::pointer TcpServer::create(
     bool reuse_port,
     int nominalBufferSize)
 {
-    return std::make_shared<TcpServer>(
-        sf, io_context, address, port, reuse_port, nominalBufferSize);
+    return pointer(new TcpServer(
+        sf, io_context, address, port, reuse_port, nominalBufferSize));
 }
 
 TcpServer::pointer TcpServer::create(
@@ -289,7 +289,7 @@ TcpServer::pointer TcpServer::create(
     uint16_t portNum,
     int nominalBufferSize)
 {
-    return std::make_shared<TcpServer>(sf, io_context, portNum, nominalBufferSize);
+    return pointer(new TcpServer(sf, io_context, portNum, nominalBufferSize));
 }
 
 bool TcpServer::start()

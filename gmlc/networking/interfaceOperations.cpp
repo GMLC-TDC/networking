@@ -103,7 +103,7 @@ std::string getLocalExternalAddressV4()
     // Pick an interface that isn't an IPv4 loopback address, 127.0.0.1/8
     // or an IPv4 link-local address, 169.254.0.0/16
     std::string link_local_addr;
-    for (auto addr : interface_addresses) {
+    for (const auto &addr : interface_addresses) {
         if (addr.rfind("127.", 0) != 0) {
             if (addr.rfind("169.254.", 0) != 0) {
                 return addr;
@@ -165,7 +165,7 @@ std::string getLocalExternalAddressV4(std::string_view server)
     int cnt = 0;
     std::string def = candidate_addresses[0];
     cnt = matchcount(sstring.begin(), sstring.end(), def.begin(), def.end());
-    for (auto ndef : candidate_addresses) {
+    for (const auto& ndef : candidate_addresses) {
         auto mcnt = matchcount(
             sstring.begin(), sstring.end(), ndef.begin(), ndef.end());
         if ((mcnt > cnt) && (mcnt >= 7)) {
@@ -210,7 +210,7 @@ std::string getLocalExternalAddressV6()
     // Pick an interface that isn't the IPv6 loopback address, ::1/128
     // or an IPv6 link-local address, fe80::/16
     std::string link_local_addr;
-    for (auto addr : interface_addresses) {
+    for (const auto& addr : interface_addresses) {
         if (addr != "::1") {
             if (addr.rfind("fe80:", 0) != 0) {
                 return addr;
@@ -266,7 +266,7 @@ std::string getLocalExternalAddressV6(std::string_view server)
     int cnt = 0;
     std::string def = candidate_addresses[0];
     cnt = matchcount(sstring.begin(), sstring.end(), def.begin(), def.end());
-    for (auto ndef : candidate_addresses) {
+    for (const auto& ndef : candidate_addresses) {
         auto mcnt = matchcount(
             sstring.begin(), sstring.end(), ndef.begin(), ndef.end());
         if ((mcnt > cnt) && (mcnt >= 7)) {

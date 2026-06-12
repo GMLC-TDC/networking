@@ -251,7 +251,7 @@ TcpConnection::pointer TcpConnection::create(
     const std::string& port,
     size_t bufferSize)
 {
-    auto ptr = std::make_shared<TcpConnection>(sf, io_context, bufferSize);
+    auto ptr = pointer(new TcpConnection(sf, io_context, bufferSize));
 
     ptr->socket_->async_connect(
         connection, port, [ptr](const std::error_code& error) {
