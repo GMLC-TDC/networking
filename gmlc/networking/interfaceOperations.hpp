@@ -30,8 +30,8 @@ and low priority addresses last
 should be used
  */
 std::vector<std::string> prioritizeExternalAddresses(
-    std::vector<std::string> high,
-    std::vector<std::string> low);
+    const std::vector<std::string> &high,
+    const std::vector<std::string> &low);
 
 /** get the external ipv4 address of the current computer
  */

@@ -21,15 +21,15 @@ All rights reserved. SPDX-License-Identifier: BSD-3-Clause
 
 namespace gmlc::networking {
 std::vector<std::string> prioritizeExternalAddresses(
-    std::vector<std::string> high,
-    std::vector<std::string> low)
+    const std::vector<std::string> &high,
+    const std::vector<std::string> &low)
 {
     std::vector<std::string> result;
 
     // Top choice: addresses that both lists contain (resolver + OS)
     for (const auto& r_addr : low) {
         if (std::find(high.begin(), high.end(), r_addr) != high.end()) {
-            result.push_back(r_addr);
+            result.emplace_back(r_addr);
         }
     }
     // Second choice: high-priority addresses found by the OS (likely link-local
@@ -37,7 +37,7 @@ std::vector<std::string> prioritizeExternalAddresses(
     for (const auto& i_addr : high) {
         // add the address if it isn't already in the list
         if (std::find(result.begin(), result.end(), i_addr) == result.end()) {
-            result.push_back(i_addr);
+            result.emplace_back(i_addr);
         }
     }
     // Last choice: low-priority addresses returned by the resolver (OS doesn't
@@ -45,7 +45,7 @@ std::vector<std::string> prioritizeExternalAddresses(
     for (const auto& r_addr : low) {
         // add the address if it isn't already in the list
         if (std::find(result.begin(), result.end(), r_addr) == result.end()) {
-            result.push_back(r_addr);
+            result.emplace_back(r_addr);
         }
     }
 
