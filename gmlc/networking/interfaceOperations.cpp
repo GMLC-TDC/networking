@@ -21,8 +21,8 @@ All rights reserved. SPDX-License-Identifier: BSD-3-Clause
 
 namespace gmlc::networking {
 std::vector<std::string> prioritizeExternalAddresses(
-    const std::vector<std::string> &high,
-    const std::vector<std::string> &low)
+    const std::vector<std::string>& high,
+    const std::vector<std::string>& low)
 {
     std::vector<std::string> result;
 
