@@ -98,8 +98,7 @@ asio::io_context&
     if (ptr) {
         return ptr->getBaseContext();
     }
-    throw 
-        std::invalid_argument("the context name specified was not available");
+    throw std::invalid_argument("the context name specified was not available");
 }
 
 void AsioContextManager::closeContext(std::string_view contextName)

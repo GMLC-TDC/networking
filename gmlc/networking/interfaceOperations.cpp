@@ -77,10 +77,9 @@ std::string getLocalExternalAddressV4()
 
     if (!ec) {
         if (!results.empty()) {
-            
-        asio::ip::tcp::endpoint endpoint = *results.begin();
-        resolved_address = endpoint.address().to_string();
-}
+            asio::ip::tcp::endpoint endpoint = *results.begin();
+            resolved_address = endpoint.address().to_string();
+        }
     }
 #endif
     auto interface_addresses = gmlc::netif::getInterfaceAddressesV4();
@@ -103,7 +102,7 @@ std::string getLocalExternalAddressV4()
     // Pick an interface that isn't an IPv4 loopback address, 127.0.0.1/8
     // or an IPv4 link-local address, 169.254.0.0/16
     std::string link_local_addr;
-    for (const auto &addr : interface_addresses) {
+    for (const auto& addr : interface_addresses) {
         if (addr.rfind("127.", 0) != 0) {
             if (addr.rfind("169.254.", 0) != 0) {
                 return addr;
@@ -137,8 +136,9 @@ std::string getLocalExternalAddressV4(std::string_view server)
     if (ec) {
         return getLocalExternalAddressV4();
     }
-    auto sstring = results_server.empty() ? std::string(server) :
-                                        results_server.begin()->endpoint().address().to_string();
+    auto sstring = results_server.empty() ?
+        std::string(server) :
+        results_server.begin()->endpoint().address().to_string();
 #else
     std::string sstring{server};
 #endif
@@ -161,7 +161,7 @@ std::string getLocalExternalAddressV4(std::string_view server)
         prioritizeExternalAddresses(interface_addresses, resolved_addresses);
     if (candidate_addresses.empty()) {
         return getLocalExternalAddressV4();
-    }   
+    }
     int cnt = 0;
     std::string def = candidate_addresses[0];
     cnt = matchcount(sstring.begin(), sstring.end(), def.begin(), def.end());
@@ -240,8 +240,9 @@ std::string getLocalExternalAddressV6(std::string_view server)
 
     asio::ip::tcp::resolver::results_type it_server =
         resolver.resolve(asio::ip::tcp::v6(), std::string(server), "");
-    auto sstring = it_server.empty() ? std::string(server) :
-                                       it_server.begin()->endpoint().address().to_string();
+    auto sstring = it_server.empty() ?
+        std::string(server) :
+        it_server.begin()->endpoint().address().to_string();
 #else
     std::string sstring{server};
 #endif
@@ -262,7 +263,7 @@ std::string getLocalExternalAddressV6(std::string_view server)
         prioritizeExternalAddresses(interface_addresses, resolved_addresses);
     if (candidate_addresses.empty()) {
         return getLocalExternalAddressV6();
-    }   
+    }
     int cnt = 0;
     std::string def = candidate_addresses[0];
     cnt = matchcount(sstring.begin(), sstring.end(), def.begin(), def.end());
